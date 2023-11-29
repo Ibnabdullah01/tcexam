@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_pdf_all_questions.php
 // Begin       : 2004-06-10
-// Last Update : 2011-02-24
+// Last Update : 2023-11-29
 //
 // Description : Creates a PDF document containing exported questions.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2010  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023  Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 
@@ -32,21 +32,24 @@
  */
 
 require_once('../config/tce_config.php');
+$pagelevel = K_AUTH_ADMIN_RESULTS;
 require_once('../../shared/code/tce_authorization.php');
 require_once('../../shared/code/tce_functions_auth_sql.php');
 require_once('../../shared/code/tce_functions_tcecode.php');
 require_once('../../shared/config/tce_pdf.php');
 require_once('../../shared/code/tcpdfex.php');
 
-if ((isset($_REQUEST['expmode']) and ($_REQUEST['expmode'] > 0))
-    and (isset($_REQUEST['module_id']) and ($_REQUEST['module_id'] > 0))
-    and (isset($_REQUEST['subject_id']) and ($_REQUEST['subject_id'] > 0))) {
-    $expmode = intval($_REQUEST['expmode']);
-    $module_id = intval($_REQUEST['module_id']);
-    $subject_id = intval($_REQUEST['subject_id']);
-} else {
+if (
+    (!isset($_REQUEST['expmode']) || $_REQUEST['expmode'] <= 0)
+    || (!isset($_REQUEST['module_id']) || $_REQUEST['module_id'] <= 0) 
+    || (!isset($_REQUEST['subject_id']) || $_REQUEST['subject_id'] <= 0)
+) {
     exit;
 }
+
+$expmode = (int) $_REQUEST['expmode'];
+$module_id = (int) $_REQUEST['module_id'];
+$subject_id = (int) $_REQUEST['subject_id'];
 
 // check user's authorization for module
 if (!F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {

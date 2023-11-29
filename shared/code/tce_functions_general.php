@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_general.php
 // Begin       : 2001-09-08
-// Last Update : 2022-12-17
+// Last Update : 2023-11-29
 //
 // Description : General functions.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2022 Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 
@@ -227,6 +227,9 @@ function F_substr_utf8($str, $start, $length)
  */
 function F_text_to_xml($str)
 {
+    if (empty($str)) {
+        return '';
+    }
     $replaceTable = array("\0" => '', '&' => '&amp;', '<' => '&lt;', '>' => '&gt;');
     return strtr($str, $replaceTable);
 }
@@ -238,6 +241,9 @@ function F_text_to_xml($str)
  */
 function F_xml_to_text($str)
 {
+    if (empty($str)) {
+        return '';
+    }
     $replaceTable = array('&amp;' => '&', '&lt;' => '<', '&gt;' => '>');
     return strtr($str, $replaceTable);
 }
@@ -249,6 +255,9 @@ function F_xml_to_text($str)
  */
 function F_text_to_tsv($str)
 {
+    if (empty($str)) {
+        return '';
+    }
     $replaceTable = array("\0" => '', "\t" => '\t', "\n" => '\n', "\r" => '\r');
     return strtr($str, $replaceTable);
 }
@@ -260,6 +269,9 @@ function F_text_to_tsv($str)
  */
 function F_tsv_to_text($str)
 {
+    if (empty($str)) {
+        return '';
+    }
     $replaceTable = array('\t' => "\t", '\n' => "\n", '\r' => "\r");
     return strtr($str, $replaceTable);
 }
@@ -288,6 +300,9 @@ function showRequiredField($mode = 1)
  */
 function utrim($txt)
 {
+    if (empty($txt)) {
+        return '';
+    }
     $txt = preg_replace('/\xA0/u', ' ', $txt);
     $txt = preg_replace('/^([\s]+)/u', '', $txt);
     $txt = preg_replace('/([\s]+)$/u', '', $txt);
