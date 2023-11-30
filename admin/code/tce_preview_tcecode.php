@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_preview_tcecode.php
 // Begin       : 2002-01-30
@@ -27,8 +28,7 @@
  * @since 2002-01-30
  */
 
-/**
- */
+
 
 require_once('../config/tce_config.php');
 $pagelevel = K_AUTH_ADMIN_TCECODE;
@@ -45,7 +45,7 @@ $tcexamcode = stripslashes(urldecode($tcexamcode));
 $tcexamcode = str_replace('~#PLUS#~', '+', $tcexamcode);
 echo F_decode_tcecode($tcexamcode);
 
-echo '<hr />'.K_NEWLINE;
+echo '<hr />' . K_NEWLINE;
 
 echo F_close_button();
 

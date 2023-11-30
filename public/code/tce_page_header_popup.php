@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_page_header_popup.php
 // Begin       : 2001-11-01
@@ -27,8 +28,7 @@
  * @since 2001-11-01
  */
 
-/**
- */
+
 
 require_once('tce_xhtml_header.php');
 

@@ -39,8 +39,7 @@
  * @license  http://www.apache.org/licenses/LICENSE-2.0  Apache License 2.0
  * @link     https://wiki.jasig.org/display/CASC/phpCAS
  */
-class CAS_Request_CurlMultiRequest
-implements CAS_Request_MultiRequestInterface
+class CAS_Request_CurlMultiRequest implements CAS_Request_MultiRequestInterface
 {
     private array $_requests = [];
 
@@ -57,20 +56,19 @@ implements CAS_Request_MultiRequestInterface
      *
      * @param CAS_Request_RequestInterface $request reqest to add
      *
-     * @return void
      * @throws CAS_OutOfSequenceException If called after the Request has been sent.
      * @throws CAS_InvalidArgumentException If passed a Request of the wrong
      * implmentation.
      */
-    public function addRequest (CAS_Request_RequestInterface $request)
+    public function addRequest(CAS_Request_RequestInterface $request)
     {
         if ($this->_sent) {
             throw new CAS_OutOfSequenceException(
-                'Request has already been sent cannot '.__METHOD__
+                'Request has already been sent cannot ' . __METHOD__
             );
         }
 
-        if (!$request instanceof CAS_Request_CurlRequest) {
+        if (! $request instanceof CAS_Request_CurlRequest) {
             throw new CAS_InvalidArgumentException(
                 'As a CAS_Request_CurlMultiRequest, I can only work with CAS_Request_CurlRequest objects.'
             );
@@ -88,7 +86,7 @@ implements CAS_Request_MultiRequestInterface
     {
         if ($this->_sent) {
             throw new CAS_OutOfSequenceException(
-                'Request has already been sent cannot '.__METHOD__
+                'Request has already been sent cannot ' . __METHOD__
             );
         }
 
@@ -106,7 +104,7 @@ implements CAS_Request_MultiRequestInterface
      * @return bool TRUE on success, FALSE on failure.
      * @throws CAS_OutOfSequenceException If called multiple times.
      */
-    public function send ()
+    public function send()
     {
         if ($this->_sent) {
             throw new CAS_OutOfSequenceException(

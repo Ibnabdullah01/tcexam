@@ -1,11 +1,13 @@
 <?php
+
 // This file name must match the name of your custom authentication method.
 
 /**
  * Implement the custom authentication function.
  * Function name format "custom_auth_[auth method name]_check_login".
  */
-function custom_auth_basic_check_login() {
+function custom_auth_basic_check_login()
+{
     // Do anything you want for the authentication here:
     // - It can be checking username and password from another database.
     // - Token from query string.

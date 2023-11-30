@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_general.php
 // Begin       : 2001-09-08
@@ -38,7 +39,7 @@ function F_count_rows($dbtable, $where = '')
     global $db;
     require_once('../config/tce_config.php');
     $numofrows = 0;
-    $sql = 'SELECT COUNT(*) AS numrows FROM '.$dbtable.' '.$where.'';
+    $sql = 'SELECT COUNT(*) AS numrows FROM ' . $dbtable . ' ' . $where . '';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             $numofrows = $m['numrows'];
@@ -47,7 +48,7 @@ function F_count_rows($dbtable, $where = '')
         F_display_db_error();
     }
 
-    return($numofrows);
+    return ($numofrows);
 }
 
 /**
@@ -61,7 +62,7 @@ function F_empty_to_null($str)
     global $db;
     require_once('../../shared/code/tce_db_dal.php');
     if (strlen($str) > 0) {
-        return "'".F_escape_sql($db, $str)."'";
+        return "'" . F_escape_sql($db, $str) . "'";
     }
 
     return 'NULL';
@@ -115,9 +116,9 @@ function F_check_unique($table, $where, $fieldname = false, $fieldid = false)
 {
     require_once('../config/tce_config.php');
     global $l, $db;
-    $sqlc = 'SELECT * FROM '.$table.' WHERE '.$where.' LIMIT 1';
+    $sqlc = 'SELECT * FROM ' . $table . ' WHERE ' . $where . ' LIMIT 1';
     if ($rc = F_db_query($sqlc, $db)) {
-        if ($fieldname === false && $fieldid === false && F_count_rows($table, 'WHERE '.$where) > 0) {
+        if ($fieldname === false && $fieldid === false && F_count_rows($table, 'WHERE ' . $where) > 0) {
             return false;
         }
 
@@ -167,7 +168,13 @@ function unhtmlentities($text_to_convert, $preserve_tagsign = false)
  */
 function F_compact_string($string, $dquotes = false)
 {
-    $repTable = ["\t" => ' ', "\n" => ' ', "\r" => ' ', "\0" => ' ', "\x0B" => ' '];
+    $repTable = [
+        "\t" => ' ',
+        "\n" => ' ',
+        "\r" => ' ',
+        "\0" => ' ',
+        "\x0B" => ' ',
+    ];
     if ($dquotes) {
         $repTable['"'] = '&quot;';
     }
@@ -182,7 +189,10 @@ function F_compact_string($string, $dquotes = false)
  */
 function F_replace_angulars($str)
 {
-    $replaceTable = ['<' => '&lt;', '>' => '&gt;'];
+    $replaceTable = [
+        '<' => '&lt;',
+        '>' => '&gt;',
+    ];
     return strtr($str, $replaceTable);
 }
 
@@ -239,7 +249,12 @@ function F_text_to_xml($str)
         return '';
     }
 
-    $replaceTable = ["\0" => '', '&' => '&amp;', '<' => '&lt;', '>' => '&gt;'];
+    $replaceTable = [
+        "\0" => '',
+        '&' => '&amp;',
+        '<' => '&lt;',
+        '>' => '&gt;',
+    ];
     return strtr($str, $replaceTable);
 }
 
@@ -254,7 +269,11 @@ function F_xml_to_text($str)
         return '';
     }
 
-    $replaceTable = ['&amp;' => '&', '&lt;' => '<', '&gt;' => '>'];
+    $replaceTable = [
+        '&amp;' => '&',
+        '&lt;' => '<',
+        '&gt;' => '>',
+    ];
     return strtr($str, $replaceTable);
 }
 
@@ -269,7 +288,12 @@ function F_text_to_tsv($str)
         return '';
     }
 
-    $replaceTable = ["\0" => '', "\t" => '\t', "\n" => '\n', "\r" => '\r'];
+    $replaceTable = [
+        "\0" => '',
+        "\t" => '\t',
+        "\n" => '\n',
+        "\r" => '\r',
+    ];
     return strtr($str, $replaceTable);
 }
 
@@ -284,7 +308,11 @@ function F_tsv_to_text($str)
         return '';
     }
 
-    $replaceTable = ['\t' => "\t", '\n' => "\n", '\r' => "\r"];
+    $replaceTable = [
+        '\t' => "\t",
+        '\n' => "\n",
+        '\r' => "\r",
+    ];
     return strtr($str, $replaceTable);
 }
 
@@ -298,10 +326,10 @@ function showRequiredField($mode = 1)
     global $l;
     $str = '';
     if ($mode == 2) {
-        return ' <acronym class="requiredonbox" title="'.$l['w_required'].'">+</acronym>';
+        return ' <acronym class="requiredonbox" title="' . $l['w_required'] . '">+</acronym>';
     }
 
-    return ' <acronym class="requiredoffbox" title="'.$l['w_not_required'].'">-</acronym>';
+    return ' <acronym class="requiredoffbox" title="' . $l['w_not_required'] . '">-</acronym>';
 }
 
 /**
@@ -347,7 +375,7 @@ function getNormalizedIP($ip)
     // check address type
     $is_ipv6 = (str_contains($ip, ':'));
     $is_ipv4 = (str_contains($ip, '.'));
-    if (!$is_ipv4 && !$is_ipv6) {
+    if (! $is_ipv4 && ! $is_ipv6) {
         return false;
     }
 
@@ -372,16 +400,16 @@ function getNormalizedIP($ip)
 
         $part7 = base_convert(($ip_parts[0] * 256) + $ip_parts[1], 10, 16);
         $part8 = base_convert(($ip_parts[2] * 256) + $ip_parts[3], 10, 16);
-        $ip = '::ffff:'.$part7.':'.$part8;
+        $ip = '::ffff:' . $part7 . ':' . $part8;
     }
 
     // expand IPv6 notation
     if (str_contains($ip, '::')) {
-        $ip = str_replace('::', str_repeat(':0000', (8 - substr_count($ip, ':'))).':', $ip);
+        $ip = str_replace('::', str_repeat(':0000', (8 - substr_count($ip, ':'))) . ':', $ip);
     }
 
     if (str_starts_with($ip, ':')) {
-        $ip = '0000'.$ip;
+        $ip = '0000' . $ip;
     }
 
     // normalize parts to 4 bytes
@@ -440,7 +468,7 @@ function F_formatPercentage($num, $ratio = true)
         $num = (100 * $num);
     }
 
-    return '('.str_replace(' ', '&nbsp;', sprintf('% 3d', round($num))).'%)';
+    return '(' . str_replace(' ', '&nbsp;', sprintf('% 3d', round($num))) . '%)';
 }
 
 /**
@@ -455,7 +483,7 @@ function F_formatPdfPercentage($num, $ratio = true)
         $num = (100 * $num);
     }
 
-    return '('.sprintf('% 3d', round($num)).'%)';
+    return '(' . sprintf('% 3d', round($num)) . '%)';
 }
 
 
@@ -494,8 +522,8 @@ function F_getUTCoffset($timezone)
 function F_db_getUTCoffset($timezone)
 {
     $time_offset = F_getUTCoffset($timezone);
-    $sign = ($time_offset >= 0)?'+':'-';
-    return $sign.gmdate('H:i', abs($time_offset));
+    $sign = ($time_offset >= 0) ? '+' : '-';
+    return $sign . gmdate('H:i', abs($time_offset));
 }
 
 /**
@@ -512,17 +540,17 @@ function getDataXML($data, $level = 1)
         $key = strtolower($key);
         $key = preg_replace('/[^a-z0-9]+/', '_', $key);
         if (is_numeric($key[0]) || $key[0] == '_') {
-            $key = 'item'.$key;
+            $key = 'item' . $key;
         }
 
-        $xml .= $tb.'<'.$key.'>';
+        $xml .= $tb . '<' . $key . '>';
         if (is_array($value)) {
-            $xml .= "\n".getDataXML($value, ($level + 1));
+            $xml .= "\n" . getDataXML($value, ($level + 1));
         } else {
             $xml .= F_text_to_xml($value);
         }
 
-        $xml .= '</'.$key.'>'."\n";
+        $xml .= '</' . $key . '>' . "\n";
     }
 
     return $xml;
@@ -539,9 +567,9 @@ function getDataTSVHeader($data, $prefix = '')
     $tsv = '';
     foreach ($data as $key => $value) {
         if (is_array($value)) {
-            $tsv .= getDataTSVHeader($value, $prefix.$key.'_');
+            $tsv .= getDataTSVHeader($value, $prefix . $key . '_');
         } else {
-            $tsv .= "\t".$prefix.$key;
+            $tsv .= "\t" . $prefix . $key;
         }
     }
 
@@ -560,7 +588,7 @@ function getDataTSV($data)
         if (is_array($value)) {
             $tsv .= getDataTSV($value);
         } else {
-            $tsv .= "\t".F_text_to_tsv($value);
+            $tsv .= "\t" . F_text_to_tsv($value);
         }
     }
 
@@ -576,7 +604,16 @@ function F_html_to_TSV($str)
 {
     $dollar_replacement = ":.dlr.:"; //string replacement for dollar symbol
     //tags conversion table
-    $tags2textTable = ["'<br[^>]*?>'i" => ' ', "'<table[^>]*?>'i" => "\n", "'</table>'i" => "\n", "'<tr[^>]*?>'i" => "\n", "'<th[^>]*?>'i" => "\t", "'<td[^>]*?>'i" => "\t", "'<h[0-9][^>]*?>'i" => "\n\n", "'</h[0-9]>'i" => "\n"];
+    $tags2textTable = [
+        "'<br[^>]*?>'i" => ' ',
+        "'<table[^>]*?>'i" => "\n",
+        "'</table>'i" => "\n",
+        "'<tr[^>]*?>'i" => "\n",
+        "'<th[^>]*?>'i" => "\t",
+        "'<td[^>]*?>'i" => "\t",
+        "'<h[0-9][^>]*?>'i" => "\n\n",
+        "'</h[0-9]>'i" => "\n",
+    ];
     $str = str_replace('&nbsp;', ' ', $str);
     $str = str_replace('&rarr;', '-', $str);
     $str = str_replace('&darr;', '', $str);
@@ -621,13 +658,13 @@ function F_select_table_header_element($order_field, $orderdir, $title, $name, $
     $ord = '';
     if ($order_field == $current_order_field) {
         if ($orderdir == 1) {
-            $ord = ' <acronym title="'.$l['w_ascent'].'">&gt;</acronym>';
+            $ord = ' <acronym title="' . $l['w_ascent'] . '">&gt;</acronym>';
         } else {
-            $ord = ' <acronym title="'.$l['w_descent'].'">&lt;</acronym>';
+            $ord = ' <acronym title="' . $l['w_descent'] . '">&lt;</acronym>';
         }
     }
 
-    return '<th><a href="'.$_SERVER['SCRIPT_NAME'].'?'.$filter.'&amp;firstrow=0&amp;order_field='.$order_field.'&amp;orderdir='.$orderdir.'" title="'.$title.'">'.$name.'</a>'.$ord.'</th>'."\n";
+    return '<th><a href="' . $_SERVER['SCRIPT_NAME'] . '?' . $filter . '&amp;firstrow=0&amp;order_field=' . $order_field . '&amp;orderdir=' . $orderdir . '" title="' . $title . '">' . $name . '</a>' . $ord . '</th>' . "\n";
 }
 
 /**
@@ -724,7 +761,7 @@ function bcdechex($dec)
         return strtoupper(dechex($last));
     }
 
-    return bcdechex($remain).strtoupper(dechex($last));
+    return bcdechex($remain) . strtoupper(dechex($last));
 }
 
 //============================================================+

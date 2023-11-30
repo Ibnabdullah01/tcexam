@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_auth_sql.php
 // Begin       : 2006-03-11
@@ -38,15 +39,15 @@ function F_select_modules_sql($andwhere = '')
 {
     global $l;
     require_once('../config/tce_config.php');
-    $sql = 'SELECT * FROM '.K_TABLE_MODULES.'';
+    $sql = 'SELECT * FROM ' . K_TABLE_MODULES . '';
     if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
-        if (!empty($andwhere)) {
-            $sql .= ' WHERE '.$andwhere;
+        if (! empty($andwhere)) {
+            $sql .= ' WHERE ' . $andwhere;
         }
     } else {
-        $sql .= ' WHERE module_user_id IN ('.F_getAuthorizedUsers($_SESSION['session_user_id']).')';
-        if (!empty($andwhere)) {
-            $sql .= ' AND '.$andwhere;
+        $sql .= ' WHERE module_user_id IN (' . F_getAuthorizedUsers($_SESSION['session_user_id']) . ')';
+        if (! empty($andwhere)) {
+            $sql .= ' AND ' . $andwhere;
         }
     }
 
@@ -76,15 +77,15 @@ function F_select_module_subjects_sql($andwhere = '')
 {
     global $l;
     require_once('../config/tce_config.php');
-    $sql = 'SELECT * FROM '.K_TABLE_MODULES.','.K_TABLE_SUBJECTS.'';
+    $sql = 'SELECT * FROM ' . K_TABLE_MODULES . ',' . K_TABLE_SUBJECTS . '';
     $sql .= ' WHERE module_id=subject_module_id';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
         $authorized_users = F_getAuthorizedUsers($_SESSION['session_user_id']);
-        $sql .= ' AND (module_user_id IN ('.$authorized_users.') OR subject_user_id IN ('.$authorized_users.'))';
+        $sql .= ' AND (module_user_id IN (' . $authorized_users . ') OR subject_user_id IN (' . $authorized_users . '))';
     }
 
-    if (!empty($andwhere)) {
-        $sql .= ' AND '.$andwhere;
+    if (! empty($andwhere)) {
+        $sql .= ' AND ' . $andwhere;
     }
 
     return $sql . ' ORDER BY module_name,subject_name';
@@ -100,9 +101,9 @@ function F_select_tests_sql()
 {
     global $l;
     require_once('../config/tce_config.php');
-    $sql = 'SELECT * FROM '.K_TABLE_TESTS.'';
+    $sql = 'SELECT * FROM ' . K_TABLE_TESTS . '';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        $sql .= ' WHERE test_user_id IN ('.F_getAuthorizedUsers($_SESSION['session_user_id']).')';
+        $sql .= ' WHERE test_user_id IN (' . F_getAuthorizedUsers($_SESSION['session_user_id']) . ')';
     }
 
     return $sql . ' ORDER BY test_begin_time DESC, test_name';
@@ -119,14 +120,14 @@ function F_select_executed_tests_sql()
     global $l;
     require_once('../config/tce_config.php');
     $sql = 'SELECT *
-		FROM '.K_TABLE_TESTS.'
+		FROM ' . K_TABLE_TESTS . '
 		WHERE test_id IN (
 			SELECT testuser_test_id
-			FROM '.K_TABLE_TEST_USER.'
+			FROM ' . K_TABLE_TEST_USER . '
 			WHERE testuser_status>0
 		)';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
-        $sql .= ' AND test_user_id IN ('.F_getAuthorizedUsers($_SESSION['session_user_id']).')';
+        $sql .= ' AND test_user_id IN (' . F_getAuthorizedUsers($_SESSION['session_user_id']) . ')';
     }
 
     return $sql . ' ORDER BY test_begin_time DESC, test_name';

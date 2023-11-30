@@ -42,7 +42,6 @@
 
 class CAS_ProxyChain_AllowedList
 {
-
     private array $_chains = [];
 
     /**
@@ -59,8 +58,6 @@ class CAS_ProxyChain_AllowedList
      * Add a chain of proxies to the list of possible chains
      *
      * @param CAS_ProxyChain_Interface $chain A chain of proxies
-     *
-     * @return void
      */
     public function allowProxyChain(CAS_ProxyChain_Interface $chain)
     {
@@ -83,7 +80,7 @@ class CAS_ProxyChain_AllowedList
             return true;
         }
 
-        if (!$this->isProxyingAllowed()) {
+        if (! $this->isProxyingAllowed()) {
             phpCAS::trace("Proxies are not allowed");
             phpCAS::traceEnd(false);
             return false;
@@ -107,7 +104,7 @@ class CAS_ProxyChain_AllowedList
         phpCAS::traceBegin();
         $count = 0;
         foreach ($this->_chains as $chain) {
-            phpCAS::trace("Checking chain ". $count++);
+            phpCAS::trace("Checking chain " . $count++);
             if ($chain->matches($list)) {
                 phpCAS::traceEnd(true);
                 return true;
@@ -119,4 +116,3 @@ class CAS_ProxyChain_AllowedList
         return false;
     }
 }
-?>

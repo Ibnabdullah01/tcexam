@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_user_registration.php
 // Begin       : 2008-03-31
@@ -45,7 +46,7 @@ function F_send_user_reg_email($user_id, $user_email, $user_verifycode)
     $user_id = (int) $user_id;
 
     // Instantiate C_mailer class
-    $mail = new C_mailer;
+    $mail = new C_mailer();
 
     //Load default values
     $mail->setLanguageData($l);
@@ -74,7 +75,7 @@ function F_send_user_reg_email($user_id, $user_email, $user_verifycode)
     }
 
     $mail->CharSet = $l['a_meta_charset'];
-    if (!$mail->CharSet) {
+    if (! $mail->CharSet) {
         $mail->CharSet = $emailcfg['CharSet'];
     }
 
@@ -84,13 +85,13 @@ function F_send_user_reg_email($user_id, $user_email, $user_verifycode)
     $mail->isHTML(true); // Sets message type to HTML.
 
     //compose confirmation URL
-    $subscribe_url = ''.K_PATH_PUBLIC_CODE.'tce_user_verification.php?a='.$user_email.'&amp;b='.$user_verifycode.'&amp;c='.$user_id.'';
+    $subscribe_url = '' . K_PATH_PUBLIC_CODE . 'tce_user_verification.php?a=' . $user_email . '&amp;b=' . $user_verifycode . '&amp;c=' . $user_id . '';
 
     //--- Elaborate Templates ---
     $mail->Body = str_replace('#EMAIL#', $user_email, $mail->Body);
     $mail->Body = str_replace('#USERIP#', $_SERVER['REMOTE_ADDR'], $mail->Body);
     $mail->Body = str_replace('#SUBSCRIBEURL#', $subscribe_url, $mail->Body);
-    $mail->Body = str_replace('#TCEXAMURL#', K_PATH_HOST.K_PATH_TCEXAM, $mail->Body);
+    $mail->Body = str_replace('#TCEXAMURL#', K_PATH_HOST . K_PATH_TCEXAM, $mail->Body);
 
     //compose alternative TEXT message body
     $mail->AltBody = F_html_to_text($mail->Body, false, true);
@@ -101,7 +102,7 @@ function F_send_user_reg_email($user_id, $user_email, $user_verifycode)
         $mail->addBCC(K_USRREG_ADMIN_EMAIL);
     }
 
-    if (!$mail->send()) { //send email to user
+    if (! $mail->send()) { //send email to user
         F_print_error('ERROR', 'EMAIL ERROR');
     }
 

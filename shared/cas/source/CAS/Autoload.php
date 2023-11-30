@@ -26,7 +26,7 @@ function CAS_autoload($class)
     // Static to hold the Include Path to CAS
     static $include_path;
     // Check only for CAS classes
-    if (!str_starts_with($class, 'CAS_')) {
+    if (! str_starts_with($class, 'CAS_')) {
         return false;
     }
 
@@ -43,7 +43,7 @@ function CAS_autoload($class)
         if ($fp) {
             fclose($fp);
             include $file_path;
-            if (!class_exists($class, false) && !interface_exists($class, false)) {
+            if (! class_exists($class, false) && ! interface_exists($class, false)) {
                 die(
                     new Exception(
                         'Class ' . $class . ' was not present in ' .
@@ -60,7 +60,7 @@ function CAS_autoload($class)
     $e = new Exception(
         'Class ' . $class . ' could not be loaded from ' .
         $file_path . ', file does not exist (Path="'
-        . implode(':', $include_path) .'") [CAS_autoload]'
+        . implode(':', $include_path) . '") [CAS_autoload]'
     );
     $trace = $e->getTrace();
     if (isset($trace[2]) && isset($trace[2]['function'])
@@ -75,25 +75,24 @@ function CAS_autoload($class)
         return false;
     }
 
-    die ((string) $e);
+    die((string) $e);
 }
 
 // set up __autoload
 if (function_exists('spl_autoload_register')) {
-    if (!(spl_autoload_functions())
-        || !in_array('CAS_autoload', spl_autoload_functions())
+    if (! (spl_autoload_functions())
+        || ! in_array('CAS_autoload', spl_autoload_functions())
     ) {
         spl_autoload_register('CAS_autoload');
         if (function_exists('__autoload')
-            && !in_array('__autoload', spl_autoload_functions())
+            && ! in_array('__autoload', spl_autoload_functions())
         ) {
             // __autoload() was being used, but now would be ignored, add
             // it to the autoload stack
             spl_autoload_register('__autoload');
         }
     }
-} elseif (!function_exists('__autoload')) {
-
+} elseif (! function_exists('__autoload')) {
     /**
      * Autoload a class
      *
@@ -106,5 +105,3 @@ if (function_exists('spl_autoload_register')) {
         return CAS_autoload($class);
     }
 }
-
-?>

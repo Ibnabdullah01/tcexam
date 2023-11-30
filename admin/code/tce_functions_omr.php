@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_omr.php
 // Begin       : 2011-05-17
@@ -72,7 +73,7 @@ function F_decodeOMRTestDataQRCode($image)
         return false;
     }
 
-    $command = K_OMR_PATH_ZBARIMG.' --raw -Sdisable -Sqrcode.enable -q '.escapeshellarg($image);
+    $command = K_OMR_PATH_ZBARIMG . ' --raw -Sdisable -Sqrcode.enable -q ' . escapeshellarg($image);
     $str = exec($command);
     return F_decodeOMRTestData($str);
 }
@@ -87,7 +88,7 @@ function F_decodeOMRPage($image)
 {
     require_once('../config/tce_config.php');
     // decode barcode containing first question number
-    $command = K_OMR_PATH_ZBARIMG.' --raw -Sdisable -Scode128.enable -q '.escapeshellarg($image);
+    $command = K_OMR_PATH_ZBARIMG . ' --raw -Sdisable -Scode128.enable -q ' . escapeshellarg($image);
     $qstart = exec($command);
     $qstart = (int) $qstart;
     if ($qstart == 0) {
@@ -235,28 +236,28 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
     $date = date(K_TIMESTAMP_FORMAT, $time);
     $dateanswers = date(K_TIMESTAMP_FORMAT, ($time + 1));
     // check user's group
-    if (F_count_rows(K_TABLE_USERGROUP.', '.K_TABLE_TEST_GROUPS.' WHERE usrgrp_group_id=tstgrp_group_id AND tstgrp_test_id='.$test_id.' AND usrgrp_user_id='.$user_id.' LIMIT 1') == 0) {
+    if (F_count_rows(K_TABLE_USERGROUP . ', ' . K_TABLE_TEST_GROUPS . ' WHERE usrgrp_group_id=tstgrp_group_id AND tstgrp_test_id=' . $test_id . ' AND usrgrp_user_id=' . $user_id . ' LIMIT 1') == 0) {
         return false;
     }
 
     // get test data
     $testdata = F_getTestData($test_id);
     // 1. check if test is repeatable
-    $sqls = 'SELECT test_id FROM '.K_TABLE_TESTS.' WHERE test_id='.$test_id." AND test_repeatable='1' LIMIT 1";
+    $sqls = 'SELECT test_id FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . " AND test_repeatable='1' LIMIT 1";
     if ($rs = F_db_query($sqls, $db)) {
         if ($ms = F_db_fetch_array($rs)) {
             // 1a. update previous test data if repeatable
-            $sqld = 'UPDATE '.K_TABLE_TEST_USER.' SET testuser_status=testuser_status+1 WHERE testuser_test_id='.$test_id.' AND testuser_user_id='.$user_id.' AND testuser_status>3';
-            if (!$rd = F_db_query($sqld, $db)) {
+            $sqld = 'UPDATE ' . K_TABLE_TEST_USER . ' SET testuser_status=testuser_status+1 WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id . ' AND testuser_status>3';
+            if (! $rd = F_db_query($sqld, $db)) {
                 F_display_db_error();
             }
         } elseif ($overwrite) {
             // 1b. delete previous test data if not repeatable
-            $sqld = 'DELETE FROM '.K_TABLE_TEST_USER.' WHERE testuser_test_id='.$test_id.' AND testuser_user_id='.$user_id.'';
-            if (!$rd = F_db_query($sqld, $db)) {
+            $sqld = 'DELETE FROM ' . K_TABLE_TEST_USER . ' WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id . '';
+            if (! $rd = F_db_query($sqld, $db)) {
                 F_display_db_error();
             }
-        } elseif (F_count_rows(K_TABLE_TEST_USER, 'WHERE testuser_test_id='.$test_id.' AND testuser_user_id='.$user_id.'') > 0) {
+        } elseif (F_count_rows(K_TABLE_TEST_USER, 'WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id . '') > 0) {
             // 1c. check if this data already exist
             return false;
         }
@@ -266,20 +267,20 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
 
     // 2. create new user's test entry
     // ------------------------------
-    $sql = 'INSERT INTO '.K_TABLE_TEST_USER.' (
+    $sql = 'INSERT INTO ' . K_TABLE_TEST_USER . ' (
 		testuser_test_id,
 		testuser_user_id,
 		testuser_status,
 		testuser_creation_time,
 		testuser_comment
 		) VALUES (
-		'.$test_id.',
-		'.$user_id.',
+		' . $test_id . ',
+		' . $user_id . ',
 		4,
-		\''.$date.'\',
+		\'' . $date . '\',
 		\'OMR\'
 		)';
-    if (!$r = F_db_query($sql, $db)) {
+    if (! $r = F_db_query($sql, $db)) {
         F_display_db_error(false);
         return false;
     }
@@ -295,7 +296,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
         $question_id = (int) $omr_testdata[$q][0];
         $num_answers = count($omr_testdata[$q][1]);
         // get question data
-        $sqlq = 'SELECT question_type, question_difficulty FROM '.K_TABLE_QUESTIONS.' WHERE question_id='.$question_id.' LIMIT 1';
+        $sqlq = 'SELECT question_type, question_difficulty FROM ' . K_TABLE_QUESTIONS . ' WHERE question_id=' . $question_id . ' LIMIT 1';
         if ($rq = F_db_query($sqlq, $db)) {
             if ($mq = F_db_fetch_array($rq)) {
                 // question scores
@@ -303,7 +304,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                 $question_wrong_score = ($testdata['test_score_wrong'] * $mq['question_difficulty']);
                 $question_unanswered_score = ($testdata['test_score_unanswered'] * $mq['question_difficulty']);
                 // add question
-                $sqll = 'INSERT INTO '.K_TABLE_TESTS_LOGS.' (
+                $sqll = 'INSERT INTO ' . K_TABLE_TESTS_LOGS . ' (
 					testlog_testuser_id,
 					testlog_question_id,
 					testlog_score,
@@ -313,16 +314,16 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
 					testlog_order,
 					testlog_num_answers
 					) VALUES (
-					'.$testuser_id.',
-					'.$question_id.',
-					'.$question_unanswered_score.',
-					\''.$date.'\',
-					\''.$date.'\',
+					' . $testuser_id . ',
+					' . $question_id . ',
+					' . $question_unanswered_score . ',
+					\'' . $date . '\',
+					\'' . $date . '\',
 					1,
-					'.$q.',
-					'.$num_answers.'
+					' . $q . ',
+					' . $num_answers . '
 					)';
-                if (!$rl = F_db_query($sqll, $db)) {
+                if (! $rl = F_db_query($sqll, $db)) {
                     F_display_db_error(false);
                     return false;
                 }
@@ -343,18 +344,18 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                     }
 
                     // add answer
-                    $sqli = 'INSERT INTO '.K_TABLE_LOG_ANSWER.' (
+                    $sqli = 'INSERT INTO ' . K_TABLE_LOG_ANSWER . ' (
 						logansw_testlog_id,
 						logansw_answer_id,
 						logansw_selected,
 						logansw_order
 						) VALUES (
-						'.$testlog_id.',
-						'.$answer_id.',
-						'.$answer_selected.',
-						'.$a.'
+						' . $testlog_id . ',
+						' . $answer_id . ',
+						' . $answer_selected . ',
+						' . $a . '
 						)';
-                    if (!$ri = F_db_query($sqli, $db)) {
+                    if (! $ri = F_db_query($sqli, $db)) {
                         F_display_db_error(false);
                         return false;
                     }
@@ -363,7 +364,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                     if ($mq['question_type'] < 3) { // MCSA or MCMA
                         // check if the answer is right
                         $answer_isright = false;
-                        $sqla = 'SELECT answer_isright FROM '.K_TABLE_ANSWERS.' WHERE answer_id='.$answer_id.' LIMIT 1';
+                        $sqla = 'SELECT answer_isright FROM ' . K_TABLE_ANSWERS . ' WHERE answer_id=' . $answer_id . ' LIMIT 1';
                         if ($ra = F_db_query($sqla, $db)) {
                             if (($ma = F_db_fetch_array($ra))) {
                                 $answer_isright = F_getBoolean($ma['answer_isright']);
@@ -413,7 +414,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                     }
                 }
 
-                 // end for each answer
+                // end for each answer
                 if ($mq['question_type'] == 2) { // MCMA
                     // normalize score
                     if (F_getBoolean($testdata['test_mcma_partial_score'])) {
@@ -435,12 +436,12 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
                 $change_time = $unanswered ? '' : $dateanswers;
 
                 // update question score
-                $sqll = 'UPDATE '.K_TABLE_TESTS_LOGS.' SET
-					testlog_score='.$qscore.',
-					testlog_change_time='.F_empty_to_null($change_time).',
+                $sqll = 'UPDATE ' . K_TABLE_TESTS_LOGS . ' SET
+					testlog_score=' . $qscore . ',
+					testlog_change_time=' . F_empty_to_null($change_time) . ',
 					testlog_reaction_time=1000
-					WHERE testlog_id='.$testlog_id.'';
-                if (!$rl = F_db_query($sqll, $db)) {
+					WHERE testlog_id=' . $testlog_id . '';
+                if (! $rl = F_db_query($sqll, $db)) {
                     F_display_db_error();
                     return false;
                 }
@@ -451,7 +452,7 @@ function F_importOMRTestData($user_id, $date, $omr_testdata, $omr_answers, $over
         }
     }
 
-     // end for each question
+    // end for each question
     return true;
 }
 

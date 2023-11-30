@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_session.php
 // Begin       : 2001-09-26
@@ -30,8 +31,7 @@
  * @since 2001-09-26
  */
 
-/**
- */
+
 
 // PHP session settings
 //ini_set('session.save_handler', 'user');
@@ -72,19 +72,19 @@ function F_session_read($key)
     global $db;
     $key = F_escape_sql($db, $key);
     $sql = 'SELECT cpsession_data
-			FROM '.K_TABLE_SESSIONS.'
-			WHERE cpsession_id=\''.$key.'\'
-				AND cpsession_expiry>=\''.date(K_TIMESTAMP_FORMAT).'\'
+			FROM ' . K_TABLE_SESSIONS . '
+			WHERE cpsession_id=\'' . $key . '\'
+				AND cpsession_expiry>=\'' . date(K_TIMESTAMP_FORMAT) . '\'
 			LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             return $m['cpsession_data'];
         }
 
-        return('');
+        return ('');
     }
 
-    return('');
+    return ('');
 }
 
 /**
@@ -97,7 +97,7 @@ function F_session_write($key, $val)
 {
     global $db;
     // workaround for PHP bug 41230
-    if ((!isset($db) || !$db) && !$db = @F_db_connect(K_DATABASE_HOST, K_DATABASE_PORT, K_DATABASE_USER_NAME, K_DATABASE_USER_PASSWORD, K_DATABASE_NAME)) {
+    if ((! isset($db) || ! $db) && ! $db = @F_db_connect(K_DATABASE_HOST, K_DATABASE_PORT, K_DATABASE_USER_NAME, K_DATABASE_USER_PASSWORD, K_DATABASE_NAME)) {
         return;
     }
 
@@ -106,30 +106,30 @@ function F_session_write($key, $val)
     $expiry = date(K_TIMESTAMP_FORMAT, (time() + K_SESSION_LIFE));
     // check if this session already exist on database
     $sql = 'SELECT cpsession_id
-			FROM '.K_TABLE_SESSIONS.'
-			WHERE cpsession_id=\''.$key.'\'
+			FROM ' . K_TABLE_SESSIONS . '
+			WHERE cpsession_id=\'' . $key . '\'
 			LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             // SQL to update existing session
-            $sqlup = 'UPDATE '.K_TABLE_SESSIONS.' SET
-				cpsession_expiry=\''.$expiry.'\',
-				cpsession_data=\''.$val.'\'
-				WHERE cpsession_id=\''.$key."'";
+            $sqlup = 'UPDATE ' . K_TABLE_SESSIONS . ' SET
+				cpsession_expiry=\'' . $expiry . '\',
+				cpsession_data=\'' . $val . '\'
+				WHERE cpsession_id=\'' . $key . "'";
         } else {
             // SQL to insert new session
-            $sqlup = 'INSERT INTO '.K_TABLE_SESSIONS.' (
+            $sqlup = 'INSERT INTO ' . K_TABLE_SESSIONS . ' (
 				cpsession_id,
 				cpsession_expiry,
 				cpsession_data
 				) VALUES (
-				\''.$key.'\',
-				\''.$expiry.'\',
-				\''.$val.'\'
+				\'' . $key . '\',
+				\'' . $expiry . '\',
+				\'' . $val . '\'
 				)';
         }
 
-        return (F_db_query($sqlup, $db) !== FALSE);
+        return (F_db_query($sqlup, $db) !== false);
     }
 
     return false;
@@ -144,7 +144,7 @@ function F_session_destroy($key)
 {
     global $db;
     $key = F_escape_sql($db, $key);
-    $sql = 'DELETE FROM '.K_TABLE_SESSIONS." WHERE cpsession_id='".$key."'";
+    $sql = 'DELETE FROM ' . K_TABLE_SESSIONS . " WHERE cpsession_id='" . $key . "'";
     return F_db_query($sql, $db);
 }
 
@@ -158,8 +158,8 @@ function F_session_gc()
 {
     global $db;
     $expiry_time = date(K_TIMESTAMP_FORMAT);
-    $sql = 'DELETE FROM '.K_TABLE_SESSIONS." WHERE cpsession_expiry<='".$expiry_time."'";
-    if (!$r = F_db_query($sql, $db)) {
+    $sql = 'DELETE FROM ' . K_TABLE_SESSIONS . " WHERE cpsession_expiry<='" . $expiry_time . "'";
+    if (! $r = F_db_query($sql, $db)) {
         return false;
     }
 
@@ -177,10 +177,10 @@ function F_session_string_to_array($sd)
 {
     $sess_array = [];
     $vars = preg_split('/[;}]/', $sd);
-    for ($i=0; $i < count($vars)-1; ++$i) {
+    for ($i = 0; $i < count($vars) - 1; ++$i) {
         $parts = explode('|', $vars[$i]);
         $key = $parts[0];
-        $val = unserialize($parts[1].';');
+        $val = unserialize($parts[1] . ';');
         $sess_array[$key] = $val;
     }
 
@@ -231,7 +231,7 @@ function getClientFingerprint()
  */
 function getNewSessionID()
 {
-    return md5(getPasswordHash(uniqid(microtime().getClientFingerprint().K_RANDOM_SECURITY.session_id(), true)));
+    return md5(getPasswordHash(uniqid(microtime() . getClientFingerprint() . K_RANDOM_SECURITY . session_id(), true)));
 }
 
 /**
@@ -248,7 +248,7 @@ function getPasswordHash($password)
  * Verifies that a password matches a hash
  * @param $password (string) The password to verify
  * @param $hash (string) Password hash
- * 
+ *
  * @return boolean
  */
 function checkPassword($password, $hash)
@@ -258,19 +258,19 @@ function checkPassword($password, $hash)
 
 /**
  * Generate unencoded CSRF token string
- * 
+ *
  * @return string
  */
 function getPlainCSRFToken()
 {
     $inc = get_included_files();
-    return $inc[0].session_id().K_RANDOM_SECURITY.getClientFingerprint();
+    return $inc[0] . session_id() . K_RANDOM_SECURITY . getClientFingerprint();
 }
 
 /**
  * Check the CSRF token
  * @param $token (string) tocken to check
- * 
+ *
  * @return boolean
  */
 function checkCSRFToken($token)
@@ -280,7 +280,7 @@ function checkCSRFToken($token)
 
 /**
  * Generate CSRF token
- * 
+ *
  * @return string
  */
 function F_getCSRFToken()
@@ -311,7 +311,7 @@ if (isset($_REQUEST['PHPSESSID'])) {
     $PHPSESSID = getNewSessionID();
 }
 
-if (!isset($_REQUEST['menu_mode']) || $_REQUEST['menu_mode'] != 'startlongprocess') {
+if (! isset($_REQUEST['menu_mode']) || $_REQUEST['menu_mode'] != 'startlongprocess') {
     // fix flush problem on long processes
     session_id($PHPSESSID); //set session id
 }

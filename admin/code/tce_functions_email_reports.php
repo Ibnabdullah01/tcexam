@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_email_reports.php
 // Begin       : 2005-02-24
@@ -53,7 +54,7 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
     $mode = (int) $mode;
     if ($test_id > 0) {
         $test_id = (int) $test_id;
-        if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
+        if (! F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
             return;
         }
     } else {
@@ -66,14 +67,14 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
 
     $group_id = $group_id > 0 ? (int) $group_id : 0;
 
-    if (!empty($startdate)) {
+    if (! empty($startdate)) {
         $startdate_time = strtotime($startdate);
         $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
     } else {
         $startdate = '';
     }
 
-    if (!empty($enddate)) {
+    if (! empty($enddate)) {
         $enddate_time = strtotime($enddate);
         $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
     } else {
@@ -81,7 +82,7 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
     }
 
     // Instantiate C_mailer class
-    $mail = new C_mailer;
+    $mail = new C_mailer();
 
     //Load default values
     $mail->setLanguageData($l);
@@ -110,7 +111,7 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
     }
 
     $mail->CharSet = $l['a_meta_charset'];
-    if (!$mail->CharSet) {
+    if (! $mail->CharSet) {
         $mail->CharSet = $emailcfg['CharSet'];
     }
 
@@ -127,50 +128,50 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
             // set HTML header
             $mail->Body = $emailcfg['MsgHeader'];
             // compose alternate TEXT message
-            $mail->AltBody = ''.$l['t_result_user'].' ['.$tu['testuser_creation_time'].']'.K_NEWLINE;
-            $mail->AltBody .= $l['w_test'].': '.$tu['test']['test_name'].K_NEWLINE;
+            $mail->AltBody = '' . $l['t_result_user'] . ' [' . $tu['testuser_creation_time'] . ']' . K_NEWLINE;
+            $mail->AltBody .= $l['w_test'] . ': ' . $tu['test']['test_name'] . K_NEWLINE;
 
             $passmsg = '';
             if ($tu['test']['test_score_threshold'] > 0) {
-                $mail->AltBody .= $l['w_test_score_threshold'].': '.$tu['test']['test_score_threshold'];
+                $mail->AltBody .= $l['w_test_score_threshold'] . ': ' . $tu['test']['test_score_threshold'];
                 if ($tu['total_score'] >= $tu['test']['test_score_threshold']) {
-                    $passmsg = ' - '.$l['w_passed'];
+                    $passmsg = ' - ' . $l['w_passed'];
                 } else {
-                    $passmsg = ' - '.$l['w_not_passed'];
+                    $passmsg = ' - ' . $l['w_not_passed'];
                 }
 
                 $mail->AltBody .= K_NEWLINE;
             }
 
-            $mail->AltBody .= $l['w_score'].': '.F_formatFloat($tu['total_score']).' '.F_formatPercentage($tu['total_score_perc'], false).$passmsg.K_NEWLINE;
+            $mail->AltBody .= $l['w_score'] . ': ' . F_formatFloat($tu['total_score']) . ' ' . F_formatPercentage($tu['total_score_perc'], false) . $passmsg . K_NEWLINE;
             if ($display_mode > 0) {
-                $mail->AltBody .= $l['w_answers_right'].': '.$tu['right'].'&nbsp;'.F_formatPercentage($tu['right_perc'], false).K_NEWLINE;
-                $mail->AltBody .= $l['w_answers_wrong'].': '.$tu['wrong'].'&nbsp;'.F_formatPercentage($tu['wrong_perc'], false).K_NEWLINE;
-                $mail->AltBody .= $l['w_questions_unanswered'].': '.$tu['unanswered'].'&nbsp;'.F_formatPercentage($tu['unanswered_perc'], false).K_NEWLINE;
-                $mail->AltBody .= $l['w_questions_undisplayed'].': '.$tu['undisplayed'].'&nbsp;'.F_formatPercentage($tu['undisplayed_perc'], false).K_NEWLINE;
+                $mail->AltBody .= $l['w_answers_right'] . ': ' . $tu['right'] . '&nbsp;' . F_formatPercentage($tu['right_perc'], false) . K_NEWLINE;
+                $mail->AltBody .= $l['w_answers_wrong'] . ': ' . $tu['wrong'] . '&nbsp;' . F_formatPercentage($tu['wrong_perc'], false) . K_NEWLINE;
+                $mail->AltBody .= $l['w_questions_unanswered'] . ': ' . $tu['unanswered'] . '&nbsp;' . F_formatPercentage($tu['unanswered_perc'], false) . K_NEWLINE;
+                $mail->AltBody .= $l['w_questions_undisplayed'] . ': ' . $tu['undisplayed'] . '&nbsp;' . F_formatPercentage($tu['undisplayed_perc'], false) . K_NEWLINE;
             }
 
             if ($mode == 0) {
-                $pdfkey = getPasswordHash(date('Y').$tu['id'].K_RANDOM_SECURITY.$tu['test']['test_id'].date('m').$tu['user_id']);
+                $pdfkey = getPasswordHash(date('Y') . $tu['id'] . K_RANDOM_SECURITY . $tu['test']['test_id'] . date('m') . $tu['user_id']);
                 // create PDF doc
-                $pdf_content = file_get_contents(K_PATH_HOST.K_PATH_TCEXAM.'admin/code/tce_pdf_results.php?mode=3&diplay_mode='.$display_mode.'&show_graph='.$show_graph.'&test_id='.$tu['test']['test_id'].'&user_id='.$tu['user_id'].'&testuser_id='.$tu['id'].'&email='.urlencode($pdfkey));
+                $pdf_content = file_get_contents(K_PATH_HOST . K_PATH_TCEXAM . 'admin/code/tce_pdf_results.php?mode=3&diplay_mode=' . $display_mode . '&show_graph=' . $show_graph . '&test_id=' . $tu['test']['test_id'] . '&user_id=' . $tu['user_id'] . '&testuser_id=' . $tu['id'] . '&email=' . urlencode($pdfkey));
                 // set PDF document file name
                 $doc_name = 'tcexam_report';
                 $doc_name .= '_3';
                 $doc_name .= '_0';
-                $doc_name .= '_'.$tu['test']['test_id'];
+                $doc_name .= '_' . $tu['test']['test_id'];
                 $doc_name .= '_0';
-                $doc_name .= '_'.$tu['user_id'];
-                $doc_name .= '_'.$tu['id'];
+                $doc_name .= '_' . $tu['user_id'];
+                $doc_name .= '_' . $tu['id'];
                 $doc_name .= '.pdf';
 
                 // attach document
                 $mail->addStringAttachment($pdf_content, $doc_name, $emailcfg['AttachmentsEncoding'], 'application/octet-stream');
-                $mail->AltBody .= K_NEWLINE.$l['w_attachment'].': '.$doc_name.K_NEWLINE;
+                $mail->AltBody .= K_NEWLINE . $l['w_attachment'] . ': ' . $doc_name . K_NEWLINE;
             }
 
             // convert alternate text to HTML
-            $mail->Body .= str_replace(K_NEWLINE, '<br />'.K_NEWLINE, $mail->AltBody);
+            $mail->Body .= str_replace(K_NEWLINE, '<br />' . K_NEWLINE, $mail->AltBody);
 
             // add HTML footer
             $mail->Body .= $emailcfg['MsgFooter'];
@@ -188,19 +189,19 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
             $mail->addAddress($tu['user_email'], $tu['user_name']);
 
             ++$email_num;
-            $progresslog = ''.$email_num.'. '.$tu['user_email'].' ['.$tu['user_name'].']'; //output user data
+            $progresslog = '' . $email_num . '. ' . $tu['user_email'] . ' [' . $tu['user_name'] . ']'; //output user data
 
-            if (!$mail->send()) { //send email to user
-                $progresslog .= ' ['.$l['t_error'].']'; //display error message
+            if (! $mail->send()) { //send email to user
+                $progresslog .= ' [' . $l['t_error'] . ']'; //display error message
             }
 
             $mail->clearAddresses(); // Clear all addresses for next loop
             $mail->clearAttachments(); // Clears all previously set filesystem, string, and binary attachments
         } else {
-            $progresslog = '['.$l['t_error'].'] '.$tu['user_name'].': '.$l['m_unknown_email'].''; //output user data
+            $progresslog = '[' . $l['t_error'] . '] ' . $tu['user_name'] . ': ' . $l['m_unknown_email'] . ''; //output user data
         }
 
-        echo $progresslog.'<br />'.K_NEWLINE; //output processed emails
+        echo $progresslog . '<br />' . K_NEWLINE; //output processed emails
         flush(); // force browser output
     }
 

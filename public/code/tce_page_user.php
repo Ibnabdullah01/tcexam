@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_page_user.php
 // Begin       : 2010-09-20
@@ -27,8 +28,7 @@
  * @since 2010-09-20
  */
 
-/**
- */
+
 
 require_once('../config/tce_config.php');
 
@@ -38,17 +38,17 @@ require_once('../../shared/code/tce_authorization.php');
 $thispage_title = $l['w_user'];
 require_once('../code/tce_page_header.php');
 
-echo '<div class="container">'.K_NEWLINE;
+echo '<div class="container">' . K_NEWLINE;
 
 // print submenu
-echo '<ul>'.K_NEWLINE;
+echo '<ul>' . K_NEWLINE;
 foreach ($menu['tce_page_user.php']['sub'] as $link => $data) {
     echo F_menu_link($link, $data, 1);
 }
 
-echo '</ul>'.K_NEWLINE;
+echo '</ul>' . K_NEWLINE;
 
-echo '</div>'.K_NEWLINE;
+echo '</div>' . K_NEWLINE;
 
 require_once('../code/tce_page_footer.php');
 

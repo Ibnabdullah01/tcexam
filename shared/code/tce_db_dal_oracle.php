@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_db_dal_oracle.php
 // Begin       : 2009-10-09
@@ -43,12 +44,12 @@
  */
 function F_db_connect($host = 'localhost', $port = '1521', $username = 'root', $password = '', $database = '')
 {
-    $dbstring = '//'.$host.':'.$port;
-    if (!empty($database)) {
-        $dbstring .= '/'.$database;
+    $dbstring = '//' . $host . ':' . $port;
+    if (! empty($database)) {
+        $dbstring .= '/' . $database;
     }
 
-    if (!$db = @oci_connect($username, $password, $dbstring, 'UTF8')) {
+    if (! $db = @oci_connect($username, $password, $dbstring, 'UTF8')) {
         return false;
     }
 
@@ -74,7 +75,7 @@ function F_db_close($link_identifier)
 function F_db_error($link_identifier = null)
 {
     $e = oci_error();
-    return '['.$e['code'].']: '.$e['message'].'';
+    return '[' . $e['code'] . ']: ' . $e['message'] . '';
 }
 
 /**
@@ -82,7 +83,7 @@ function F_db_error($link_identifier = null)
  * NOTE: Convert MySQL RAND() function to Oracle RANDOM() on ORDER BY clause of selection queries.
  * @param $query (string) The query tosend. The query string should not end with a semicolon.
  * @param $link_identifier (resource) database link identifier.
- * @return FALSE in case of error, TRUE or resource-identifier in case of success.
+ * @return false in case of error, TRUE or resource-identifier in case of success.
  */
 function F_db_query($query, $link_identifier)
 {
@@ -96,7 +97,7 @@ function F_db_query($query, $link_identifier)
     $query = preg_replace("/LIMIT 1([\s]*)$/si", '', $query);
 
     $stid = @oci_parse($link_identifier, $query);
-    if (!$stid) {
+    if (! $stid) {
         return false;
     }
 
@@ -173,7 +174,7 @@ function F_db_num_rows($result)
  */
 function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
-    $query = 'SELECT '.$tablename.'_seq.currval FROM dual';
+    $query = 'SELECT ' . $tablename . '_seq.currval FROM dual';
     if (($r = @F_db_query($query, $link_identifier)) && ($m = oci_fetch_array($r, OCI_NUM))) {
         return $m[0];
     }
@@ -183,13 +184,11 @@ function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 
 /**
  * Returns the SQL string to calculate the difference in seconds between to datetime fields.
- * @param $start_date (string) Column name of the start date-time.
- * @param $end_date (string) Column name of the end date-time.
  * @return SQL query string
  */
 function F_db_datetime_diff_seconds($start_date_field, $end_date_field)
 {
-    return '('.$end_date_field.' – '.$start_date_field.')*86400';
+    return '(' . $end_date_field . ' – ' . $start_date_field . ')*86400';
 }
 
 /**

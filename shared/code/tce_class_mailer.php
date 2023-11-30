@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : cp_class_mailer.php
 // Begin       : 2001-10-20
@@ -28,8 +29,7 @@
  * @since 2005-02-24
  */
 
-/**
- */
+
 
 require_once('../config/tce_config.php');
 
@@ -60,7 +60,6 @@ class C_mailer extends PHPMailer\PHPMailer\PHPMailer
      * Replace the default SetError
      * @param $msg (string) error message
      * @public
-     * @return void
      */
     public function setError($msg)
     {
@@ -73,7 +72,6 @@ class C_mailer extends PHPMailer\PHPMailer\PHPMailer
      * Set the language array
      * @param $lang (array) Language array
      * @public
-     * @return void
      */
     public function setLanguageData($lang)
     {
@@ -89,9 +87,8 @@ class C_mailer extends PHPMailer\PHPMailer\PHPMailer
      */
     protected function lang($key)
     {
-        return $this->language['m_mailerror_'.$key] ?? 'UNKNOW ERROR: ['.$key.']';
+        return $this->language['m_mailerror_' . $key] ?? 'UNKNOW ERROR: [' . $key . ']';
     }
-
 } //end of class
 
 //============================================================+

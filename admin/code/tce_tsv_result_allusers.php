@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_tsv_result_allusers.php
 // Begin       : 2006-03-30
@@ -29,8 +30,7 @@
  * @since 2006-03-30
  */
 
-/**
- */
+
 
 require_once('../config/tce_config.php');
 $pagelevel = K_AUTH_ADMIN_RESULTS;
@@ -41,7 +41,7 @@ if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
     $test_id = (int) $_REQUEST['test_id'];
     // check user's authorization
     require_once('../../shared/code/tce_authorization.php');
-    if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
+    if (! F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         exit;
     }
 } else {
@@ -68,16 +68,16 @@ if (isset($_REQUEST['enddate'])) {
     $enddate = 0;
 }
 
-if (isset($_REQUEST['order_field']) && !empty($_REQUEST['order_field']) && in_array($_REQUEST['order_field'], ['testuser_creation_time', 'testuser_end_time', 'user_name', 'user_lastname', 'user_firstname', 'total_score'])) {
+if (isset($_REQUEST['order_field']) && ! empty($_REQUEST['order_field']) && in_array($_REQUEST['order_field'], ['testuser_creation_time', 'testuser_end_time', 'user_name', 'user_lastname', 'user_firstname', 'total_score'])) {
     $order_field = $_REQUEST['order_field'];
 } else {
     $order_field = 'total_score, user_lastname, user_firstname';
 }
 
-if (!isset($_REQUEST['orderdir']) || empty($_REQUEST['orderdir'])) {
+if (! isset($_REQUEST['orderdir']) || empty($_REQUEST['orderdir'])) {
     $full_order_field = $order_field;
 } else {
-    $full_order_field = $order_field.' DESC';
+    $full_order_field = $order_field . ' DESC';
 }
 
 $display_mode = isset($_REQUEST['display_mode']) ? max(0, min(5, (int) $_REQUEST['display_mode'])) : 0;
@@ -87,17 +87,17 @@ header('Content-Description: TXT File Transfer');
 header('Cache-Control: public, must-revalidate, max-age=0'); // HTTP/1.1
 header('Pragma: public');
 header('Expires: Sat, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT');
+header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
 // force download dialog
 header('Content-Type: application/force-download');
 header('Content-Type: application/octet-stream', false);
 header('Content-Type: application/download', false);
 header('Content-Type: text/tab-separated-values', false);
 // use the Content-Disposition header to supply a recommended filename
-header('Content-Disposition: attachment; filename=tcexam_test_results_'.$test_id.'_'.date('YmdHis').'.tsv;');
+header('Content-Disposition: attachment; filename=tcexam_test_results_' . $test_id . '_' . date('YmdHis') . '.tsv;');
 header('Content-Transfer-Encoding: binary');
 
-// get data
+
 $data = F_getAllUsersTestStat($test_id, $group_id, $user_id, $startdate, $enddate, $full_order_field, false, $display_mode);
 // format data as HTML table
 $table = F_printTestResultStat($data, 1, $order_field, '', false, $display_mode);
@@ -112,11 +112,11 @@ if ($user_id == 0) {
     }
 
     if (count($users) > 1) {
-        echo K_NEWLINE.K_NEWLINE.K_NEWLINE.'<<< DETAILS >>>'.K_NEWLINE;
+        echo K_NEWLINE . K_NEWLINE . K_NEWLINE . '<<< DETAILS >>>' . K_NEWLINE;
         // display detailed stats for each user
         foreach ($users as $uid) {
-            echo K_NEWLINE.K_NEWLINE.'### USER'.K_TAB.$uid.K_NEWLINE.K_NEWLINE;
-            // get data
+            echo K_NEWLINE . K_NEWLINE . '### USER' . K_TAB . $uid . K_NEWLINE . K_NEWLINE;
+            
             $usrdata = F_getAllUsersTestStat($test_id, $group_id, $uid, $startdate, $enddate, $full_order_field);
             // format data as HTML table
             $table = F_printTestResultStat($usrdata, 1, $order_field, '', false, $display_mode);

@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_pdf_all_questions.php
 // Begin       : 2004-06-10
@@ -28,8 +29,7 @@
  * @param $_REQUEST['subject_id'] (int) topic ID
  */
 
-/**
- */
+
 
 require_once('../config/tce_config.php');
 $pagelevel = K_AUTH_ADMIN_RESULTS;
@@ -40,9 +40,9 @@ require_once('../../shared/config/tce_pdf.php');
 require_once('../../shared/code/tcpdfex.php');
 
 if (
-    (!isset($_REQUEST['expmode']) || $_REQUEST['expmode'] <= 0)
-    || (!isset($_REQUEST['module_id']) || $_REQUEST['module_id'] <= 0) 
-    || (!isset($_REQUEST['subject_id']) || $_REQUEST['subject_id'] <= 0)
+    (! isset($_REQUEST['expmode']) || $_REQUEST['expmode'] <= 0)
+    || (! isset($_REQUEST['module_id']) || $_REQUEST['module_id'] <= 0)
+    || (! isset($_REQUEST['subject_id']) || $_REQUEST['subject_id'] <= 0)
 ) {
     exit;
 }
@@ -52,7 +52,7 @@ $module_id = (int) $_REQUEST['module_id'];
 $subject_id = (int) $_REQUEST['subject_id'];
 
 // check user's authorization for module
-if (!F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
+if (! F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_id')) {
     exit;
 }
 
@@ -85,27 +85,27 @@ $pdf = new TCPDFEX(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, $isunicode);
 switch ($expmode) {
     case 1: {
         // Set backlink QR-Code
-        $pdf->setTCExamBackLink(K_PATH_URL.'admin/code/tce_show_all_questions.php?subject_module_id='.$module_id.'&subject_id='.$subject_id);
+        $pdf->setTCExamBackLink(K_PATH_URL . 'admin/code/tce_show_all_questions.php?subject_module_id=' . $module_id . '&subject_id=' . $subject_id);
         break;
     }
     case 2: {
         // Set backlink QR-Code
-        $pdf->setTCExamBackLink(K_PATH_URL.'admin/code/tce_show_all_questions.php?subject_module_id='.$module_id);
+        $pdf->setTCExamBackLink(K_PATH_URL . 'admin/code/tce_show_all_questions.php?subject_module_id=' . $module_id);
         break;
     }
     case 3: {
         // Set backlink QR-Code
-        $pdf->setTCExamBackLink(K_PATH_URL.'admin/code/tce_show_all_questions.php');
+        $pdf->setTCExamBackLink(K_PATH_URL . 'admin/code/tce_show_all_questions.php');
         break;
     }
 }
 
 // set document information
-$pdf->SetCreator('TCExam ver.'.K_TCEXAM_VERSION."");
+$pdf->SetCreator('TCExam ver.' . K_TCEXAM_VERSION . "");
 $pdf->SetAuthor(PDF_AUTHOR);
 $pdf->SetTitle($doc_title);
 $pdf->SetSubject($doc_description);
-$pdf->SetKeywords('TCExam, '.$doc_title);
+$pdf->SetKeywords('TCExam, ' . $doc_title);
 
 $pdf->setHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE, PDF_HEADER_STRING);
 
@@ -127,11 +127,16 @@ $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
 $pdf->setLanguageArray($l); //set language items
 
 // set default alignment for cells
-$defalign = $l['a_meta_dir']=='rtl' ? 'R' : 'L';
+$defalign = $l['a_meta_dir'] == 'rtl' ? 'R' : 'L';
 
 if (defined('K_DIGSIG_ENABLE') && K_DIGSIG_ENABLE) {
     // set document signature
-    $pdf->setSignature(K_DIGSIG_CERTIFICATE, K_DIGSIG_PRIVATE_KEY, K_DIGSIG_PASSWORD, K_DIGSIG_EXTRA_CERTS, K_DIGSIG_CERT_TYPE, ['Name'=>K_DIGSIG_NAME, 'Location'=>K_DIGSIG_LOCATION, 'Reason'=>K_DIGSIG_REASON, 'ContactInfo'=>K_DIGSIG_CONTACT]);
+    $pdf->setSignature(K_DIGSIG_CERTIFICATE, K_DIGSIG_PRIVATE_KEY, K_DIGSIG_PASSWORD, K_DIGSIG_EXTRA_CERTS, K_DIGSIG_CERT_TYPE, [
+        'Name' => K_DIGSIG_NAME,
+        'Location' => K_DIGSIG_LOCATION,
+        'Reason' => K_DIGSIG_REASON,
+        'ContactInfo' => K_DIGSIG_CONTACT,
+    ]);
 }
 
 // calculate some sizes
@@ -146,20 +151,20 @@ $data_cell_width_half = round($data_cell_width / 2, 2);
 // ---- module
 $andmodwhere = '';
 if ($expmode < 3) {
-    $andmodwhere = 'module_id='.$module_id.'';
+    $andmodwhere = 'module_id=' . $module_id . '';
 }
 
 $sqlm = F_select_modules_sql($andmodwhere);
 if ($rm = F_db_query($sqlm, $db)) {
     while ($mm = F_db_fetch_array($rm)) {
-        $module_id =  $mm['module_id'];
+        $module_id = $mm['module_id'];
         $module_name = $mm['module_name'];
         //$module_enabled = F_getBoolean($mm['module_enabled']);
 
         // ---- topic
-        $where_sqls = 'subject_module_id='.$module_id.'';
+        $where_sqls = 'subject_module_id=' . $module_id . '';
         if ($expmode < 2) {
-            $where_sqls .= ' AND subject_id='.$subject_id.'';
+            $where_sqls .= ' AND subject_id=' . $subject_id . '';
         }
 
         $sqls = F_select_subjects_sql($where_sqls);
@@ -174,7 +179,7 @@ if ($rm = F_db_query($sqlm, $db)) {
 
                 $pdf->AddPage();
 
-                // set barcode
+                
                 $pdf->setBarcode($subject_id);
 
                 $pdf->SetFillColor(204, 204, 204);
@@ -189,7 +194,7 @@ if ($rm = F_db_query($sqlm, $db)) {
 
                 // --- display subject info ---
                 $pdf->SetFont(PDF_FONT_NAME_DATA, 'B', PDF_FONT_SIZE_DATA * HEAD_MAGNIFICATION);
-                $pdf->Cell($page_width, $data_cell_height * HEAD_MAGNIFICATION, ''.$module_name.' :: '.$subject_name.'', 1, 1, $defalign, 1);
+                $pdf->Cell($page_width, $data_cell_height * HEAD_MAGNIFICATION, '' . $module_name . ' :: ' . $subject_name . '', 1, 1, $defalign, 1);
                 $pdf->SetFont(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
                 $pdf->writeHTMLCell(0, $data_cell_height, PDF_MARGIN_LEFT, $pdf->GetY(), $subject_description, 1, 1);
                 // --- end subject info ---
@@ -198,22 +203,22 @@ if ($rm = F_db_query($sqlm, $db)) {
 
                 // ---- questions
                 $sqlq = 'SELECT *
-					FROM '.K_TABLE_QUESTIONS.'
-					WHERE question_subject_id='.$subject_id.'
+					FROM ' . K_TABLE_QUESTIONS . '
+					WHERE question_subject_id=' . $subject_id . '
 					ORDER BY question_enabled DESC, question_position, question_description';
                 if ($rq = F_db_query($sqlq, $db)) {
                     $pdf->SetFont(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
                     $itemcount = 1;
                     while ($mq = F_db_fetch_array($rq)) {
                         $question_disabled = 0;
-                        if (!F_getBoolean($mq['question_enabled'])) {
+                        if (! F_getBoolean($mq['question_enabled'])) {
                             $question_disabled = 1;
                         }
 
                         $pdf->Cell($data_cell_width_third, $data_cell_height, $itemcount, 1, 0, 'R', $question_disabled);
 
-                        $pdf->Cell($data_cell_width_third/2, $data_cell_height, $qtype[($mq['question_type']-1)], 1, 0, 'C', $question_disabled);
-                        $pdf->Cell($data_cell_width_third/2, $data_cell_height, $mq['question_difficulty'], 1, 0, 'R', $question_disabled);
+                        $pdf->Cell($data_cell_width_third / 2, $data_cell_height, $qtype[($mq['question_type'] - 1)], 1, 0, 'C', $question_disabled);
+                        $pdf->Cell($data_cell_width_third / 2, $data_cell_height, $mq['question_difficulty'], 1, 0, 'R', $question_disabled);
 
                         if ($mq['question_position'] <= 0) {
                             $mq['question_position'] = '';
@@ -222,13 +227,13 @@ if ($rm = F_db_query($sqlm, $db)) {
                         $pdf->Cell($data_cell_width_third, $data_cell_height, $mq['question_position'], 1, 0, 'R', $question_disabled);
                         $mq['question_fullscreen'] = F_getBoolean($mq['question_fullscreen']) ? 'F' : '';
 
-                        $pdf->Cell($data_cell_width_third/2, $data_cell_height, $mq['question_fullscreen'], 1, 0, 'C', $question_disabled);
+                        $pdf->Cell($data_cell_width_third / 2, $data_cell_height, $mq['question_fullscreen'], 1, 0, 'C', $question_disabled);
                         $mq['question_inline_answers'] = F_getBoolean($mq['question_inline_answers']) ? 'I' : '';
 
-                        $pdf->Cell($data_cell_width_third/2, $data_cell_height, $mq['question_inline_answers'], 1, 0, 'C', $question_disabled);
+                        $pdf->Cell($data_cell_width_third / 2, $data_cell_height, $mq['question_inline_answers'], 1, 0, 'C', $question_disabled);
                         $mq['question_auto_next'] = F_getBoolean($mq['question_auto_next']) ? 'A' : '';
 
-                        $pdf->Cell($data_cell_width_third/2, $data_cell_height, $mq['question_auto_next'], 1, 0, 'C', $question_disabled);
+                        $pdf->Cell($data_cell_width_third / 2, $data_cell_height, $mq['question_auto_next'], 1, 0, 'C', $question_disabled);
                         if ($mq['question_timer'] <= 0) {
                             $mq['question_timer'] = '';
                         }
@@ -237,7 +242,7 @@ if ($rm = F_db_query($sqlm, $db)) {
 
                         $pdf->Ln();
                         $pdf->writeHTMLCell(0, $data_cell_height, (PDF_MARGIN_LEFT + $data_cell_width_third), $pdf->GetY(), F_decode_tcecode($mq['question_description']), 1, 1, '', '');
-                        if (K_ENABLE_QUESTION_EXPLANATION && !empty($mq['question_explanation'])) {
+                        if (K_ENABLE_QUESTION_EXPLANATION && ! empty($mq['question_explanation'])) {
                             $pdf->Cell($data_cell_width_third, $data_cell_height, '', 0, 0, 'C', 0);
                             $pdf->SetFont('', 'BIU');
                             $pdf->Cell(0, $data_cell_height, $l['w_explanation'], 'LTR', 1, '', 0, '', 0);
@@ -248,23 +253,23 @@ if ($rm = F_db_query($sqlm, $db)) {
                         if ($show_answers) {
                             // display alternative answers
                             $sqla = 'SELECT *
-								FROM '.K_TABLE_ANSWERS.'
-								WHERE answer_question_id=\''.$mq['question_id'].'\'
+								FROM ' . K_TABLE_ANSWERS . '
+								WHERE answer_question_id=\'' . $mq['question_id'] . '\'
 								ORDER BY answer_position,answer_isright DESC';
                             if ($ra = F_db_query($sqla, $db)) {
                                 $idx = 0; // count items
                                 while ($ma = F_db_fetch_array($ra)) {
                                     ++$idx;
-                                    $answer_disabled = (int) (!F_getBoolean($ma['answer_enabled']));
+                                    $answer_disabled = (int) (! F_getBoolean($ma['answer_enabled']));
                                     $answer_isright = (int) F_getBoolean($ma['answer_isright']);
 
                                     $pdf->Cell($data_cell_width_third, $data_cell_height, '', 0, 0, 'C', 0);
                                     $pdf->Cell($data_cell_width_third, $data_cell_height, $idx, 1, 0, 'C', $answer_disabled);
 
                                     if ($mq['question_type'] != 4) {
-                                        $pdf->Cell($data_cell_width_third/2, $data_cell_height, $qright[$answer_isright], 1, 0, 'C', $answer_disabled);
+                                        $pdf->Cell($data_cell_width_third / 2, $data_cell_height, $qright[$answer_isright], 1, 0, 'C', $answer_disabled);
                                     } else {
-                                        $pdf->Cell($data_cell_width_third/2, $data_cell_height, '', 1, 0, 'C', $answer_disabled);
+                                        $pdf->Cell($data_cell_width_third / 2, $data_cell_height, '', 1, 0, 'C', $answer_disabled);
                                     }
 
                                     if ($ma['answer_position'] > 0) {
@@ -274,14 +279,14 @@ if ($rm = F_db_query($sqlm, $db)) {
                                     }
 
                                     if ($ma['answer_keyboard_key'] > 0) {
-                                        $pdf->Cell($data_cell_width_third/2, $data_cell_height, F_text_to_xml(chr($ma['answer_keyboard_key'])), 1, 0, 'C', $answer_disabled);
+                                        $pdf->Cell($data_cell_width_third / 2, $data_cell_height, F_text_to_xml(chr($ma['answer_keyboard_key'])), 1, 0, 'C', $answer_disabled);
                                     } else {
-                                        $pdf->Cell($data_cell_width_third/2, $data_cell_height, '', 1, 0, 'C', $answer_disabled);
+                                        $pdf->Cell($data_cell_width_third / 2, $data_cell_height, '', 1, 0, 'C', $answer_disabled);
                                     }
 
                                     $pdf->Ln();
                                     $pdf->writeHTMLCell(0, $data_cell_height, (PDF_MARGIN_LEFT + (2 * $data_cell_width_third)), $pdf->GetY(), F_decode_tcecode($ma['answer_description']), 1, 1, '', '', '');
-                                    if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
+                                    if (K_ENABLE_ANSWER_EXPLANATION && ! empty($ma['answer_explanation'])) {
                                         $pdf->Cell((2 * $data_cell_width_third), $data_cell_height, '', 0, 0, 'C', 0);
                                         $pdf->SetFont('', 'BIU');
                                         $pdf->Cell(0, $data_cell_height, $l['w_explanation'], 'LTR', 1, '', 0, '', 0);
@@ -320,10 +325,10 @@ $pdf->Cell(0, 0, $msg, 0, 0, 'R', 0, $lnk, 0, false, 'B', 'B');
 
 // set PDF file name
 $pdf_filename = match ($expmode) {
-    1 => 'tcexam_subject_'.$subject_id.'_'.date('YmdHi').'.pdf',
-    2 => 'tcexam_module_'.$module_id.'_'.date('YmdHi').'.pdf',
-    3 => 'tcexam_all_modules_'.date('YmdHi').'.pdf',
-    default => 'tcexam_export_'.date('YmdHi').'.pdf',
+    1 => 'tcexam_subject_' . $subject_id . '_' . date('YmdHi') . '.pdf',
+    2 => 'tcexam_module_' . $module_id . '_' . date('YmdHi') . '.pdf',
+    3 => 'tcexam_all_modules_' . date('YmdHi') . '.pdf',
+    default => 'tcexam_export_' . date('YmdHi') . '.pdf',
 };
 
 // Send PDF output

@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_user_change_email.php
 // Begin       : 2010-09-17
@@ -27,8 +28,7 @@
  * @since 2010-09-17
  */
 
-/**
- */
+
 
 require_once('../config/tce_config.php');
 
@@ -42,7 +42,7 @@ $user_id = (int) $_SESSION['session_user_id'];
 
 // comma separated list of required fields
 $_REQUEST['ff_required'] = 'user_email,user_email_repeat';
-$_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_email'].','.$l['w_email'], ENT_COMPAT, $l['a_meta_charset']);
+$_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_email'] . ',' . $l['w_email'], ENT_COMPAT, $l['a_meta_charset']);
 
 // process submitted data
 switch ($menu_mode) {
@@ -57,9 +57,9 @@ switch ($menu_mode) {
                 break;
             }
 
-            $sql = 'SELECT user_password FROM '.K_TABLE_USERS.' WHERE user_id='.$user_id;
+            $sql = 'SELECT user_password FROM ' . K_TABLE_USERS . ' WHERE user_id=' . $user_id;
             if ($r = F_db_query($sql, $db)) {
-                if (!($m = F_db_fetch_array($r)) || !checkPassword($currentpassword, $m['user_password'])) {
+                if (! ($m = F_db_fetch_array($r)) || ! checkPassword($currentpassword, $m['user_password'])) {
                     F_print_error('WARNING', $l['m_login_wrong']);
                     $formstatus = false;
                     F_stripslashes_formfields();
@@ -71,22 +71,22 @@ switch ($menu_mode) {
             }
 
             $user_verifycode = getNewSessionID(); // verification code
-            $sql = 'UPDATE '.K_TABLE_USERS.' SET
-				user_email=\''.F_escape_sql($db, $user_email).'\',
+            $sql = 'UPDATE ' . K_TABLE_USERS . ' SET
+				user_email=\'' . F_escape_sql($db, $user_email) . '\',
 				user_level=\'0\',
-				user_verifycode=\''.$user_verifycode.'\'
-				WHERE user_id='.$user_id;
-            if (!$r = F_db_query($sql, $db)) {
+				user_verifycode=\'' . $user_verifycode . '\'
+				WHERE user_id=' . $user_id;
+            if (! $r = F_db_query($sql, $db)) {
                 F_display_db_error(false);
             } else {
                 F_print_error('MESSAGE', $l['m_email_updated']);
                 // require email confirmation
                 require_once('../../shared/code/tce_functions_user_registration.php');
                 F_send_user_reg_email($user_id, $user_email, $user_verifycode);
-                F_print_error('MESSAGE', $user_email.': '.$l['m_user_verification_sent']);
-                echo '<div class="container">'.K_NEWLINE;
-                echo '<strong><a href="index.php" title="'.$l['h_index'].'">'.$l['h_index'].' &gt;</a></strong>'.K_NEWLINE;
-                echo '</div>'.K_NEWLINE;
+                F_print_error('MESSAGE', $user_email . ': ' . $l['m_user_verification_sent']);
+                echo '<div class="container">' . K_NEWLINE;
+                echo '<strong><a href="index.php" title="' . $l['h_index'] . '">' . $l['h_index'] . ' &gt;</a></strong>' . K_NEWLINE;
+                echo '</div>' . K_NEWLINE;
                 require_once('tce_page_footer.php');
                 exit;
             }
@@ -95,34 +95,34 @@ switch ($menu_mode) {
         break;
     }
 
-    default :{
+    default:{
         break;
     }
 } //end of switch
 
-echo '<div class="container">'.K_NEWLINE;
+echo '<div class="container">' . K_NEWLINE;
 
-echo '<div class="gsoformbox">'.K_NEWLINE;
-echo '<form action="'.$_SERVER['SCRIPT_NAME'].'" method="post" enctype="multipart/form-data" id="form_editor">'.K_NEWLINE;
+echo '<div class="gsoformbox">' . K_NEWLINE;
+echo '<form action="' . $_SERVER['SCRIPT_NAME'] . '" method="post" enctype="multipart/form-data" id="form_editor">' . K_NEWLINE;
 
 echo getFormRowTextInput('user_email', $l['w_new_email'], $l['h_email'], '', '', K_EMAIL_RE_PATTERN, 255, false, false, false, '');
-echo getFormRowTextInput('user_email_repeat', $l['w_new_email'], $l['h_email'], ' ('.$l['w_repeat'].')', '', '', 255, false, false, false, '');
+echo getFormRowTextInput('user_email_repeat', $l['w_new_email'], $l['h_email'], ' (' . $l['w_repeat'] . ')', '', '', 255, false, false, false, '');
 echo getFormRowTextInput('currentpassword', $l['w_password'], $l['h_password'], '', '', '', 255, false, false, true, '');
 
-echo '<div class="row">'.K_NEWLINE;
+echo '<div class="row">' . K_NEWLINE;
 
 F_submit_button('update', $l['w_update'], $l['h_update']);
 
-echo '</div>'.K_NEWLINE;
-echo F_getCSRFTokenField().K_NEWLINE;
-echo '</form>'.K_NEWLINE;
-echo '</div>'.K_NEWLINE;
+echo '</div>' . K_NEWLINE;
+echo F_getCSRFTokenField() . K_NEWLINE;
+echo '</form>' . K_NEWLINE;
+echo '</div>' . K_NEWLINE;
 
 
-echo '<div class="pagehelp">'.$l['hp_user_change_email'].'</div>'.K_NEWLINE;
-echo '</div>'.K_NEWLINE;
+echo '<div class="pagehelp">' . $l['hp_user_change_email'] . '</div>' . K_NEWLINE;
+echo '</div>' . K_NEWLINE;
 
-require_once(__DIR__.'/tce_page_footer.php');
+require_once(__DIR__ . '/tce_page_footer.php');
 
 //============================================================+
 // END OF FILE

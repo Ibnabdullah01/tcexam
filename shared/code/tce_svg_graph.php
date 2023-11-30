@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_svg_graph.php
 // Begin       : 2012-04-15
@@ -27,8 +28,7 @@
  * @since 2012-04-15
  */
 
-/**
- */
+
 
 require_once('../../shared/code/tce_functions_svg_graph.php');
 

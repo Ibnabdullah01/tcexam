@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_altauth.php
 // Begin       : 2008-03-28
@@ -43,9 +44,9 @@ function F_altLogin()
 
     // 1) SSL ----------------------------------------------------------
     require_once('../../shared/config/tce_ssl.php');
-    if ((K_SSL_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) && (isset($_SERVER['SSL_CLIENT_M_SERIAL']) && isset($_SERVER['SSL_CLIENT_I_DN']) && isset($_SERVER['SSL_CLIENT_V_END']) && isset($_SERVER['SSL_CLIENT_VERIFY']) && $_SERVER['SSL_CLIENT_VERIFY'] === 'SUCCESS' && isset($_SERVER['SSL_CLIENT_V_REMAIN']) && $_SERVER['SSL_CLIENT_V_REMAIN'] <= 0)) {
-        $_POST['xuser_name'] = md5($_SERVER['SSL_CLIENT_M_SERIAL'].$_SERVER['SSL_CLIENT_I_DN']);
-        $_POST['xuser_password'] = getPasswordHash($_SERVER['SSL_CLIENT_M_SERIAL'].$_SERVER['SSL_CLIENT_I_DN'].K_RANDOM_SECURITY.$_SERVER['SSL_CLIENT_V_END']);
+    if ((K_SSL_ENABLED && (! isset($_SESSION['logout']) || ! $_SESSION['logout'])) && (isset($_SERVER['SSL_CLIENT_M_SERIAL']) && isset($_SERVER['SSL_CLIENT_I_DN']) && isset($_SERVER['SSL_CLIENT_V_END']) && isset($_SERVER['SSL_CLIENT_VERIFY']) && $_SERVER['SSL_CLIENT_VERIFY'] === 'SUCCESS' && isset($_SERVER['SSL_CLIENT_V_REMAIN']) && $_SERVER['SSL_CLIENT_V_REMAIN'] <= 0)) {
+        $_POST['xuser_name'] = md5($_SERVER['SSL_CLIENT_M_SERIAL'] . $_SERVER['SSL_CLIENT_I_DN']);
+        $_POST['xuser_password'] = getPasswordHash($_SERVER['SSL_CLIENT_M_SERIAL'] . $_SERVER['SSL_CLIENT_I_DN'] . K_RANDOM_SECURITY . $_SERVER['SSL_CLIENT_V_END']);
         $_POST['logaction'] = 'login';
         $usr = [];
         $usr['user_email'] = $_SERVER['SSL_CLIENT_S_DN_Email'] ?? '';
@@ -66,7 +67,7 @@ function F_altLogin()
 
     // 2) HTTP BASIC ---------------------------------------------------
     require_once('../../shared/config/tce_httpbasic.php');
-    if ((K_HTTPBASIC_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) && (isset($_SERVER['AUTH_TYPE']) && $_SERVER['AUTH_TYPE'] == 'Basic' && isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && $_SESSION['session_user_name'] != $_SERVER['PHP_AUTH_USER'])) {
+    if ((K_HTTPBASIC_ENABLED && (! isset($_SESSION['logout']) || ! $_SESSION['logout'])) && (isset($_SERVER['AUTH_TYPE']) && $_SERVER['AUTH_TYPE'] == 'Basic' && isset($_SERVER['PHP_AUTH_USER']) && isset($_SERVER['PHP_AUTH_PW']) && $_SESSION['session_user_name'] != $_SERVER['PHP_AUTH_USER'])) {
         $_POST['xuser_name'] = $_SERVER['PHP_AUTH_USER'];
         $_POST['xuser_password'] = $_SERVER['PHP_AUTH_PW'];
         $_POST['logaction'] = 'login';
@@ -94,7 +95,7 @@ function F_altLogin()
         phpCAS::forceAuthentication();
         if ($_SESSION['session_user_name'] != phpCAS::getUser()) {
             $_POST['xuser_name'] = phpCAS::getUser();
-            $_POST['xuser_password'] = getPasswordHash($_POST['xuser_name'].K_RANDOM_SECURITY);
+            $_POST['xuser_password'] = getPasswordHash($_POST['xuser_name'] . K_RANDOM_SECURITY);
             $_POST['logaction'] = 'login';
             $usr = [];
             $usr['user_email'] = '';
@@ -114,9 +115,9 @@ function F_altLogin()
 
     // 4) Shibboleth ---------------------------------------------------
     require_once('../../shared/config/tce_shibboleth.php');
-    if ((K_SHIBBOLETH_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) && (isset($_SERVER['AUTH_TYPE']) && $_SERVER['AUTH_TYPE'] == 'shibboleth' && (isset($_SERVER['Shib_Session_ID']) && !empty($_SERVER['Shib_Session_ID']) || isset($_SERVER['HTTP_SHIB_IDENTITY_PROVIDER']) && !empty($_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'])) && isset($_SERVER['eppn']) && $_SESSION['session_user_name'] != $_SERVER['eppn'])) {
+    if ((K_SHIBBOLETH_ENABLED && (! isset($_SESSION['logout']) || ! $_SESSION['logout'])) && (isset($_SERVER['AUTH_TYPE']) && $_SERVER['AUTH_TYPE'] == 'shibboleth' && (isset($_SERVER['Shib_Session_ID']) && ! empty($_SERVER['Shib_Session_ID']) || isset($_SERVER['HTTP_SHIB_IDENTITY_PROVIDER']) && ! empty($_SERVER['HTTP_SHIB_IDENTITY_PROVIDER'])) && isset($_SERVER['eppn']) && $_SESSION['session_user_name'] != $_SERVER['eppn'])) {
         $_POST['xuser_name'] = $_SERVER['eppn'];
-        $_POST['xuser_password'] = getPasswordHash($_POST['xuser_name'].K_RANDOM_SECURITY);
+        $_POST['xuser_password'] = getPasswordHash($_POST['xuser_name'] . K_RANDOM_SECURITY);
         $_POST['logaction'] = 'login';
         $usr = [];
         $usr['user_email'] = $_SERVER['eppn'];
@@ -151,7 +152,17 @@ function F_altLogin()
             }
 
             if ($radius->AccessRequest($radusername, $radpassword)) {
-                return ['user_email' => '', 'user_firstname' => '', 'user_lastname' => '', 'user_birthdate' => '', 'user_birthplace' => '', 'user_regnumber' => '', 'user_ssn' => '', 'user_level' => K_RADIUS_USER_LEVEL, 'usrgrp_group_id' => K_RADIUS_USER_GROUP_ID];
+                return [
+                    'user_email' => '',
+                    'user_firstname' => '',
+                    'user_lastname' => '',
+                    'user_birthdate' => '',
+                    'user_birthplace' => '',
+                    'user_regnumber' => '',
+                    'user_ssn' => '',
+                    'user_level' => K_RADIUS_USER_LEVEL,
+                    'usrgrp_group_id' => K_RADIUS_USER_GROUP_ID,
+                ];
             }
         }
 
@@ -179,11 +190,11 @@ function F_altLogin()
                 $sorted_ldap_attr = $ldap_attr;
                 sort($sorted_ldap_attr);
                 //var_export($rdn); // uncomment this to see the structure of the entries
-                if (($search = @ldap_search($ldapconn, K_LDAP_BASE_DN, $ldap_filter, $sorted_ldap_attr)) && ($rdn = @ldap_get_entries($ldapconn, $search)) && (!empty($rdn[0]['dn']) && @ldap_bind($ldapconn, $rdn[0]['dn'], $ldappassword))) {
+                if (($search = @ldap_search($ldapconn, K_LDAP_BASE_DN, $ldap_filter, $sorted_ldap_attr)) && ($rdn = @ldap_get_entries($ldapconn, $search)) && (! empty($rdn[0]['dn']) && @ldap_bind($ldapconn, $rdn[0]['dn'], $ldappassword))) {
                     @ldap_unbind($ldapconn);
                     $usr = [];
                     foreach ($ldap_attr as $k => $v) {
-                        if (!empty($v) && isset($rdn[0][$v])) {
+                        if (! empty($v) && isset($rdn[0][$v])) {
                             $usr[$k] = is_array($rdn[0][$v]) ? $rdn[0][$v][0] : $rdn[0][$v];
                         } else {
                             $usr[$k] = '';

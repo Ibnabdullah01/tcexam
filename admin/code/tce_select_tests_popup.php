@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_select_tests_popup.php
 // Begin       : 2012-12-02
@@ -27,8 +28,7 @@
  * @since 2012-12-02
  */
 
-/**
- */
+
 
 require_once('../config/tce_config.php');
 
@@ -41,24 +41,24 @@ require_once('../code/tce_page_header_popup.php');
 require_once('../../shared/code/tce_functions_form.php');
 require_once('tce_functions_test_select.php');
 
-if (!isset($order_field)) {
-    $order_field='test_begin_time DESC,test_name';
+if (! isset($order_field)) {
+    $order_field = 'test_begin_time DESC,test_name';
 }
 
-if (!isset($orderdir)) {
-    $orderdir=0;
+if (! isset($orderdir)) {
+    $orderdir = 0;
 }
 
-if (!isset($firstrow)) {
-    $firstrow=0;
+if (! isset($firstrow)) {
+    $firstrow = 0;
 }
 
-if (!isset($rowsperpage)) {
-    $rowsperpage=K_MAX_ROWS_PER_PAGE;
+if (! isset($rowsperpage)) {
+    $rowsperpage = K_MAX_ROWS_PER_PAGE;
 }
 
-if (!isset($searchterms)) {
-    $searchterms='';
+if (! isset($searchterms)) {
+    $searchterms = '';
 }
 
 $cid = isset($cid) ? preg_replace('/[^a-z0-9_]/', '', $cid) : '';
@@ -66,17 +66,17 @@ $cid = isset($cid) ? preg_replace('/[^a-z0-9_]/', '', $cid) : '';
 // ID of the calling form field
 $tids = isset($tids) ? preg_replace('/[^x0-9]/', '', $tids) : '';  // selected test IDs
 
-echo '<form action="'.$_SERVER['SCRIPT_NAME'].'" method="post" enctype="multipart/form-data" id="form_testselect">'.K_NEWLINE;
+echo '<form action="' . $_SERVER['SCRIPT_NAME'] . '" method="post" enctype="multipart/form-data" id="form_testselect">' . K_NEWLINE;
 
-echo '<input type="hidden" name="cid" id="cid" value="'.$cid.'" />'.K_NEWLINE;
-echo '<input type="hidden" name="tids" id="tids" value="'.$tids.'" />'.K_NEWLINE;
+echo '<input type="hidden" name="cid" id="cid" value="' . $cid . '" />' . K_NEWLINE;
+echo '<input type="hidden" name="tids" id="tids" value="' . $tids . '" />' . K_NEWLINE;
 
-echo '<div class="row">'.K_NEWLINE;
+echo '<div class="row">' . K_NEWLINE;
 
-echo '<span class="formw">'.K_NEWLINE;
-echo '<input type="text" name="searchterms" id="searchterms" value="'.htmlspecialchars($searchterms, ENT_COMPAT, $l['a_meta_charset']).'" size="20" maxlength="255" title="'.$l['w_search'].'" />';
+echo '<span class="formw">' . K_NEWLINE;
+echo '<input type="text" name="searchterms" id="searchterms" value="' . htmlspecialchars($searchterms, ENT_COMPAT, $l['a_meta_charset']) . '" size="20" maxlength="255" title="' . $l['w_search'] . '" />';
 F_submit_button('search', $l['w_search'], $l['w_search']);
-echo '</span></div>'.K_NEWLINE;
+echo '</span></div>' . K_NEWLINE;
 // build a search query
 $wherequery = '';
 if (strlen($searchterms) > 0) {
@@ -84,25 +84,25 @@ if (strlen($searchterms) > 0) {
     foreach ($terms as $word) {
         $word = F_escape_sql($db, $word);
         $wherequery .= ' AND (';
-        $wherequery .= " (test_name LIKE '%".$word."%')";
-        $wherequery .= " OR (test_description LIKE '%".$word."%')";
+        $wherequery .= " (test_name LIKE '%" . $word . "%')";
+        $wherequery .= " OR (test_description LIKE '%" . $word . "%')";
         if (preg_match('/^(\d{4})[\-](\d{2})[\-](\d{2})$/', $word, $wd) == 1 && checkdate($wd[2], $wd[3], $wd[1])) {
-            $wherequery .= " OR ((test_begin_time <= '".$word."')";
-            $wherequery .= " AND (test_end_time >= '".$word."'))";
+            $wherequery .= " OR ((test_begin_time <= '" . $word . "')";
+            $wherequery .= " AND (test_end_time >= '" . $word . "'))";
         }
 
         $wherequery .= ')';
     }
 
-    $wherequery = '('.substr($wherequery, 5).')';
+    $wherequery = '(' . substr($wherequery, 5) . ')';
 }
 
 // select only specified test IDs
-if (isset($tids) && !empty($tids)) {
+if (isset($tids) && ! empty($tids)) {
     $tid_list = '';
     $tids = explode('x', $tids);
     foreach ($tids as $id) {
-        $tid_list .= ','.(int) $id;
+        $tid_list .= ',' . (int) $id;
     }
 
     if ($tid_list !== '') {
@@ -110,17 +110,17 @@ if (isset($tids) && !empty($tids)) {
             $wherequery .= ' AND ';
         }
 
-        $wherequery .= '(test_id IN ('.substr($tid_list, 1).'))';
+        $wherequery .= '(test_id IN (' . substr($tid_list, 1) . '))';
     }
 }
 
 echo getFormNoscriptSelect();
 
-echo '<div class="row"><hr /></div>'.K_NEWLINE;
+echo '<div class="row"><hr /></div>' . K_NEWLINE;
 
 F_show_select_test_popup($order_field, $orderdir, $firstrow, $rowsperpage, $wherequery, $searchterms, $cid);
-echo F_getCSRFTokenField().K_NEWLINE;
-echo '</form>'.K_NEWLINE;
+echo F_getCSRFTokenField() . K_NEWLINE;
+echo '</form>' . K_NEWLINE;
 
 require_once('../code/tce_page_footer_popup.php');
 

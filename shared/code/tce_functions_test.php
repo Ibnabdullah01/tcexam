@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_test.php
 // Begin       : 2004-05-28
@@ -43,9 +44,9 @@ function F_getUserTests()
     // get current date-time
     $current_time = date(K_TIMESTAMP_FORMAT);
     // select tests hiding old repeated tests
-    $sql = 'SELECT * FROM '.K_TABLE_TESTS.' WHERE (test_id IN (SELECT tsubset_test_id FROM '.K_TABLE_TEST_SUBJSET.") AND (test_begin_time < '".$current_time."')";
+    $sql = 'SELECT * FROM ' . K_TABLE_TESTS . ' WHERE (test_id IN (SELECT tsubset_test_id FROM ' . K_TABLE_TEST_SUBJSET . ") AND (test_begin_time < '" . $current_time . "')";
     if (K_HIDE_EXPIRED_TESTS) {
-        $sql .= " AND (test_end_time > '".$current_time."')";
+        $sql .= " AND (test_end_time > '" . $current_time . "')";
     }
 
     $sql .= ') ORDER BY test_begin_time DESC';
@@ -64,16 +65,16 @@ function F_getUserTests()
                     $datestyle = '';
                 }
 
-                $str .= '<tr>'.K_NEWLINE;
+                $str .= '<tr>' . K_NEWLINE;
                 if ($m['test_password'] !== null && strlen($m['test_password']) > 0) {
                     $str .= '<td style="background-color:#ffffcc;">';
                 } else {
                     $str .= '<td>';
                 }
 
-                $str .= '<strong>'.F_testInfoLink($m['test_id'], $m['test_name']).'</strong></td>'.K_NEWLINE;
-                $str .= '<td'.$datestyle.'>'.$m['test_begin_time'].'</td>'.K_NEWLINE;
-                $str .= '<td'.$datestyle.'>'.$m['test_end_time'].'</td>'.K_NEWLINE;
+                $str .= '<strong>' . F_testInfoLink($m['test_id'], $m['test_name']) . '</strong></td>' . K_NEWLINE;
+                $str .= '<td' . $datestyle . '>' . $m['test_begin_time'] . '</td>' . K_NEWLINE;
+                $str .= '<td' . $datestyle . '>' . $m['test_end_time'] . '</td>' . K_NEWLINE;
                 // status
                 $str .= '<td';
                 if ($test_status >= 4 && F_getBoolean($m['test_results_to_users'])) {
@@ -82,19 +83,19 @@ function F_getUserTests()
                     if (isset($usrtestdata['user_score']) && isset($usrtestdata['test_score_threshold']) && $usrtestdata['test_score_threshold'] > 0) {
                         if ($usrtestdata['user_score'] >= $usrtestdata['test_score_threshold']) {
                             $str .= ' style="background-color:#ddffdd;"';
-                            $passmsg = ' - '.$l['w_passed'];
+                            $passmsg = ' - ' . $l['w_passed'];
                         } else {
                             $str .= ' style="background-color:#ffdddd;"';
-                            $passmsg = ' - '.$l['w_not_passed'];
+                            $passmsg = ' - ' . $l['w_not_passed'];
                         }
                     }
 
                     $str .= '>';
-                    if (isset($usrtestdata['user_score']) && strlen(''.$usrtestdata['user_score']) > 0) {
+                    if (isset($usrtestdata['user_score']) && strlen('' . $usrtestdata['user_score']) > 0) {
                         if ($usrtestdata['test_max_score'] > 0) {
-                            $str .= '<a href="tce_show_result_user.php?testuser_id='.$testuser_id.'&amp;test_id='.$m['test_id'].'" title="'.$l['h_result'].'">'.$usrtestdata['user_score'].' / '.$usrtestdata['test_max_score'].' ('.round(100 * $usrtestdata['user_score'] / $usrtestdata['test_max_score']).'%)'.$passmsg.'</a>';
+                            $str .= '<a href="tce_show_result_user.php?testuser_id=' . $testuser_id . '&amp;test_id=' . $m['test_id'] . '" title="' . $l['h_result'] . '">' . $usrtestdata['user_score'] . ' / ' . $usrtestdata['test_max_score'] . ' (' . round(100 * $usrtestdata['user_score'] / $usrtestdata['test_max_score']) . '%)' . $passmsg . '</a>';
                         } else {
-                            $str .= '<a href="tce_show_result_user.php?testuser_id='.$testuser_id.'&amp;test_id='.$m['test_id'].'" title="'.$l['h_result'].'">'.$usrtestdata['user_score'].$passmsg.'</a>';
+                            $str .= '<a href="tce_show_result_user.php?testuser_id=' . $testuser_id . '&amp;test_id=' . $m['test_id'] . '" title="' . $l['h_result'] . '">' . $usrtestdata['user_score'] . $passmsg . '</a>';
                         }
                     } else {
                         $str .= '&nbsp;';
@@ -103,15 +104,15 @@ function F_getUserTests()
                     $str .= '>&nbsp;';
                 }
 
-                $str .= '</td>'.K_NEWLINE;
+                $str .= '</td>' . K_NEWLINE;
                 // display various action links by status case
                 $str .= '<td style="text-align:center;">';
-                if (!$expired) {
+                if (! $expired) {
                     switch ($test_status) {
                         case 0: { // 0 = the test generation process is started but not completed
                             // print execute test link
                             $str .= '<a href="';
-                            if (K_DISPLAY_TEST_DESCRIPTION || !empty($m['test_password'])) {
+                            if (K_DISPLAY_TEST_DESCRIPTION || ! empty($m['test_password'])) {
                                 // display test description before starting
                                 $str .= 'tce_test_start.php';
                             } else {
@@ -119,21 +120,21 @@ function F_getUserTests()
                                 $str .= 'tce_test_execute.php';
                             }
 
-                            $str .= '?testid='.$m['test_id'].'" title="'.$l['h_execute'].'" class="buttongreen">'.$l['w_execute'].'</a>';
+                            $str .= '?testid=' . $m['test_id'] . '" title="' . $l['h_execute'] . '" class="buttongreen">' . $l['w_execute'] . '</a>';
                             break;
                         }
                         case 1: // 1 = the test has been successfully created
                         case 2: // 2 = all questions have been displayed to the user
                         case 3: { // 3 = all questions have been answered
                             // continue test
-                            $str .= '<a href="tce_test_execute.php?testid='.$m['test_id'].'" title="'.$l['h_continue'].'" class="xmlbutton">'.$l['w_continue'].'</a>';
+                            $str .= '<a href="tce_test_execute.php?testid=' . $m['test_id'] . '" title="' . $l['h_continue'] . '" class="xmlbutton">' . $l['w_continue'] . '</a>';
                             break;
                         }
                         default: { // 4 or greater = test can be repeated
-                            if (F_countUserTest($_SESSION['session_user_id'], $m['test_id']) < $m['test_repeatable'] || $m['test_repeatable']==1) {
+                            if (F_countUserTest($_SESSION['session_user_id'], $m['test_id']) < $m['test_repeatable'] || $m['test_repeatable'] == 1) {
                                 // print execute test link
                                 $str .= '<a href="';
-                                if (K_DISPLAY_TEST_DESCRIPTION || !empty($m['test_password'])) {
+                                if (K_DISPLAY_TEST_DESCRIPTION || ! empty($m['test_password'])) {
                                     // display test description before starting
                                     $str .= 'tce_test_start.php';
                                 } else {
@@ -141,7 +142,7 @@ function F_getUserTests()
                                     $str .= 'tce_test_execute.php';
                                 }
 
-                                $str .= '?testid='.$m['test_id'].'&amp;repeat=1" title="'.$l['h_repeat_test'].'" class="buttonblue">'.$l['w_repeat'].'</a>';
+                                $str .= '?testid=' . $m['test_id'] . '&amp;repeat=1" title="' . $l['h_repeat_test'] . '" class="buttonblue">' . $l['w_repeat'] . '</a>';
                             }
 
                             break;
@@ -149,8 +150,8 @@ function F_getUserTests()
                     }
                 }
 
-                $str .= '</td>'.K_NEWLINE;
-                $str .= '</tr>'.K_NEWLINE;
+                $str .= '</td>' . K_NEWLINE;
+                $str .= '</tr>' . K_NEWLINE;
             }
         }
     } else {
@@ -158,16 +159,16 @@ function F_getUserTests()
     }
 
     if (strlen($str) > 0) {
-        $out = '<table class="testlist">'.K_NEWLINE;
-        $out .= '<tr>'.K_NEWLINE;
-        $out .= '<th>'.$l['w_test'].'</th>'.K_NEWLINE;
-        $out .= '<th>'.$l['w_from'].'</th>'.K_NEWLINE;
-        $out .= '<th>'.$l['w_to'].'</th>'.K_NEWLINE;
-        $out .= '<th>'.$l['w_status'].'</th>'.K_NEWLINE;
-        $out .= '<th>'.$l['w_action'].'</th>'.K_NEWLINE;
-        $out .= '</tr>'.K_NEWLINE;
+        $out = '<table class="testlist">' . K_NEWLINE;
+        $out .= '<tr>' . K_NEWLINE;
+        $out .= '<th>' . $l['w_test'] . '</th>' . K_NEWLINE;
+        $out .= '<th>' . $l['w_from'] . '</th>' . K_NEWLINE;
+        $out .= '<th>' . $l['w_to'] . '</th>' . K_NEWLINE;
+        $out .= '<th>' . $l['w_status'] . '</th>' . K_NEWLINE;
+        $out .= '<th>' . $l['w_action'] . '</th>' . K_NEWLINE;
+        $out .= '</tr>' . K_NEWLINE;
         $out .= $str;
-        $out .= '</table>'.K_NEWLINE;
+        $out .= '</table>' . K_NEWLINE;
     } else {
         $out = $l['m_no_test_available'];
     }
@@ -185,14 +186,14 @@ function F_repeatTest($test_id)
     global $db, $l;
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
-    $sql = 'SELECT test_id FROM '.K_TABLE_TESTS.' WHERE test_id='.$test_id." AND test_repeatable<>'0' LIMIT 1";
+    $sql = 'SELECT test_id FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . " AND test_repeatable<>'0' LIMIT 1";
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
-            $sqls = 'SELECT testuser_id FROM '.K_TABLE_TEST_USER.' WHERE testuser_test_id='.$test_id.' AND testuser_user_id='.$user_id.' AND testuser_status>3 ORDER BY testuser_status DESC';
+            $sqls = 'SELECT testuser_id FROM ' . K_TABLE_TEST_USER . ' WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id . ' AND testuser_status>3 ORDER BY testuser_status DESC';
             if ($rs = F_db_query($sqls, $db)) {
                 while ($ms = F_db_fetch_array($rs)) {
-                    $sqld = 'UPDATE '.K_TABLE_TEST_USER.' SET testuser_status=testuser_status+1 WHERE testuser_id='.$ms['testuser_id'].'';
-                    if (!$rd = F_db_query($sqld, $db)) {
+                    $sqld = 'UPDATE ' . K_TABLE_TEST_USER . ' SET testuser_status=testuser_status+1 WHERE testuser_id=' . $ms['testuser_id'] . '';
+                    if (! $rd = F_db_query($sqld, $db)) {
                         F_display_db_error();
                     }
                 }
@@ -245,7 +246,7 @@ function F_isValidIP($user_ip, $test_ips)
             }
 
             // convert to IPv6 address range
-            $ipmask = getNormalizedIP(implode('.', $ipv4_start)).'-'.getNormalizedIP(implode('.', $ipv4_end));
+            $ipmask = getNormalizedIP(implode('.', $ipv4_start)) . '-' . getNormalizedIP(implode('.', $ipv4_end));
         }
 
         if (strrpos($ipmask, '-') !== false) {
@@ -281,7 +282,7 @@ function F_isValidSSLCert($test_id)
     require_once('../../shared/code/tce_functions_authorization.php');
     global $db, $l;
     $test_id = (int) $test_id;
-    if (F_count_rows(K_TABLE_TEST_SSLCERTS, 'WHERE tstssl_test_id='.$test_id) == 0) {
+    if (F_count_rows(K_TABLE_TEST_SSLCERTS, 'WHERE tstssl_test_id=' . $test_id) == 0) {
         // no certificates were selected for this test
         return true;
     }
@@ -290,10 +291,10 @@ function F_isValidSSLCert($test_id)
     $client_ssl_hash = F_getSSLClientHash();
     // check if the client certificate is enabled for this test
     return F_count_rows(
-        K_TABLE_TEST_SSLCERTS.', '.K_TABLE_SSLCERTS,
+        K_TABLE_TEST_SSLCERTS . ', ' . K_TABLE_SSLCERTS,
         'WHERE tstssl_ssl_id=ssl_id
-			AND tstssl_test_id='.$test_id.'
-			AND ssl_hash=\''.$client_ssl_hash.'\'
+			AND tstssl_test_id=' . $test_id . '
+			AND ssl_hash=\'' . $client_ssl_hash . '\'
 			LIMIT 1'
     ) > 0;
 }
@@ -312,21 +313,21 @@ function F_isValidTestUser($test_id, $user_ip, $test_ip)
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
     // check user's IP
-    if (!F_isValidIP($user_ip, $test_ip)) {
+    if (! F_isValidIP($user_ip, $test_ip)) {
         return false;
     }
 
     // check user's SSL certificate
-    if (!F_isValidSSLCert($test_id)) {
+    if (! F_isValidSSLCert($test_id)) {
         return false;
     }
 
     // check user's group
     return F_count_rows(
-        K_TABLE_USERGROUP.', '.K_TABLE_TEST_GROUPS,
+        K_TABLE_USERGROUP . ', ' . K_TABLE_TEST_GROUPS,
         'WHERE usrgrp_group_id=tstgrp_group_id
-			AND tstgrp_test_id='.$test_id.'
-			AND usrgrp_user_id='.$user_id.'
+			AND tstgrp_test_id=' . $test_id . '
+			AND usrgrp_user_id=' . $user_id . '
 			LIMIT 1'
     ) > 0;
 }
@@ -342,12 +343,12 @@ function F_terminateUserTest($test_id)
     global $db, $l;
     $test_id = (int) $test_id;
     $user_id = (int) $_SESSION['session_user_id'];
-    $sql = 'UPDATE '.K_TABLE_TEST_USER.'
+    $sql = 'UPDATE ' . K_TABLE_TEST_USER . '
 		SET testuser_status=4
-		WHERE testuser_test_id='.$test_id.'
-			AND testuser_user_id='.$user_id.'
+		WHERE testuser_test_id=' . $test_id . '
+			AND testuser_user_id=' . $user_id . '
 			AND testuser_status<4';
-    if (!$r = F_db_query($sql, $db)) {
+    if (! $r = F_db_query($sql, $db)) {
         F_display_db_error();
     }
 }
@@ -360,7 +361,7 @@ function F_terminateUserTest($test_id)
  */
 function F_countUserTest($user_id, $test_id)
 {
-    return F_count_rows(K_TABLE_TEST_USER,'WHERE testuser_test_id='.$test_id.' AND testuser_user_id='.$user_id.' AND testuser_status >= 4');
+    return F_count_rows(K_TABLE_TEST_USER, 'WHERE testuser_test_id=' . $test_id . ' AND testuser_user_id=' . $user_id . ' AND testuser_status >= 4');
 }
 
 /**
@@ -383,9 +384,9 @@ function F_checkTestStatus($user_id, $test_id, $duration)
     $testuser_id = 0;
     // get current test status for the selected user
     $sql = 'SELECT testuser_id, testuser_status, testuser_creation_time
-		FROM '.K_TABLE_TEST_USER.'
-		WHERE testuser_test_id='.$test_id.'
-			AND testuser_user_id='.$user_id.'
+		FROM ' . K_TABLE_TEST_USER . '
+		WHERE testuser_test_id=' . $test_id . '
+			AND testuser_user_id=' . $user_id . '
 		ORDER BY testuser_status
 		LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
@@ -395,10 +396,10 @@ function F_checkTestStatus($user_id, $test_id, $duration)
             $endtime = date(K_TIMESTAMP_FORMAT, strtotime($m['testuser_creation_time']) + ($duration * K_SECONDS_IN_MINUTE));
             if ($test_status > 0 && $test_status < 4 && $current_time > $endtime) {
                 // update test mode to 4 = test locked (for timeout)
-                $sqlu = 'UPDATE '.K_TABLE_TEST_USER.'
+                $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
 					SET testuser_status=4
-					WHERE testuser_id='.$testuser_id.'';
-                if (!$ru = F_db_query($sqlu, $db)) {
+					WHERE testuser_id=' . $testuser_id . '';
+                if (! $ru = F_db_query($sqlu, $db)) {
                     F_display_db_error();
                 } else {
                     // test locked
@@ -408,9 +409,9 @@ function F_checkTestStatus($user_id, $test_id, $duration)
                 switch ($test_status) {
                     case 0: { // 0 = the test generation process is started but not completed
                         // delete incomplete test (also deletes test logs using database referential integrity)
-                        $sqld = 'DELETE FROM '.K_TABLE_TEST_USER.'
-							WHERE testuser_id='.$testuser_id.'';
-                        if (!$rd = F_db_query($sqld, $db)) {
+                        $sqld = 'DELETE FROM ' . K_TABLE_TEST_USER . '
+							WHERE testuser_id=' . $testuser_id . '';
+                        if (! $rd = F_db_query($sqld, $db)) {
                             F_display_db_error();
                         }
 
@@ -418,12 +419,12 @@ function F_checkTestStatus($user_id, $test_id, $duration)
                     }
                     case 1: { // 1 = the test has been successfully created
                         // check if all questions were displayed
-                        if (F_count_rows(K_TABLE_TESTS_LOGS, 'WHERE testlog_testuser_id='.$testuser_id.' AND testlog_display_time IS NULL') == 0) {
+                        if (F_count_rows(K_TABLE_TESTS_LOGS, 'WHERE testlog_testuser_id=' . $testuser_id . ' AND testlog_display_time IS NULL') == 0) {
                             // update test status to 2 = all questions have been displayed to the user
-                            $sqlu = 'UPDATE '.K_TABLE_TEST_USER.'
+                            $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
 								SET testuser_status=2
-								WHERE testuser_id='.$testuser_id.'';
-                            if (!$ru = F_db_query($sqlu, $db)) {
+								WHERE testuser_id=' . $testuser_id . '';
+                            if (! $ru = F_db_query($sqlu, $db)) {
                                 F_display_db_error();
                             } else {
                                 $test_status = 2;
@@ -434,12 +435,12 @@ function F_checkTestStatus($user_id, $test_id, $duration)
                     }
                     case 2: { // 2 = all questions have been displayed to the user
                         // check if test has been completed in time
-                        if (F_count_rows(K_TABLE_TESTS_LOGS, 'WHERE testlog_testuser_id='.$testuser_id.' AND testlog_change_time IS NULL') == 0) {
+                        if (F_count_rows(K_TABLE_TESTS_LOGS, 'WHERE testlog_testuser_id=' . $testuser_id . ' AND testlog_change_time IS NULL') == 0) {
                             // update test mode to 3 = all questions have been answered
-                            $sqlu = 'UPDATE '.K_TABLE_TEST_USER.'
+                            $sqlu = 'UPDATE ' . K_TABLE_TEST_USER . '
 								SET testuser_status=3
-								WHERE testuser_id='.$testuser_id.'';
-                            if (!$ru = F_db_query($sqlu, $db)) {
+								WHERE testuser_id=' . $testuser_id . '';
+                            if (! $ru = F_db_query($sqlu, $db)) {
                                 F_display_db_error();
                             } else {
                                 $test_status = 3;
@@ -469,13 +470,13 @@ function F_testInfoLink($test_id, $link_name = '')
     require_once('../config/tce_config.php');
     global $db, $l;
     $str = '';
-    $onclickinfo = "infoTestWindow=window.open('tce_popup_test_info.php?testid=".$test_id."'";
+    $onclickinfo = "infoTestWindow=window.open('tce_popup_test_info.php?testid=" . $test_id . "'";
     $onclickinfo .= ",'infoTestWindow','dependent";
-    $onclickinfo .= ',height='.K_TEST_INFO_HEIGHT;
-    $onclickinfo .= ',width='.K_TEST_INFO_WIDTH;
+    $onclickinfo .= ',height=' . K_TEST_INFO_HEIGHT;
+    $onclickinfo .= ',width=' . K_TEST_INFO_WIDTH;
     $onclickinfo .= ",menubar=no,resizable=yes,scrollbars=yes,status=no,toolbar=no');";
     $onclickinfo .= 'return false;';
-    $str .= '<a href="tce_popup_test_info.php?testid='.$test_id.'" onclick="'.$onclickinfo.'" title="'.$l['m_new_window_link'].'">';
+    $str .= '<a href="tce_popup_test_info.php?testid=' . $test_id . '" onclick="' . $onclickinfo . '" title="' . $l['m_new_window_link'] . '">';
     if (strlen($link_name) > 0) {
         $str .= unhtmlentities(strip_tags($link_name));
     } else {
@@ -499,19 +500,19 @@ function F_printTestInfo($test_id, $showip = false)
     $str = ''; //string to return
     $boolval = [$l['w_no'], $l['w_yes']];
     //$ordmode = Array($l['w_position'], $l['w_alphabetic'], $l['w_id']);
-    $sql = 'SELECT * FROM '.K_TABLE_TESTS.' WHERE test_id='.$test_id.' LIMIT 1';
+    $sql = 'SELECT * FROM ' . K_TABLE_TESTS . ' WHERE test_id=' . $test_id . ' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
-            if (!F_isValidTestUser($test_id, $_SESSION['session_user_ip'], $m['test_ip_range'])) {
+            if (! F_isValidTestUser($test_id, $_SESSION['session_user_ip'], $m['test_ip_range'])) {
                 return '';
             }
 
-            $str .= '<h1>'.htmlspecialchars($m['test_name'], ENT_NOQUOTES, $l['a_meta_charset']).'</h1>'.K_NEWLINE;
-            $str .= '<div class="tcecontentbox">'.F_decode_tcecode($m['test_description']).'<br /><br /></div>'.K_NEWLINE;
-            $str .= '<div class="tceformbox">'.K_NEWLINE;
+            $str .= '<h1>' . htmlspecialchars($m['test_name'], ENT_NOQUOTES, $l['a_meta_charset']) . '</h1>' . K_NEWLINE;
+            $str .= '<div class="tcecontentbox">' . F_decode_tcecode($m['test_description']) . '<br /><br /></div>' . K_NEWLINE;
+            $str .= '<div class="tceformbox">' . K_NEWLINE;
             $str .= F_twoColRow($l['w_time_begin'], $l['h_time_begin'], $m['test_begin_time']);
             $str .= F_twoColRow($l['w_time_end'], $l['h_time_end'], $m['test_end_time']);
-            $str .= F_twoColRow($l['w_test_time'], $l['h_test_time'], $m['test_duration_time'].' '.$l['w_minutes']);
+            $str .= F_twoColRow($l['w_test_time'], $l['h_test_time'], $m['test_duration_time'] . ' ' . $l['w_minutes']);
             $str .= F_twoColRow($l['w_score_right'], $l['h_score_right'], $m['test_score_right']);
             $str .= F_twoColRow($l['w_score_wrong'], $l['h_score_wrong'], $m['test_score_wrong']);
             $str .= F_twoColRow($l['w_score_unanswered'], $l['h_score_unanswered'], $m['test_score_unanswered']);
@@ -524,10 +525,10 @@ function F_printTestInfo($test_id, $showip = false)
             if ($m['test_repeatable'] == 1) {
                 $repeat_times = ' ( unlimited )';
             } elseif ($m['test_repeatable'] > 1) {
-                $repeat_times = ' ( '.$m['test_repeatable'].' )';
+                $repeat_times = ' ( ' . $m['test_repeatable'] . ' )';
             }
 
-            $str .= F_twoColRow($l['w_repeatable'], $l['h_repeatable_test'], $is_test_repeatable.$repeat_times);
+            $str .= F_twoColRow($l['w_repeatable'], $l['h_repeatable_test'], $is_test_repeatable . $repeat_times);
             // Additional information hidden by default
             //$str .= F_twoColRow($l['w_random_questions_select'], $l['h_random_questions_select'], $boolval[intval(F_getBoolean($m['test_random_questions_select']))]);
             //$str .= F_twoColRow($l['w_random_questions_order'], $l['h_random_questions_order'], $boolval[intval(F_getBoolean($m['test_random_questions_order']))]);
@@ -564,8 +565,8 @@ function F_getTestData($test_id)
     $test_id = (int) $test_id;
     $td = [];
     $sql = 'SELECT *
-		FROM '.K_TABLE_TESTS.'
-		WHERE test_id='.$test_id.'
+		FROM ' . K_TABLE_TESTS . '
+		WHERE test_id=' . $test_id . '
 		LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         $td = F_db_fetch_assoc($r);
@@ -588,8 +589,8 @@ function F_getUserData($user_id)
     $user_id = (int) $user_id;
     $ud = [];
     $sql = 'SELECT *
-		FROM '.K_TABLE_USERS.'
-		WHERE user_id='.$user_id.'
+		FROM ' . K_TABLE_USERS . '
+		WHERE user_id=' . $user_id . '
 		LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         $ud = F_db_fetch_assoc($r);
@@ -650,8 +651,8 @@ function F_getTestStartTime($testuser_id)
     $starttime = 0;
     // select test control row (if any)
     $sql = 'SELECT testuser_creation_time
-		FROM '.K_TABLE_TEST_USER.'
-		WHERE testuser_id='.$testuser_id.'';
+		FROM ' . K_TABLE_TEST_USER . '
+		WHERE testuser_id=' . $testuser_id . '';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             $starttime = strtotime($m['testuser_creation_time']);
@@ -679,14 +680,14 @@ function F_twoColRow($label = "", $description = "", $value = "")
     $str = '';
     $str .= '<div class="row">';
     $str .= '<span class="label">';
-    $str .= '<span title="'.$description.'">';
-    $str .= $label.': ';
+    $str .= '<span title="' . $description . '">';
+    $str .= $label . ': ';
     $str .= '</span>';
     $str .= '</span>';
     $str .= '<span class="value">';
     $str .= $value;
     $str .= '</span>';
-    return $str . ('</div>'.K_NEWLINE);
+    return $str . ('</div>' . K_NEWLINE);
 }
 
 /**
@@ -704,10 +705,10 @@ function F_executeTest($test_id)
     $test_id = (int) $test_id;
     // select the specified test checking if it's valid for the current time
     $sql = 'SELECT test_id, test_ip_range, test_duration_time, test_repeatable
-		FROM '.K_TABLE_TESTS.'
-		WHERE test_id='.$test_id.'
-			AND test_begin_time < \''.$current_time.'\'
-			AND test_end_time > \''.$current_time."'";
+		FROM ' . K_TABLE_TESTS . '
+		WHERE test_id=' . $test_id . '
+			AND test_begin_time < \'' . $current_time . '\'
+			AND test_end_time > \'' . $current_time . "'";
     if ($r = F_db_query($sql, $db)) {
         // check user's authorization
         if (($m = F_db_fetch_array($r)) && F_isValidTestUser($m['test_id'], $_SESSION['session_user_ip'], $m['test_ip_range'])) {
@@ -758,9 +759,9 @@ function F_isRightTestlogUser($test_id, $testlog_id)
     $testlog_id = (int) $testlog_id;
     // check if the current user is the right testlog_id owner
     $sql = 'SELECT testuser_user_id, testuser_test_id
-		FROM '.K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.'
+		FROM ' . K_TABLE_TEST_USER . ', ' . K_TABLE_TESTS_LOGS . '
 		WHERE testuser_id=testlog_testuser_id
-			AND testlog_id='.$testlog_id.'';
+			AND testlog_id=' . $testlog_id . '';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             if ($m['testuser_user_id'] != $_SESSION['session_user_id'] || $m['testuser_test_id'] != $test_id) {
@@ -816,14 +817,14 @@ function F_selectAnswers($question_id, $isright = '', $ordering = false, $limit 
     }
 
     $sql = 'SELECT answer_id, answer_position
-		FROM '.K_TABLE_ANSWERS.'
-		WHERE answer_question_id='.$question_id.'
+		FROM ' . K_TABLE_ANSWERS . '
+		WHERE answer_question_id=' . $question_id . '
 		AND answer_enabled=\'1\'';
     if ($ordering) {
         $sql .= ' AND answer_position>0';
     } elseif (strlen($isright) > 0) {
         // MCSA
-        $sql .= " AND answer_isright='".$isright."'";
+        $sql .= " AND answer_isright='" . $isright . "'";
     }
 
     if ($randorder) {
@@ -834,9 +835,9 @@ function F_selectAnswers($question_id, $isright = '', $ordering = false, $limit 
 
     if ($limit > 0) {
         if (K_DATABASE_TYPE == 'ORACLE') {
-            $sql = 'SELECT * FROM ('.$sql.') WHERE rownum <= '.$limit.'';
+            $sql = 'SELECT * FROM (' . $sql . ') WHERE rownum <= ' . $limit . '';
         } else {
-            $sql .= ' LIMIT '.$limit.'';
+            $sql .= ' LIMIT ' . $limit . '';
         }
     }
 
@@ -874,20 +875,20 @@ function F_addLogAnswers($testlog_id, $answers_ids)
     global $db, $l;
     $testlog_id = (int) $testlog_id;
     $i = 0;
-    $answer_data = [];		
+    $answer_data = [];
     foreach ($answers_ids as $key => $answid) {
         ++$i;
-	$answer_data[] = '('.$testlog_id.', '.$answid.', -1, '.$i.')';    
+        $answer_data[] = '(' . $testlog_id . ', ' . $answid . ', -1, ' . $i . ')';
     }
 
-    $answer_data_value = implode(', ', $answer_data);	
-    $sqli = 'INSERT INTO '.K_TABLE_LOG_ANSWER.' (
+    $answer_data_value = implode(', ', $answer_data);
+    $sqli = 'INSERT INTO ' . K_TABLE_LOG_ANSWER . ' (
 			logansw_testlog_id,
 			logansw_answer_id,
 			logansw_selected,
 			logansw_order
-			) VALUES '.$answer_data_value;
-    if (!$ri = F_db_query($sqli, $db)) {
+			) VALUES ' . $answer_data_value;
+    if (! $ri = F_db_query($sqli, $db)) {
         F_display_db_error(false);
         return false;
     }
@@ -908,8 +909,8 @@ function F_getFirstTestUser($test_id)
     // check if this is the first test creation
     $firsttest = 0;
     $sql = 'SELECT testuser_id
-		FROM '.K_TABLE_TEST_USER.'
-		WHERE testuser_test_id='.$test_id.'
+		FROM ' . K_TABLE_TEST_USER . '
+		WHERE testuser_test_id=' . $test_id . '
 			AND testuser_status>0
 		LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
@@ -939,7 +940,7 @@ function F_newTestLog($testuser_id, $question_id, $score, $order, $num_answers =
     $testuser_id = (int) $testuser_id;
     $question_id = (int) $question_id;
     $score = (float) $score;
-    $sqll = 'INSERT INTO '.K_TABLE_TESTS_LOGS.' (
+    $sqll = 'INSERT INTO ' . K_TABLE_TESTS_LOGS . ' (
 		testlog_testuser_id,
 		testlog_question_id,
 		testlog_score,
@@ -948,15 +949,15 @@ function F_newTestLog($testuser_id, $question_id, $score, $order, $num_answers =
 		testlog_order,
 		testlog_num_answers
 		) VALUES (
-		'.$testuser_id.',
-		'.$question_id.',
-		'.$score.',
-		\''.date(K_TIMESTAMP_FORMAT).'\',
+		' . $testuser_id . ',
+		' . $question_id . ',
+		' . $score . ',
+		\'' . date(K_TIMESTAMP_FORMAT) . '\',
 		0,
-		'.$order.',
-		'.$num_answers.'
+		' . $order . ',
+		' . $num_answers . '
 		)';
-    if (!$rl = F_db_query($sqll, $db)) {
+    if (! $rl = F_db_query($sqll, $db)) {
         F_display_db_error(false);
         return false;
     }
@@ -981,7 +982,7 @@ function F_isTestOverLimits()
     if (K_MAX_TESTS_DAY) {
         // check day limit (last 24 hours)
         $startdate = date(K_TIMESTAMP_FORMAT, ($now - K_SECONDS_IN_DAY));
-        $numtests = F_count_rows(K_TABLE_TESTUSER_STAT, "WHERE tus_date>='".$startdate."' AND tus_date<='".$enddate."'");
+        $numtests = F_count_rows(K_TABLE_TESTUSER_STAT, "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'");
         if ($numtests >= K_MAX_TESTS_DAY) {
             return true;
         }
@@ -990,7 +991,7 @@ function F_isTestOverLimits()
     if (K_MAX_TESTS_MONTH) {
         // check month limit (last 30 days)
         $startdate = date(K_TIMESTAMP_FORMAT, ($now - K_SECONDS_IN_MONTH));
-        $numtests = F_count_rows(K_TABLE_TESTUSER_STAT, "WHERE tus_date>='".$startdate."' AND tus_date<='".$enddate."'");
+        $numtests = F_count_rows(K_TABLE_TESTUSER_STAT, "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'");
         if ($numtests >= K_MAX_TESTS_MONTH) {
             return true;
         }
@@ -999,7 +1000,7 @@ function F_isTestOverLimits()
     if (K_MAX_TESTS_YEAR !== false) {
         // check year limit (last 365 days)
         $startdate = date(K_TIMESTAMP_FORMAT, ($now - K_SECONDS_IN_YEAR));
-        $numtests = F_count_rows(K_TABLE_TESTUSER_STAT, "WHERE tus_date>='".$startdate."' AND tus_date<='".$enddate."'");
+        $numtests = F_count_rows(K_TABLE_TESTUSER_STAT, "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'");
         if ($numtests >= K_MAX_TESTS_YEAR) {
             return true;
         }
@@ -1017,21 +1018,21 @@ function F_isTestOverLimits()
 function F_count_executed_tests($startdate, $enddate)
 {
     require_once('../config/tce_config.php');
-    if (!empty($startdate)) {
+    if (! empty($startdate)) {
         $startdate_time = strtotime($startdate);
         $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
     } else {
-        $startdate = date('Y').'-01-01 00:00:00';
+        $startdate = date('Y') . '-01-01 00:00:00';
     }
 
-    if (!empty($enddate)) {
+    if (! empty($enddate)) {
         $enddate_time = strtotime($enddate);
         $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
     } else {
-        $enddate = date('Y').'-12-31 23:59:59';
+        $enddate = date('Y') . '-12-31 23:59:59';
     }
 
-    return F_count_rows(K_TABLE_TESTUSER_STAT, "WHERE tus_date>='".$startdate."' AND tus_date<='".$enddate."'");
+    return F_count_rows(K_TABLE_TESTUSER_STAT, "WHERE tus_date>='" . $startdate . "' AND tus_date<='" . $enddate . "'");
 }
 
 /**
@@ -1042,8 +1043,8 @@ function F_updateTestuserStat($date)
 {
     require_once('../config/tce_config.php');
     global $db;
-    $sql = 'INSERT INTO '.K_TABLE_TESTUSER_STAT." (tus_date) VALUES ('".$date."')";
-    if (!$r = F_db_query($sql, $db)) {
+    $sql = 'INSERT INTO ' . K_TABLE_TESTUSER_STAT . " (tus_date) VALUES ('" . $date . "')";
+    if (! $r = F_db_query($sql, $db)) {
         F_display_db_error();
     }
 }
@@ -1076,7 +1077,7 @@ function F_createTest($test_id, $user_id)
     $test_answers_order_mode = (int) $testdata['test_answers_order_mode'];
     $random_questions = ($test_random_questions_select || $test_random_questions_order);
     $sql_answer_position = '';
-    if (!$test_random_answers_order && $test_answers_order_mode == 0) {
+    if (! $test_random_answers_order && $test_answers_order_mode == 0) {
         $sql_answer_position = ' AND answer_position>0';
     }
 
@@ -1115,18 +1116,18 @@ function F_createTest($test_id, $user_id)
     // 1. create user's test entry
     // ------------------------------
     $date = date(K_TIMESTAMP_FORMAT);
-    $sql = 'INSERT INTO '.K_TABLE_TEST_USER.' (
+    $sql = 'INSERT INTO ' . K_TABLE_TEST_USER . ' (
 		testuser_test_id,
 		testuser_user_id,
 		testuser_status,
 		testuser_creation_time
 		) VALUES (
-		'.$test_id.',
-		'.$user_id.',
+		' . $test_id . ',
+		' . $user_id . ',
 		0,
-		\''.$date.'\'
+		\'' . $date . '\'
 		)';
-    if (!$r = F_db_query($sql, $db)) {
+    if (! $r = F_db_query($sql, $db)) {
         F_display_db_error(false);
         return false;
     }
@@ -1144,31 +1145,31 @@ function F_createTest($test_id, $user_id)
         // 2. for each set of subjects
         // ------------------------------
         $sql = 'SELECT *
-			FROM '.K_TABLE_TEST_SUBJSET.'
-			WHERE tsubset_test_id='.$test_id.'
+			FROM ' . K_TABLE_TEST_SUBJSET . '
+			WHERE tsubset_test_id=' . $test_id . '
 			ORDER BY tsubset_type, tsubset_difficulty, tsubset_answers DESC';
         if ($r = F_db_query($sql, $db)) {
             $questions_data = [];
             while ($m = F_db_fetch_array($r)) {
                 // 3. select the subjects IDs
                 $selected_subjects = '0';
-                $sqlt = 'SELECT subjset_subject_id FROM '.K_TABLE_SUBJECT_SET.' WHERE subjset_tsubset_id='.$m['tsubset_id'];
+                $sqlt = 'SELECT subjset_subject_id FROM ' . K_TABLE_SUBJECT_SET . ' WHERE subjset_tsubset_id=' . $m['tsubset_id'];
                 if ($rt = F_db_query($sqlt, $db)) {
                     while ($mt = F_db_fetch_array($rt)) {
-                        $selected_subjects .= ','.$mt['subjset_subject_id'];
+                        $selected_subjects .= ',' . $mt['subjset_subject_id'];
                     }
                 }
 
                 // 4. select questions
                 // ------------------------------
                 $sqlq = 'SELECT question_id, question_type, question_difficulty, question_position
-					FROM '.K_TABLE_QUESTIONS.'';
-                $sqlq .= ' WHERE question_subject_id IN ('.$selected_subjects.')
-					AND question_difficulty='.$m['tsubset_difficulty'].'
+					FROM ' . K_TABLE_QUESTIONS . '';
+                $sqlq .= ' WHERE question_subject_id IN (' . $selected_subjects . ')
+					AND question_difficulty=' . $m['tsubset_difficulty'] . '
 					AND question_enabled=\'1\'
-					AND question_id NOT IN ('.$selected_questions.')';
+					AND question_id NOT IN (' . $selected_questions . ')';
                 if ($m['tsubset_type'] > 0) {
-                    $sqlq .= ' AND question_type='.$m['tsubset_type'];
+                    $sqlq .= ' AND question_type=' . $m['tsubset_type'];
                 }
 
                 if ($m['tsubset_type'] == 1) {
@@ -1176,57 +1177,57 @@ function F_createTest($test_id, $user_id)
                     // get questions with the right number of answers
                     if (empty($right_answers_mcsa_questions_ids)) {
                         $right_answers_mcsa_questions_ids = '0';
-                        $sqlt = 'SELECT DISTINCT answer_question_id FROM '.K_TABLE_ANSWERS." WHERE answer_enabled='1' AND answer_isright='1'".$sql_answer_position.'';
+                        $sqlt = 'SELECT DISTINCT answer_question_id FROM ' . K_TABLE_ANSWERS . " WHERE answer_enabled='1' AND answer_isright='1'" . $sql_answer_position . '';
                         if ($rt = F_db_query($sqlt, $db)) {
                             while ($mt = F_db_fetch_array($rt)) {
-                                $right_answers_mcsa_questions_ids .= ','.$mt['answer_question_id'];
+                                $right_answers_mcsa_questions_ids .= ',' . $mt['answer_question_id'];
                             }
                         }
                     }
 
-                    $sqlq .= ' AND question_id IN ('.$right_answers_mcsa_questions_ids.')';
+                    $sqlq .= ' AND question_id IN (' . $right_answers_mcsa_questions_ids . ')';
                     if ($m['tsubset_answers'] > 0) {
-                        if (!isset($wrong_answers_mcsa_questions_ids["'".$m['tsubset_answers']."'"])) {
-                            $wrong_answers_mcsa_questions_ids["'".$m['tsubset_answers']."'"] = '0';
-                            $sqlt = 'SELECT answer_question_id FROM '.K_TABLE_ANSWERS." WHERE answer_enabled='1' AND answer_isright='0'".$sql_answer_position.' GROUP BY answer_question_id HAVING (COUNT(answer_id)>='.($m['tsubset_answers']-1).')';
+                        if (! isset($wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"])) {
+                            $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"] = '0';
+                            $sqlt = 'SELECT answer_question_id FROM ' . K_TABLE_ANSWERS . " WHERE answer_enabled='1' AND answer_isright='0'" . $sql_answer_position . ' GROUP BY answer_question_id HAVING (COUNT(answer_id)>=' . ($m['tsubset_answers'] - 1) . ')';
                             if ($rt = F_db_query($sqlt, $db)) {
                                 while ($mt = F_db_fetch_array($rt)) {
-                                    $wrong_answers_mcsa_questions_ids["'".$m['tsubset_answers']."'"] .= ','.$mt['answer_question_id'];
+                                    $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"] .= ',' . $mt['answer_question_id'];
                                 }
                             }
                         }
 
-                        $sqlq .= ' AND question_id IN ('.$wrong_answers_mcsa_questions_ids["'".$m['tsubset_answers']."'"].')';
+                        $sqlq .= ' AND question_id IN (' . $wrong_answers_mcsa_questions_ids["'" . $m['tsubset_answers'] . "'"] . ')';
                     }
                 } elseif ($m['tsubset_type'] == 2) {
                     // (MCMA : Multiple Choice Multiple Answers) -------
                     // get questions with the right number of answers
                     if ($m['tsubset_answers'] > 0) {
-                        if (!isset($answers_mcma_questions_ids["'".$m['tsubset_answers']."'"])) {
-                            $answers_mcma_questions_ids["'".$m['tsubset_answers']."'"] = '0';
-                            $sqlt = 'SELECT answer_question_id FROM '.K_TABLE_ANSWERS." WHERE answer_enabled='1'".$sql_answer_position.' GROUP BY answer_question_id HAVING (COUNT(answer_id)>='.$m['tsubset_answers'].')';
+                        if (! isset($answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"])) {
+                            $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] = '0';
+                            $sqlt = 'SELECT answer_question_id FROM ' . K_TABLE_ANSWERS . " WHERE answer_enabled='1'" . $sql_answer_position . ' GROUP BY answer_question_id HAVING (COUNT(answer_id)>=' . $m['tsubset_answers'] . ')';
                             if ($rt = F_db_query($sqlt, $db)) {
                                 while ($mt = F_db_fetch_array($rt)) {
-                                    $answers_mcma_questions_ids["'".$m['tsubset_answers']."'"] .= ','.$mt['answer_question_id'];
+                                    $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] .= ',' . $mt['answer_question_id'];
                                 }
                             }
                         }
 
-                        $sqlq .= ' AND question_id IN ('.$answers_mcma_questions_ids["'".$m['tsubset_answers']."'"].')';
+                        $sqlq .= ' AND question_id IN (' . $answers_mcma_questions_ids["'" . $m['tsubset_answers'] . "'"] . ')';
                     }
                 } elseif ($m['tsubset_type'] == 4) {
                     // ORDERING ----------------------------------------
                     if (empty($answers_order_questions_ids)) {
                         $answers_order_questions_ids = '0';
-                        $sqlt = 'SELECT answer_question_id FROM '.K_TABLE_ANSWERS." WHERE answer_enabled='1' AND answer_position>0 GROUP BY answer_question_id HAVING (COUNT(answer_id)>1)";
+                        $sqlt = 'SELECT answer_question_id FROM ' . K_TABLE_ANSWERS . " WHERE answer_enabled='1' AND answer_position>0 GROUP BY answer_question_id HAVING (COUNT(answer_id)>1)";
                         if ($rt = F_db_query($sqlt, $db)) {
                             while ($mt = F_db_fetch_array($rt)) {
-                                $answers_order_questions_ids .= ','.$mt['answer_question_id'];
+                                $answers_order_questions_ids .= ',' . $mt['answer_question_id'];
                             }
                         }
                     }
 
-                    $sqlq .= ' AND question_id IN ('.$answers_order_questions_ids.')';
+                    $sqlq .= ' AND question_id IN (' . $answers_order_questions_ids . ')';
                 }
 
                 if ($random_questions) {
@@ -1236,22 +1237,27 @@ function F_createTest($test_id, $user_id)
                 }
 
                 if (K_DATABASE_TYPE == 'ORACLE') {
-                    $sqlq = 'SELECT * FROM ('.$sqlq.') WHERE rownum <= '.$m['tsubset_quantity'].'';
+                    $sqlq = 'SELECT * FROM (' . $sqlq . ') WHERE rownum <= ' . $m['tsubset_quantity'] . '';
                 } else {
-                    $sqlq .= ' LIMIT '.$m['tsubset_quantity'].'';
+                    $sqlq .= ' LIMIT ' . $m['tsubset_quantity'] . '';
                 }
 
                 if ($rq = F_db_query($sqlq, $db)) {
                     while ($mq = F_db_fetch_array($rq)) {
                         // store questions data
-                        $tmp_data = ['id' => $mq['question_id'], 'type' => $mq['question_type'], 'answers' => $m['tsubset_answers'], 'score' => ($testdata['test_score_unanswered'] * $mq['question_difficulty'])];
+                        $tmp_data = [
+                            'id' => $mq['question_id'],
+                            'type' => $mq['question_type'],
+                            'answers' => $m['tsubset_answers'],
+                            'score' => ($testdata['test_score_unanswered'] * $mq['question_difficulty']),
+                        ];
                         if ($random_questions || $test_questions_order_mode != 0) {
                             $questions_data[] = $tmp_data;
                         } else {
                             $questions_data[$mq['question_position']] = $tmp_data;
                         }
 
-                        $selected_questions .= ','.$mq['question_id'].'';
+                        $selected_questions .= ',' . $mq['question_id'] . '';
                     } // end while select questions
                 } else {
                     F_display_db_error(false);
@@ -1272,7 +1278,7 @@ function F_createTest($test_id, $user_id)
                 ++$question_order;
                 $testlog_id = F_newTestLog($testuser_id, $q['id'], $q['score'], $question_order, $q['answers']);
                 // Add answers
-                if (!F_addQuestionAnswers($testlog_id, $q['id'], $q['type'], $q['answers'], $firsttest, $testdata)) {
+                if (! F_addQuestionAnswers($testlog_id, $q['id'], $q['type'], $q['answers'], $firsttest, $testdata)) {
                     return false;
                 }
             }
@@ -1284,9 +1290,9 @@ function F_createTest($test_id, $user_id)
         // same questions for all test-takers
         // ---------------------------------------
         $sql = 'SELECT *
-			FROM '.K_TABLE_TESTS_LOGS.', '.K_TABLE_QUESTIONS.'
+			FROM ' . K_TABLE_TESTS_LOGS . ', ' . K_TABLE_QUESTIONS . '
 			WHERE question_id=testlog_question_id
-				AND testlog_testuser_id='.$firsttest.'';
+				AND testlog_testuser_id=' . $firsttest . '';
         if (F_getBoolean($testdata['test_random_questions_order'])) {
             $sql .= ' ORDER BY RAND()';
         } else {
@@ -1301,7 +1307,7 @@ function F_createTest($test_id, $user_id)
                 $question_unanswered_score = $testdata['test_score_unanswered'] * $m['question_difficulty'];
                 $testlog_id = F_newTestLog($testuser_id, $m['testlog_question_id'], $question_unanswered_score, $question_order, $m['testlog_num_answers']);
                 // Add answers
-                if (!F_addQuestionAnswers($testlog_id, $m['question_id'], $m['question_type'], $m['testlog_num_answers'], $firsttest, $testdata)) {
+                if (! F_addQuestionAnswers($testlog_id, $m['question_id'], $m['question_type'], $m['testlog_num_answers'], $firsttest, $testdata)) {
                     return false;
                 }
             }
@@ -1313,11 +1319,11 @@ function F_createTest($test_id, $user_id)
 
     // 6. update user's test status as 1 = the test has been successfully created
     // ------------------------------
-    $sql = 'UPDATE '.K_TABLE_TEST_USER.' SET
+    $sql = 'UPDATE ' . K_TABLE_TEST_USER . ' SET
 		testuser_status=1,
-		testuser_creation_time=\''.date(K_TIMESTAMP_FORMAT).'\'
-		WHERE testuser_id='.$testuser_id.'';
-    if (!$r = F_db_query($sql, $db)) {
+		testuser_creation_time=\'' . date(K_TIMESTAMP_FORMAT) . '\'
+		WHERE testuser_id=' . $testuser_id . '';
+    if (! $r = F_db_query($sql, $db)) {
         F_display_db_error(false);
         return false;
     }
@@ -1348,7 +1354,7 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
     $ordmode = (int) $testdata['test_answers_order_mode'];
     // for each question
     if (F_getBoolean($testdata['test_random_questions_select']) || F_getBoolean($testdata['test_random_answers_select']) || $firsttest == 0) {
-            $answers_ids = []; // array used to store answers IDs
+        $answers_ids = []; // array used to store answers IDs
         switch ($question_type) {
             case 1: { // MCSA
                 // select first right answer
@@ -1357,7 +1363,7 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
                 $answers_ids += F_selectAnswers($question_id, 0, false, ($num_answers - 1), 1, $randorder, $ordmode);
                 if ($ordmode == 1) {
                     // reorder answers alphabetically
-                    $sql = 'SELECT answer_id FROM '.K_TABLE_ANSWERS.' WHERE answer_id IN ('.implode(',', $answers_ids).') ORDER BY answer_description';
+                    $sql = 'SELECT answer_id FROM ' . K_TABLE_ANSWERS . ' WHERE answer_id IN (' . implode(',', $answers_ids) . ') ORDER BY answer_description';
                     $answers_ids = [];
                     if ($r = F_db_query($sql, $db)) {
                         while ($m = F_db_fetch_array($r)) {
@@ -1384,23 +1390,23 @@ function F_addQuestionAnswers($testlog_id, $question_id, $question_type, $num_an
             }
         }
 
-            // randomizes the order of the answers
+        // randomizes the order of the answers
         if ($randorder) {
             shuffle($answers_ids);
         } else {
             ksort($answers_ids);
         }
 
-            // add answers
-            F_addLogAnswers($testlog_id, $answers_ids);
+        // add answers
+        F_addLogAnswers($testlog_id, $answers_ids);
     } else {
         // same answers for all test-takers
         // --------------------------------
         $sql = 'SELECT logansw_answer_id
-			FROM '.K_TABLE_LOG_ANSWER.', '.K_TABLE_TESTS_LOGS.'
+			FROM ' . K_TABLE_LOG_ANSWER . ', ' . K_TABLE_TESTS_LOGS . '
 			WHERE logansw_testlog_id=testlog_id
-				AND testlog_testuser_id='.$firsttest.'
-				AND testlog_question_id='.$question_id.'';
+				AND testlog_testuser_id=' . $firsttest . '
+				AND testlog_question_id=' . $question_id . '';
         if ($randorder) {
             $sql .= ' ORDER BY RAND()';
         } else {
@@ -1451,9 +1457,9 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
     $testdata = F_getTestData($test_id);
     // get question information
     $sql = 'SELECT *
-		FROM '.K_TABLE_TESTS_LOGS.', '.K_TABLE_QUESTIONS.'
+		FROM ' . K_TABLE_TESTS_LOGS . ', ' . K_TABLE_QUESTIONS . '
 		WHERE testlog_question_id=question_id
-			AND testlog_id='.$testlog_id.'
+			AND testlog_id=' . $testlog_id . '
 		LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
@@ -1474,15 +1480,15 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
     $question_unanswered_score = $testdata['test_score_unanswered'] * $question_difficulty;
     if ($question_type != 3) {
         $sql = 'SELECT *
-			FROM '.K_TABLE_LOG_ANSWER.', '.K_TABLE_ANSWERS.'
+			FROM ' . K_TABLE_LOG_ANSWER . ', ' . K_TABLE_ANSWERS . '
 			WHERE logansw_answer_id=answer_id
-				AND logansw_testlog_id='.$testlog_id.'
+				AND logansw_testlog_id=' . $testlog_id . '
 			ORDER BY logansw_order';
         if ($r = F_db_query($sql, $db)) {
             while (($m = F_db_fetch_array($r))) {
                 ++$num_answers;
                 // update each answer
-                $sqlu = 'UPDATE '.K_TABLE_LOG_ANSWER.' SET';
+                $sqlu = 'UPDATE ' . K_TABLE_LOG_ANSWER . ' SET';
                 switch ($question_type) {
                     case 1: {
                         // MCSA - Multiple Choice Single Answer
@@ -1494,7 +1500,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                             }
 
                             $sqlu .= ' logansw_selected=-1';
-                        } elseif (!empty($answer_id[$m['logansw_answer_id']])) {
+                        } elseif (! empty($answer_id[$m['logansw_answer_id']])) {
                             $unanswered = false;
                             // selected
                             $answer_score = F_getBoolean($m['answer_isright']) ? $question_right_score : $question_wrong_score;
@@ -1528,7 +1534,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                                 // right (selected)
                                 $unanswered = false;
                                 $answer_score += $question_right_score;
-                            } elseif (!F_getBoolean($m['answer_isright']) && $answer_id[$m['logansw_answer_id']] == 0) {
+                            } elseif (! F_getBoolean($m['answer_isright']) && $answer_id[$m['logansw_answer_id']] == 0) {
                                 // right (unselected)
                                 $unanswered = false;
                                 $answer_score += $question_right_score;
@@ -1542,7 +1548,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                                 $answer_changed = true;
                             }
 
-                            $sqlu .= ' logansw_selected='.$answer_id[$m['logansw_answer_id']].'';
+                            $sqlu .= ' logansw_selected=' . $answer_id[$m['logansw_answer_id']] . '';
                         } else {
                             // unselected checkbox
                             $unanswered = false;
@@ -1563,7 +1569,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                     }
                     case 4: {
                         // ORDER
-                        if (!empty($answer_id[$m['logansw_answer_id']])) {
+                        if (! empty($answer_id[$m['logansw_answer_id']])) {
                             // selected
                             $unanswered = false;
                             $answer_id[$m['logansw_answer_id']] = (int) $answer_id[$m['logansw_answer_id']];
@@ -1577,7 +1583,7 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                                 $answer_changed = true;
                             }
 
-                            $sqlu .= ' logansw_position='.$answer_id[$m['logansw_answer_id']].', logansw_selected=1';
+                            $sqlu .= ' logansw_position=' . $answer_id[$m['logansw_answer_id']] . ', logansw_selected=1';
                         } else {
                             // unanswered
                             $answer_score += $question_unanswered_score;
@@ -1592,9 +1598,9 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
                     }
                 }
 
-                 // end of switch
-                $sqlu .= ' WHERE logansw_testlog_id='.$testlog_id.' AND logansw_answer_id='.$m['logansw_answer_id'].'';
-                if (!$ru = F_db_query($sqlu, $db)) {
+                // end of switch
+                $sqlu .= ' WHERE logansw_testlog_id=' . $testlog_id . ' AND logansw_answer_id=' . $m['logansw_answer_id'] . '';
+                if (! $ru = F_db_query($sqlu, $db)) {
                     F_display_db_error();
                     return false;
                 }
@@ -1630,13 +1636,13 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
             $answer_score = 'NULL';
             // check exact answers score
             $sql = 'SELECT *
-				FROM '.K_TABLE_ANSWERS.'
-				WHERE answer_question_id='.$question_id.'
+				FROM ' . K_TABLE_ANSWERS . '
+				WHERE answer_question_id=' . $question_id . '
 					AND answer_enabled=\'1\'
 					AND answer_isright=\'1\'';
             if ($r = F_db_query($sql, $db)) {
                 while ($m = F_db_fetch_array($r)) {
-                    if (K_SHORT_ANSWERS_BINARY && strcmp(trim($answer_text), $m['answer_description']) == 0 || !K_SHORT_ANSWERS_BINARY && strcasecmp(trim($answer_text), $m['answer_description']) == 0) { 
+                    if (K_SHORT_ANSWERS_BINARY && strcmp(trim($answer_text), $m['answer_description']) == 0 || ! K_SHORT_ANSWERS_BINARY && strcasecmp(trim($answer_text), $m['answer_description']) == 0) {
                         $answer_score = $question_right_score;
                         break;
                     }
@@ -1649,14 +1655,14 @@ function F_updateQuestionLog($test_id, $testlog_id, $answpos = [], $answer_text 
 
         $change_time = $unanswered ? '' : date(K_TIMESTAMP_FORMAT);
 
-        $sqlu = 'UPDATE '.K_TABLE_TESTS_LOGS.' SET';
-        $sqlu .= ' testlog_answer_text='.F_empty_to_null($answer_text).',';
-        $sqlu .= ' testlog_score='.$answer_score.',';
-        $sqlu .= ' testlog_change_time='.F_empty_to_null($change_time).',';
-        $sqlu .= ' testlog_reaction_time='.(int) $reaction_time.',';
-        $sqlu .= " testlog_user_ip='".getNormalizedIP($_SERVER['REMOTE_ADDR'])."'";
-        $sqlu .= ' WHERE testlog_id='.$testlog_id.'';
-        if (!$ru = F_db_query($sqlu, $db)) {
+        $sqlu = 'UPDATE ' . K_TABLE_TESTS_LOGS . ' SET';
+        $sqlu .= ' testlog_answer_text=' . F_empty_to_null($answer_text) . ',';
+        $sqlu .= ' testlog_score=' . $answer_score . ',';
+        $sqlu .= ' testlog_change_time=' . F_empty_to_null($change_time) . ',';
+        $sqlu .= ' testlog_reaction_time=' . (int) $reaction_time . ',';
+        $sqlu .= " testlog_user_ip='" . getNormalizedIP($_SERVER['REMOTE_ADDR']) . "'";
+        $sqlu .= ' WHERE testlog_id=' . $testlog_id . '';
+        if (! $ru = F_db_query($sqlu, $db)) {
             F_display_db_error();
             return false;
         }
@@ -1677,10 +1683,10 @@ function F_getAnswerIdFromPosition($testlog_id, $answpos)
     global $db, $l;
     $answer_id = [];
     foreach ($answpos as $pos => $val) {
-        $sql = 'SELECT logansw_answer_id FROM '.K_TABLE_LOG_ANSWER
-            .' WHERE logansw_testlog_id='.(int) $testlog_id
-            .' AND logansw_order='.(int) $pos
-            .' LIMIT 1';
+        $sql = 'SELECT logansw_answer_id FROM ' . K_TABLE_LOG_ANSWER
+            . ' WHERE logansw_testlog_id=' . (int) $testlog_id
+            . ' AND logansw_order=' . (int) $pos
+            . ' LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
                 $answer_id[(int) $m['logansw_answer_id']] = $val;
@@ -1716,26 +1722,26 @@ function F_questionForm($test_id, $testlog_id, $formname)
     $user_id = (int) $_SESSION['session_user_id'];
     $aswkeys = [];
     $str = '';
-    if (!isset($test_id) || $test_id == 0) {
+    if (! isset($test_id) || $test_id == 0) {
         return;
     }
 
     $testdata = F_getTestData($test_id);
     $noanswer_hidden = '';
     $noanswer_disabled = '';
-    if (!F_getBoolean($testdata['test_noanswer_enabled'])) {
+    if (! F_getBoolean($testdata['test_noanswer_enabled'])) {
         $noanswer_hidden = ' style="visibility:hidden;display:none;"';
         $noanswer_disabled = ' readonly="readonly" disabled="disabled"';
     }
 
     // select question for the first time
-    if (!isset($testlog_id) || $testlog_id == 0) {
+    if (! isset($testlog_id) || $testlog_id == 0) {
         //select first question
         $sql = 'SELECT testlog_id
-			FROM '.K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.'
+			FROM ' . K_TABLE_TEST_USER . ', ' . K_TABLE_TESTS_LOGS . '
 			WHERE testlog_testuser_id=testuser_id
-				AND testuser_test_id='.$test_id.'
-				AND testuser_user_id='.$user_id.'
+				AND testuser_test_id=' . $test_id . '
+				AND testuser_user_id=' . $user_id . '
 				AND testuser_status<5
 			ORDER BY testlog_id
 			LIMIT 1';
@@ -1752,41 +1758,41 @@ function F_questionForm($test_id, $testlog_id, $formname)
 
     // build selection query for question to display
     $sql = 'SELECT *
-			FROM '.K_TABLE_QUESTIONS.', '.K_TABLE_TESTS_LOGS.'
+			FROM ' . K_TABLE_QUESTIONS . ', ' . K_TABLE_TESTS_LOGS . '
 			WHERE question_id=testlog_question_id
-				AND testlog_id='.$testlog_id.'
+				AND testlog_id=' . $testlog_id . '
 			LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             if (F_getBoolean($m['question_fullscreen'])) {
                 // hide some section for fullscreen mode
-                $str .= '<style>'.K_NEWLINE;
-                $str .= '.header{visibility:hidden;display:none;}'.K_NEWLINE;
-                $str .= '.infolink{visibility:hidden;display:none;}'.K_NEWLINE;
-                $str .= 'h1{visibility:hidden;display:none;}'.K_NEWLINE;
-                $str .= '.pagehelp{visibility:hidden;display:none;}'.K_NEWLINE;
-                $str .= '.userbar{visibility:hidden;display:none;}'.K_NEWLINE;
-                $str .= '.minibutton{visibility:hidden;display:none;}'.K_NEWLINE;
-                $str .= '.navlink{visibility:hidden;display:none;}'.K_NEWLINE;
-                $str .= '.testcomment{visibility:hidden;display:none;}'.K_NEWLINE;
-                $str .= '#terminatetest{visibility:hidden;display:none;}'.K_NEWLINE;
-                $str .= '</style>'.K_NEWLINE;
+                $str .= '<style>' . K_NEWLINE;
+                $str .= '.header{visibility:hidden;display:none;}' . K_NEWLINE;
+                $str .= '.infolink{visibility:hidden;display:none;}' . K_NEWLINE;
+                $str .= 'h1{visibility:hidden;display:none;}' . K_NEWLINE;
+                $str .= '.pagehelp{visibility:hidden;display:none;}' . K_NEWLINE;
+                $str .= '.userbar{visibility:hidden;display:none;}' . K_NEWLINE;
+                $str .= '.minibutton{visibility:hidden;display:none;}' . K_NEWLINE;
+                $str .= '.navlink{visibility:hidden;display:none;}' . K_NEWLINE;
+                $str .= '.testcomment{visibility:hidden;display:none;}' . K_NEWLINE;
+                $str .= '#terminatetest{visibility:hidden;display:none;}' . K_NEWLINE;
+                $str .= '</style>' . K_NEWLINE;
             }
 
-            $str .= '<input type="hidden" name="testid" id="testid" value="'.$test_id.'" />'.K_NEWLINE;
-            $str .= '<input type="hidden" name="testlogid" id="testlogid" value="'.$testlog_id.'" />'.K_NEWLINE;
-            $str .= '<input type="hidden" name="testuser_id" id="testuser_id" value="'.$m['testlog_testuser_id'].'" />'.K_NEWLINE;
+            $str .= '<input type="hidden" name="testid" id="testid" value="' . $test_id . '" />' . K_NEWLINE;
+            $str .= '<input type="hidden" name="testlogid" id="testlogid" value="' . $testlog_id . '" />' . K_NEWLINE;
+            $str .= '<input type="hidden" name="testuser_id" id="testuser_id" value="' . $m['testlog_testuser_id'] . '" />' . K_NEWLINE;
             // get test data
             $test_data = F_getTestData($test_id);
             // store time information for interactive timer
             $examtime = F_getTestStartTime($m['testlog_testuser_id']) + ($test_data['test_duration_time'] * K_SECONDS_IN_MINUTE);
-            $str .= '<input type="hidden" name="examtime" id="examtime" value="'.$examtime.'" />'.K_NEWLINE;
+            $str .= '<input type="hidden" name="examtime" id="examtime" value="' . $examtime . '" />' . K_NEWLINE;
             if (F_getBoolean($test_data['test_logout_on_timeout'])) {
-                $str .= '<input type="hidden" name="timeout_logout" id="timeout_logout" value="1" />'.K_NEWLINE;
+                $str .= '<input type="hidden" name="timeout_logout" id="timeout_logout" value="1" />' . K_NEWLINE;
             }
 
-            $str .= '<a name="questionsection" id="questionsection"></a>'.K_NEWLINE;
-            $str .= '<div class="tcecontentbox">'.K_NEWLINE;
+            $str .= '<a name="questionsection" id="questionsection"></a>' . K_NEWLINE;
+            $str .= '<div class="tcecontentbox">' . K_NEWLINE;
             //fieldset
             //$str .= '<legend>';
             //$str .= $l['w_question'];
@@ -1796,49 +1802,49 @@ function F_questionForm($test_id, $testlog_id, $formname)
                 $str .= '<label for="answertext">';
             }
 
-            $str .= F_decode_tcecode($m['question_description']).K_NEWLINE;
+            $str .= F_decode_tcecode($m['question_description']) . K_NEWLINE;
             if ($m['question_type'] == 3) {
                 $str .= '</label>';
             }
 
-            $str .= '<div class="row">'.K_NEWLINE;
-            $str .= '<hr/>'.K_NEWLINE;
-            $str .= '</div>'.K_NEWLINE;
-            $str .= '<div class="rowl">'.K_NEWLINE;
+            $str .= '<div class="row">' . K_NEWLINE;
+            $str .= '<hr/>' . K_NEWLINE;
+            $str .= '</div>' . K_NEWLINE;
+            $str .= '<div class="rowl">' . K_NEWLINE;
             if ($m['question_type'] == 3) {
                 // TEXT - free text question
                 if (K_ENABLE_VIRTUAL_KEYBOARD) {
-                    $str .= '<script src="'.K_PATH_SHARED_JSCRIPTS.'vk/vk_easy.js?vk_skin=default" type="text/javascript"></script>'.K_NEWLINE;
+                    $str .= '<script src="' . K_PATH_SHARED_JSCRIPTS . 'vk/vk_easy.js?vk_skin=default" type="text/javascript"></script>' . K_NEWLINE;
                 }
 
-                $str .= '<textarea cols="'.K_ANSWER_TEXTAREA_COLS.'" rows="'.K_ANSWER_TEXTAREA_ROWS.'" name="answertext" id="answertext" onchange="saveAnswer()"';
+                $str .= '<textarea cols="' . K_ANSWER_TEXTAREA_COLS . '" rows="' . K_ANSWER_TEXTAREA_ROWS . '" name="answertext" id="answertext" onchange="saveAnswer()"';
                 if (K_ENABLE_VIRTUAL_KEYBOARD) {
                     $str .= 'keyboardInput ';
                 }
 
                 $str .= 'answertext">';
                 $str .= $m['testlog_answer_text'];
-                $str .= '</textarea>'.K_NEWLINE;
+                $str .= '</textarea>' . K_NEWLINE;
             } else {
                 // multiple-choice question
                 $checked = false;
                 if (F_getBoolean($m['question_inline_answers'])) {
                     // inline display
-                    $str .= '<ol class="answer_inline">'.K_NEWLINE;
+                    $str .= '<ol class="answer_inline">' . K_NEWLINE;
                 } else {
-                    $str .= '<ol class="answer">'.K_NEWLINE;
+                    $str .= '<ol class="answer">' . K_NEWLINE;
                 }
 
                 if ($m['question_type'] == 4) {
                     // get max positions for odering questions
-                    $max_position = F_count_rows(K_TABLE_LOG_ANSWER, 'WHERE logansw_testlog_id='.$testlog_id.'');
+                    $max_position = F_count_rows(K_TABLE_LOG_ANSWER, 'WHERE logansw_testlog_id=' . $testlog_id . '');
                 }
 
                 // display answer options
                 $sqla = 'SELECT *
-					FROM '.K_TABLE_ANSWERS.', '.K_TABLE_LOG_ANSWER.'
+					FROM ' . K_TABLE_ANSWERS . ', ' . K_TABLE_LOG_ANSWER . '
 					WHERE logansw_answer_id=answer_id
-						AND logansw_testlog_id='.$testlog_id.'
+						AND logansw_testlog_id=' . $testlog_id . '
 					ORDER BY logansw_order';
                 if ($ra = F_db_query($sqla, $db)) {
                     while ($ma = F_db_fetch_array($ra)) {
@@ -1847,22 +1853,22 @@ function F_questionForm($test_id, $testlog_id, $formname)
                         switch ($m['question_type']) {
                             case 1: {
                                 // MCSA - single-answer question
-                                $str .= '<input type="radio" name="answpos" id="answpos_'.$anspos.'" value="'.$anspos.'"';
+                                $str .= '<input type="radio" name="answpos" id="answpos_' . $anspos . '" value="' . $anspos . '"';
                                 if ((int) $ma['logansw_selected'] == 1) {
                                     $str .= ' checked="checked"';
                                     $checked = true;
                                 }
 
                                 if (F_getBoolean($m['question_auto_next'])) {
-                                    $str .= " onclick=\"var submittime=new Date();document.getElementById('reaction_time').value=submittime.getTime()-document.getElementById('display_time').value;document.getElementById('autonext').value=1;document.getElementById('".$formname."').submit();\"";
+                                    $str .= " onclick=\"var submittime=new Date();document.getElementById('reaction_time').value=submittime.getTime()-document.getElementById('display_time').value;document.getElementById('autonext').value=1;document.getElementById('" . $formname . "').submit();\"";
                                 }
 
                                 $str .= ' />&nbsp;';
-                                $str .= '<label for="answpos_'.$anspos.'">';
+                                $str .= '<label for="answpos_' . $anspos . '">';
                                 $str .= F_decode_tcecode($ma['answer_description']);
                                 $str .= '</label>';
                                 if ($ma['answer_keyboard_key'] > 0) {
-                                    $aswkeys[$ma['answer_keyboard_key']] = 'answpos_'.$anspos;
+                                    $aswkeys[$ma['answer_keyboard_key']] = 'answpos_' . $anspos;
                                 }
 
                                 break;
@@ -1873,9 +1879,9 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                     // radiobuttons
 
                                     // no-answer option
-                                    $str .= '<span style="background-color:#DDDDDD;"'.$noanswer_hidden.'>&nbsp;';
-                                    $str .= '<label for="answpos_'.$anspos.'u" title="'.$l['m_unanswered'].'">'.$l['w_unanswered_acronym'].'</label>';
-                                    $str .= '<input type="radio"'.$noanswer_disabled.' name="answpos['.$anspos.']" id="answpos_'.$anspos.'u" value="-1" title="'.$l['m_unanswered'].'"';
+                                    $str .= '<span style="background-color:#DDDDDD;"' . $noanswer_hidden . '>&nbsp;';
+                                    $str .= '<label for="answpos_' . $anspos . 'u" title="' . $l['m_unanswered'] . '">' . $l['w_unanswered_acronym'] . '</label>';
+                                    $str .= '<input type="radio"' . $noanswer_disabled . ' name="answpos[' . $anspos . ']" id="answpos_' . $anspos . 'u" value="-1" title="' . $l['m_unanswered'] . '"';
                                     if ((int) $ma['logansw_selected'] == -1) {
                                         $str .= ' checked="checked"';
                                     }
@@ -1885,8 +1891,8 @@ function F_questionForm($test_id, $testlog_id, $formname)
 
                                     // false option
                                     $str .= '<span style="background-color:#FFBBBB;">&nbsp;';
-                                    $str .= '<label for="answpos_'.$anspos.'f" title="'.$l['w_false'].'">'.$l['w_false_acronym'].'</label>';
-                                    $str .= '<input type="radio" name="answpos['.$anspos.']" id="answpos_'.$anspos.'f" value="0"';
+                                    $str .= '<label for="answpos_' . $anspos . 'f" title="' . $l['w_false'] . '">' . $l['w_false_acronym'] . '</label>';
+                                    $str .= '<input type="radio" name="answpos[' . $anspos . ']" id="answpos_' . $anspos . 'f" value="0"';
                                     if ((int) $ma['logansw_selected'] == 0) {
                                         $str .= ' checked="checked"';
                                     }
@@ -1896,8 +1902,8 @@ function F_questionForm($test_id, $testlog_id, $formname)
 
                                     // true option
                                     $str .= '<span style="background-color:#BBFFBB;">&nbsp;';
-                                    $str .= '<label for="answpos_'.$anspos.'t" title="'.$l['w_true'].'">'.$l['w_true_acronym'].'</label>';
-                                    $str .= '<input type="radio" name="answpos['.$anspos.']" id="answpos_'.$anspos.'t" value="1"';
+                                    $str .= '<label for="answpos_' . $anspos . 't" title="' . $l['w_true'] . '">' . $l['w_true_acronym'] . '</label>';
+                                    $str .= '<input type="radio" name="answpos[' . $anspos . ']" id="answpos_' . $anspos . 't" value="1"';
                                     if ((int) $ma['logansw_selected'] == 1) {
                                         $str .= ' checked="checked"';
                                     }
@@ -1905,20 +1911,22 @@ function F_questionForm($test_id, $testlog_id, $formname)
                                     $str .= ' />';
                                     $str .= '</span>&nbsp;';
                                     if ($ma['answer_keyboard_key'] > 0) {
-                                        $aswkeys[] = [$ma['answer_keyboard_key'] => 'answpos_'.$anspos.'t'];
+                                        $aswkeys[] = [
+                                            $ma['answer_keyboard_key'] => 'answpos_' . $anspos . 't',
+                                        ];
                                     }
 
                                     $str .= F_decode_tcecode($ma['answer_description']);
                                 } else {
                                     // checkbox
-                                    $str .= '<input type="checkbox" name="answpos['.$anspos.']" id="answpos_'.$anspos.'" value="1"';
+                                    $str .= '<input type="checkbox" name="answpos[' . $anspos . ']" id="answpos_' . $anspos . '" value="1"';
                                     if ((int) $ma['logansw_selected'] == 1) {
                                         $str .= ' checked="checked"';
                                         $checked = true;
                                     }
 
                                     $str .= ' />&nbsp;';
-                                    $str .= '<label for="answpos_'.$anspos.'">';
+                                    $str .= '<label for="answpos_' . $anspos . '">';
                                     $str .= F_decode_tcecode($ma['answer_description']);
                                     $str .= '</label>';
                                 }
@@ -1927,30 +1935,30 @@ function F_questionForm($test_id, $testlog_id, $formname)
                             }
                             case 4: {
                                 // ORDER - ordering questions
-                                $str .= '<select name="answpos['.$anspos.']" id="answpos_'.$anspos.'" size="0">'.K_NEWLINE;
+                                $str .= '<select name="answpos[' . $anspos . ']" id="answpos_' . $anspos . '" size="0">' . K_NEWLINE;
                                 if (F_getBoolean($testdata['test_noanswer_enabled'])) {
-                                    $str .= '<option value="0">&nbsp;</option>'.K_NEWLINE;
+                                    $str .= '<option value="0">&nbsp;</option>' . K_NEWLINE;
                                 }
 
-                                for ($pos=1; $pos <= $max_position; ++$pos) {
-                                    $str .= '<option value="'.$pos.'"';
+                                for ($pos = 1; $pos <= $max_position; ++$pos) {
+                                    $str .= '<option value="' . $pos . '"';
                                     if ($pos == $ma['logansw_position']) {
                                         $str .= ' selected="selected"';
                                     }
 
-                                    $str .= '>'.$pos.'</option>'.K_NEWLINE;
+                                    $str .= '>' . $pos . '</option>' . K_NEWLINE;
                                 }
 
-                                $str .= '</select>'.K_NEWLINE;
-                                $str .= '<label for="answpos_'.$anspos.'">';
+                                $str .= '</select>' . K_NEWLINE;
+                                $str .= '<label for="answpos_' . $anspos . '">';
                                 $str .= F_decode_tcecode($ma['answer_description']);
                                 $str .= '</label>';
                                 break;
                             }
                         }
 
-                         // end of switch
-                        $str .= '</li>'.K_NEWLINE;
+                        // end of switch
+                        $str .= '</li>' . K_NEWLINE;
                     } // end of while
                 } else {
                     F_display_db_error();
@@ -1958,9 +1966,9 @@ function F_questionForm($test_id, $testlog_id, $formname)
 
                 if ($m['question_type'] == 1) {
                     // display default "unanswered" option for MCSA
-                    $str .= '<li'.$noanswer_hidden.'>';
-                    $str .= '<input type="radio"'.$noanswer_disabled.' name="answpos" id="answpos_0" value="0"';
-                    if (!$checked) {
+                    $str .= '<li' . $noanswer_hidden . '>';
+                    $str .= '<input type="radio"' . $noanswer_disabled . ' name="answpos" id="answpos_0" value="0"';
+                    if (! $checked) {
                         $str .= ' checked="checked"';
                     }
 
@@ -1968,54 +1976,54 @@ function F_questionForm($test_id, $testlog_id, $formname)
                     $str .= '<label for="answpos_0">';
                     $str .= $l['m_unanswered'];
                     $str .= '</label>';
-                    $str .= '</li>'.K_NEWLINE;
+                    $str .= '</li>' . K_NEWLINE;
                 }
 
-                $str .= '</ol>'.K_NEWLINE;
+                $str .= '</ol>' . K_NEWLINE;
             }
 
-             // end multiple answers
-            $str .= '</div>'.K_NEWLINE;
-            $str .= '</div>'.K_NEWLINE; //fieldset
+            // end multiple answers
+            $str .= '</div>' . K_NEWLINE;
+            $str .= '</div>' . K_NEWLINE; //fieldset
             // javascript code
-            $str .= '<script type="text/javascript">'.K_NEWLINE;
-            $str .= '//<![CDATA['.K_NEWLINE;
+            $str .= '<script type="text/javascript">' . K_NEWLINE;
+            $str .= '//<![CDATA[' . K_NEWLINE;
             // script to handle keyboard events
-            $str .= 'function actionByChar(e){e=(e)?e:window.event;keynum=(e.keyCode)?e.keyCode:e.which;switch(keynum){'.K_NEWLINE;
+            $str .= 'function actionByChar(e){e=(e)?e:window.event;keynum=(e.keyCode)?e.keyCode:e.which;switch(keynum){' . K_NEWLINE;
             foreach ($aswkeys as $key => $fieldid) {
-                $str .= 'case '.$key.":{document.getElementById('".$fieldid."').checked=true;var submittime=new Date();document.getElementById('reaction_time').value=submittime.getTime()-document.getElementById('display_time').value;document.getElementById('autonext').value=1;document.getElementById('".$formname."').submit();break;}".K_NEWLINE;
+                $str .= 'case ' . $key . ":{document.getElementById('" . $fieldid . "').checked=true;var submittime=new Date();document.getElementById('reaction_time').value=submittime.getTime()-document.getElementById('display_time').value;document.getElementById('autonext').value=1;document.getElementById('" . $formname . "').submit();break;}" . K_NEWLINE;
             }
 
-            $str .= '}}'.K_NEWLINE;
-            $str .= 'document.onkeypress=actionByChar;'.K_NEWLINE;
+            $str .= '}}' . K_NEWLINE;
+            $str .= 'document.onkeypress=actionByChar;' . K_NEWLINE;
             // script for autosaving text answers
             if ($m['question_type'] == 3) {
                 // check if local storage is enabled (HTML5)
-                $str .= 'var enable_storage=(typeof(Storage)!=="undefined");'.K_NEWLINE;
+                $str .= 'var enable_storage=(typeof(Storage)!=="undefined");' . K_NEWLINE;
                 // function to save the text answer locally
-                $str .= 'function saveAnswer(){if(enable_storage){localStorage.answertext'.$testlog_id.'=document.getElementById("answertext").value;}}'.K_NEWLINE;
+                $str .= 'function saveAnswer(){if(enable_storage){localStorage.answertext' . $testlog_id . '=document.getElementById("answertext").value;}}' . K_NEWLINE;
                 // initialize the text answer with the saved value
-                $str .= 'if(enable_storage && localStorage.answertext'.$testlog_id.'){document.getElementById("answertext").value=localStorage.answertext'.$testlog_id.';}'.K_NEWLINE;
+                $str .= 'if(enable_storage && localStorage.answertext' . $testlog_id . '){document.getElementById("answertext").value=localStorage.answertext' . $testlog_id . ';}' . K_NEWLINE;
             }
 
             // script for autonext
             if ($m['question_timer'] > 0) {
                 // automatic submit form after specified amount of time
-                $str .= "setTimeout('document.getElementById(\'autonext\').value=1;document.getElementById(\'".$formname."\').submit();', ".($m['question_timer'] * 1000).");".K_NEWLINE;
+                $str .= "setTimeout('document.getElementById(\'autonext\').value=1;document.getElementById(\'" . $formname . "\').submit();', " . ($m['question_timer'] * 1000) . ");" . K_NEWLINE;
             }
 
-            $str .= '//]]>'.K_NEWLINE;
-            $str .= '</script>'.K_NEWLINE;
+            $str .= '//]]>' . K_NEWLINE;
+            $str .= '</script>' . K_NEWLINE;
             // display questions menu
             $str .= F_questionsMenu($testdata, $m['testlog_testuser_id'], $testlog_id, F_getBoolean($m['question_fullscreen']));
         }
 
         if (empty($m['testlog_display_time'])) {
             // mark test as displayed:
-            $sqlu = 'UPDATE '.K_TABLE_TESTS_LOGS.'
-				SET testlog_display_time=\''.date(K_TIMESTAMP_FORMAT).'\'
-				WHERE testlog_id='.$testlog_id.'';
-            if (!$ru = F_db_query($sqlu, $db)) {
+            $sqlu = 'UPDATE ' . K_TABLE_TESTS_LOGS . '
+				SET testlog_display_time=\'' . date(K_TIMESTAMP_FORMAT) . '\'
+				WHERE testlog_id=' . $testlog_id . '';
+            if (! $ru = F_db_query($sqlu, $db)) {
                 F_display_db_error();
             }
         }
@@ -2046,9 +2054,9 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     $testlog_id_next = 0; // next question ID
     $testlog_id_last = 0; // temp variable
     $sql = 'SELECT question_description, question_difficulty, question_timer, testlog_id, testlog_answer_text, testlog_display_time, testlog_change_time
-		FROM '.K_TABLE_QUESTIONS.', '.K_TABLE_TESTS_LOGS.'
+		FROM ' . K_TABLE_QUESTIONS . ', ' . K_TABLE_TESTS_LOGS . '
 		WHERE question_id=testlog_question_id
-			AND testlog_testuser_id='.$testuser_id.'
+			AND testlog_testuser_id=' . $testuser_id . '
 		ORDER BY testlog_id';
     if ($r = F_db_query($sql, $db)) {
         $i = 0;
@@ -2058,29 +2066,29 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
             ++$i;
             if ($m['testlog_id'] != $testlog_id) {
                 $str .= '<li>';
-                $str .= '<input type="submit" name="jumpquestion_'.$m['testlog_id'].'" id="jumpquestion_'.$m['testlog_id'].'" value="&gt;" title="'.F_tcecodeToTitle($m['question_description']).'" /> ';
+                $str .= '<input type="submit" name="jumpquestion_' . $m['testlog_id'] . '" id="jumpquestion_' . $m['testlog_id'] . '" value="&gt;" title="' . F_tcecodeToTitle($m['question_description']) . '" /> ';
                 if ($testlog_id_last == $testlog_id) {
                     $testlog_id_next = $m['testlog_id'];
                 }
             } else {
                 $str .= '<li class="selected">';
-                $str .= '<input type="button" name="jumpquestion_'.$m['testlog_id'].'" id="jumpquestion_'.$m['testlog_id'].'" value="&gt;" title="'.F_tcecodeToTitle($m['question_description']).'" disabled="disabled"/> ';
+                $str .= '<input type="button" name="jumpquestion_' . $m['testlog_id'] . '" id="jumpquestion_' . $m['testlog_id'] . '" value="&gt;" title="' . F_tcecodeToTitle($m['question_description']) . '" disabled="disabled"/> ';
                 $testlog_id_prev = $testlog_id_last;
                 $question_timer = F_getBoolean($m['question_timer']);
                 $qsel = $i;
                 if ($qsel > 1) {
-                    $qprev = ' ('.($i - 1).')';
+                    $qprev = ' (' . ($i - 1) . ')';
                 }
             }
 
             // display mark when the current question has been displayed
             $str .= '<acronym';
-            if (!empty($m['testlog_display_time'])) {
+            if (! empty($m['testlog_display_time'])) {
                 $str .= ' class="onbox"';
-                $str .= ' title="'.$l['h_question_displayed'].'">+';
+                $str .= ' title="' . $l['h_question_displayed'] . '">+';
             } else {
                 $str .= ' class="offbox"';
-                $str .= ' title="'.$l['h_question_not_displayed'].'">-';
+                $str .= ' title="' . $l['h_question_not_displayed'] . '">-';
             }
 
             $str .= '</acronym>';
@@ -2089,19 +2097,19 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
 
             // show mark when the current question has been answered
             $str .= '<acronym';
-            if (!empty($m['testlog_change_time'])) {
+            if (! empty($m['testlog_change_time'])) {
                 $str .= ' class="onbox"';
-                $str .= ' title="'.$l['h_question_answered'].'">+';
+                $str .= ' title="' . $l['h_question_answered'] . '">+';
             } else {
                 $str .= ' class="offbox"';
-                $str .= ' title="'.$l['h_question_not_answered'].'">-';
+                $str .= ' title="' . $l['h_question_not_answered'] . '">-';
             }
 
             $str .= '</acronym>';
             $str .= '&nbsp;';
             // show question score
             $n_question_score = $testdata['test_score_right'] * $m['question_difficulty'];
-            $str .= '<acronym class="offbox" title="'.$l['w_max_score'].': '.$n_question_score.'">';
+            $str .= '<acronym class="offbox" title="' . $l['w_max_score'] . ': ' . $n_question_score . '">';
             $str .= sprintf('% 5.1f', $n_question_score);
             $str .= '</acronym>';
             $str .= '&nbsp;';
@@ -2112,7 +2120,7 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
 
             $testlog_id_last = $m['testlog_id'];
             $str .= F_tcecodeToLine($m['question_description']);
-            $str .= '</li>'.K_NEWLINE;
+            $str .= '</li>' . K_NEWLINE;
         }
     } else {
         F_display_db_error();
@@ -2122,53 +2130,53 @@ function F_questionsMenu($testdata, $testuser_id, $testlog_id = 0, $disable = fa
     $navlink = '';
 
     // button for previous question
-    if (!$question_timer) {
-        $navlink .= '<input type="submit" name="prevquestion" id="prevquestion" title="'.$l['w_previous'].'" value="&lt; '.$l['w_previous'].$qprev.'"';
+    if (! $question_timer) {
+        $navlink .= '<input type="submit" name="prevquestion" id="prevquestion" title="' . $l['w_previous'] . '" value="&lt; ' . $l['w_previous'] . $qprev . '"';
         if ($testlog_id_prev <= 0 || $testlog_id_prev > $testlog_id) {
             $navlink .= ' disabled="disabled"';
         }
 
         $navlink .= ' />';
         // button for confirm current question
-        $navlink .= '<input type="submit" name="confirmanswer" id="confirmanswer" value="('.$qsel.') '.$l['w_confirm'].'" />';
+        $navlink .= '<input type="submit" name="confirmanswer" id="confirmanswer" value="(' . $qsel . ') ' . $l['w_confirm'] . '" />';
     }
 
     // button for next question
     $qnext = '';
     if ($testlog_id_next > 0) {
-        $qnext = '('.($qsel + 1).') ';
+        $qnext = '(' . ($qsel + 1) . ') ';
     }
 
-    $navlink .= '<input type="submit" name="nextquestion" id="nextquestion" title="'.$l['w_next'].'" value="'.$qnext.$l['w_next'].' &gt;"';
+    $navlink .= '<input type="submit" name="nextquestion" id="nextquestion" title="' . $l['w_next'] . '" value="' . $qnext . $l['w_next'] . ' &gt;"';
     if ($testlog_id_next <= 0) {
         $navlink .= ' disabled="disabled"';
     }
 
-    $navlink .= ' />'.K_NEWLINE;
+    $navlink .= ' />' . K_NEWLINE;
 
     if (($question_timer || $disable) && $testlog_id_next <= 0) {
         // force test termination
-        $navlink .= '<input type="hidden" name="forceterminate" id="forceterminate" value="lasttimedquestion" />'.K_NEWLINE;
+        $navlink .= '<input type="hidden" name="forceterminate" id="forceterminate" value="lasttimedquestion" />' . K_NEWLINE;
     }
 
-    $navlink .= '<input type="hidden" name="prevquestionid" id="prevquestionid" value="'.$testlog_id_prev.'" />'.K_NEWLINE;
-    $navlink .= '<input type="hidden" name="nextquestionid" id="nextquestionid" value="'.$testlog_id_next.'" />'.K_NEWLINE;
-    $navlink .= '<input type="hidden" name="autonext" id="autonext" value="" />'.K_NEWLINE;
-    $navlink = '<div class="navlink">'.$navlink.'</div>'.K_NEWLINE;
+    $navlink .= '<input type="hidden" name="prevquestionid" id="prevquestionid" value="' . $testlog_id_prev . '" />' . K_NEWLINE;
+    $navlink .= '<input type="hidden" name="nextquestionid" id="nextquestionid" value="' . $testlog_id_next . '" />' . K_NEWLINE;
+    $navlink .= '<input type="hidden" name="autonext" id="autonext" value="" />' . K_NEWLINE;
+    $navlink = '<div class="navlink">' . $navlink . '</div>' . K_NEWLINE;
     $rstr = '';
-    $rstr .= '<br />'.K_NEWLINE;
+    $rstr .= '<br />' . K_NEWLINE;
     $rstr .= $navlink;
-    $rstr .= '<br />'.K_NEWLINE;
-    if (F_getBoolean($testdata['test_menu_enabled']) && !$disable) {
+    $rstr .= '<br />' . K_NEWLINE;
+    if (F_getBoolean($testdata['test_menu_enabled']) && ! $disable) {
         // display questions menu
-        $rstr .= '<a name="questionssection" id="questionssection"></a>'.K_NEWLINE;
-        $rstr .= '<div class="tcecontentbox">'.K_NEWLINE; //fieldset
+        $rstr .= '<a name="questionssection" id="questionssection"></a>' . K_NEWLINE;
+        $rstr .= '<div class="tcecontentbox">' . K_NEWLINE; //fieldset
         //$rstr .= '<legend>';
         $rstr .= $l['w_questions'];
         //$rstr .= '</legend>'.K_NEWLINE;
-        $rstr .= '<ol class="qlist">'.K_NEWLINE.$str.'</ol>'.K_NEWLINE;
-        $rstr .= '</div>'.K_NEWLINE; //fieldset
-        $rstr .= '<br />'.K_NEWLINE;
+        $rstr .= '<ol class="qlist">' . K_NEWLINE . $str . '</ol>' . K_NEWLINE;
+        $rstr .= '</div>' . K_NEWLINE; //fieldset
+        $rstr .= '<br />' . K_NEWLINE;
     }
 
     return $rstr;
@@ -2187,10 +2195,10 @@ function F_getNumOmittedQuestions($test_id)
     $user_id = (int) $_SESSION['session_user_id'];
     // get the number of omitted questions
     $omitted = F_count_rows(
-        K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS,
+        K_TABLE_TEST_USER . ', ' . K_TABLE_TESTS_LOGS,
         'WHERE testlog_testuser_id=testuser_id
-			AND testuser_test_id='.$test_id.'
-			AND testuser_user_id='.$user_id.'
+			AND testuser_test_id=' . $test_id . '
+			AND testuser_user_id=' . $user_id . '
 			AND testuser_status<5
 			AND (testlog_change_time IS NULL OR testlog_display_time IS NULL)'
     );
@@ -2216,9 +2224,9 @@ function F_testComment($test_id)
         // get user's test comment
         $comment = '';
         $sql = 'SELECT testuser_comment
-		FROM '.K_TABLE_TEST_USER.'
-		WHERE testuser_user_id='.$user_id.'
-			AND testuser_test_id='.$test_id.'
+		FROM ' . K_TABLE_TEST_USER . '
+		WHERE testuser_user_id=' . $user_id . '
+			AND testuser_test_id=' . $test_id . '
 			AND testuser_status<4
 		LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
@@ -2229,8 +2237,8 @@ function F_testComment($test_id)
             F_display_db_error();
         }
 
-        $str .= '<label for="testcomment">'.$l['w_comment'].'</label><br />';
-        $str .= '<textarea cols="'.K_ANSWER_TEXTAREA_COLS.'" rows="4" name="testcomment" id="testcomment" class="answertext" title="'.$l['h_testcomment'].'">'.$comment.'</textarea><br />'.K_NEWLINE;
+        $str .= '<label for="testcomment">' . $l['w_comment'] . '</label><br />';
+        $str .= '<textarea cols="' . K_ANSWER_TEXTAREA_COLS . '" rows="4" name="testcomment" id="testcomment" class="answertext" title="' . $l['h_testcomment'] . '">' . $comment . '</textarea><br />' . K_NEWLINE;
     }
 
     return $str;
@@ -2250,12 +2258,12 @@ function F_updateTestComment($test_id, $testcomment)
     $test_id = (int) $test_id;
     $testcomment = F_escape_sql($db, $testcomment);
     $user_id = (int) $_SESSION['session_user_id'];
-    $sql = 'UPDATE '.K_TABLE_TEST_USER.'
-		SET testuser_comment=\''.$testcomment.'\'
-		WHERE testuser_test_id='.$test_id.'
-			AND testuser_user_id='.$user_id.'
+    $sql = 'UPDATE ' . K_TABLE_TEST_USER . '
+		SET testuser_comment=\'' . $testcomment . '\'
+		WHERE testuser_test_id=' . $test_id . '
+			AND testuser_user_id=' . $user_id . '
 			AND testuser_status<4';
-    if (!$r = F_db_query($sql, $db)) {
+    if (! $r = F_db_query($sql, $db)) {
         F_display_db_error();
     }
 }
@@ -2282,23 +2290,23 @@ function F_testLoginForm($faction, $fid, $fmethod, $fenctype, $test_id)
     require_once('../config/tce_config.php');
     require_once('../../shared/code/tce_functions_form.php');
     $str = '';
-    $str .= '<div class="container">'.K_NEWLINE;
-    $str .= '<div class="tceformbox">'.K_NEWLINE;
-    $str .= '<form action="'.$faction.'" method="'.$fmethod.'" id="'.$fid.'" enctype="'.$fenctype.'">'.K_NEWLINE;
+    $str .= '<div class="container">' . K_NEWLINE;
+    $str .= '<div class="tceformbox">' . K_NEWLINE;
+    $str .= '<form action="' . $faction . '" method="' . $fmethod . '" id="' . $fid . '" enctype="' . $fenctype . '">' . K_NEWLINE;
     // test password
     $str .= getFormRowTextInput('xtest_password', $l['w_test_password'], $l['h_test_password'], '', '', '', 255, false, false, true, '');
     // buttons
-    $str .= '<div class="row">'.K_NEWLINE;
-    $str .= '<input type="submit" name="login" id="login" value="'.$l['w_login'].'" title="'.$l['h_login_button'].'" />'.K_NEWLINE;
+    $str .= '<div class="row">' . K_NEWLINE;
+    $str .= '<input type="submit" name="login" id="login" value="' . $l['w_login'] . '" title="' . $l['h_login_button'] . '" />' . K_NEWLINE;
     // the following field is used to check if the form has been submitted
-    $str .= '<input type="hidden" name="testpswaction" id="testpswaction" value="login" />'.K_NEWLINE;
-    $str .= '<input type="hidden" name="testid" id="testid" value="'.(int) $test_id.'" />'.K_NEWLINE;
-    $str .= '</div>'.K_NEWLINE;
-    $str .= F_getCSRFTokenField().K_NEWLINE;
-    $str .= '</form>'.K_NEWLINE;
-    $str .= '</div>'.K_NEWLINE;
-    $str .= '<div class="pagehelp">'.$l['hp_test_password'].'</div>'.K_NEWLINE;
-    return $str . ('</div>'.K_NEWLINE);
+    $str .= '<input type="hidden" name="testpswaction" id="testpswaction" value="login" />' . K_NEWLINE;
+    $str .= '<input type="hidden" name="testid" id="testid" value="' . (int) $test_id . '" />' . K_NEWLINE;
+    $str .= '</div>' . K_NEWLINE;
+    $str .= F_getCSRFTokenField() . K_NEWLINE;
+    $str .= '</form>' . K_NEWLINE;
+    $str .= '</div>' . K_NEWLINE;
+    $str .= '<div class="pagehelp">' . $l['hp_test_password'] . '</div>' . K_NEWLINE;
+    return $str . ('</div>' . K_NEWLINE);
 }
 
 /**
@@ -2313,10 +2321,10 @@ function F_getTestGroups($test_id)
     $test_id = (int) $test_id;
     $ids = '0';
     // select groups in this test
-    $sql = 'SELECT tstgrp_group_id FROM '.K_TABLE_TEST_GROUPS.' WHERE tstgrp_test_id='.$test_id.' ORDER BY tstgrp_group_id';
+    $sql = 'SELECT tstgrp_group_id FROM ' . K_TABLE_TEST_GROUPS . ' WHERE tstgrp_test_id=' . $test_id . ' ORDER BY tstgrp_group_id';
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_assoc($r)) {
-            $ids .= ','.$m['tstgrp_group_id'];
+            $ids .= ',' . $m['tstgrp_group_id'];
         }
     } else {
         F_display_db_error();
@@ -2337,10 +2345,10 @@ function F_getTestSSLCerts($test_id)
     $test_id = (int) $test_id;
     $ids = '0';
     // select SSL certificates in this test
-    $sql = 'SELECT tstssl_ssl_id FROM '.K_TABLE_TEST_SSLCERTS.' WHERE tstssl_test_id='.$test_id.' ORDER BY tstssl_ssl_id';
+    $sql = 'SELECT tstssl_ssl_id FROM ' . K_TABLE_TEST_SSLCERTS . ' WHERE tstssl_test_id=' . $test_id . ' ORDER BY tstssl_ssl_id';
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_assoc($r)) {
-            $ids .= ','.$m['tstssl_ssl_id'];
+            $ids .= ',' . $m['tstssl_ssl_id'];
         }
     } else {
         F_display_db_error();

@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_upload.php
 // Begin       : 2001-11-19
@@ -36,7 +37,7 @@
  */
 function F_is_allowed_upload($filename)
 {
-    if (!defined('K_ALLOWED_UPLOAD_EXTENSIONS')) {
+    if (! defined('K_ALLOWED_UPLOAD_EXTENSIONS')) {
         return false;
     }
 
@@ -61,17 +62,17 @@ function F_upload_file($fieldname, $uploaddir)
     $filename = preg_replace('/[\s]/', '_', $_FILES[$fieldname]['name']);
     $filename = preg_replace('/[^a-zA-Z0-9_\.\-]/', '', $filename);
     if ($filename[0] === '.') {
-		// files starting with a '.' are rendered as HTML pages.
-		return false;
-	}
+        // files starting with a '.' are rendered as HTML pages.
+        return false;
+    }
 
-    $filepath = $uploaddir.$filename;
+    $filepath = $uploaddir . $filename;
     if (F_is_allowed_upload($filename) && move_uploaded_file($_FILES[$fieldname]['tmp_name'], $filepath)) {
-        F_print_error('MESSAGE', htmlspecialchars($filename).': '.$l['m_upload_yes']);
+        F_print_error('MESSAGE', htmlspecialchars($filename) . ': ' . $l['m_upload_yes']);
         return $filename;
     }
 
-    F_print_error('ERROR', htmlspecialchars($filename).': '.$l['m_upload_not'].'');
+    F_print_error('ERROR', htmlspecialchars($filename) . ': ' . $l['m_upload_not'] . '');
     return false;
 }
 
@@ -92,17 +93,17 @@ function F_read_file_size($filetocheck)
         if ($s_array['size'] !== 0) {
             $filesize = $s_array['size'];
         } else {//read size from remote file (very slow function)
-            while (!feof($fp)) {
+            while (! feof($fp)) {
                 $content = fread($fp, 1);
                 ++$filesize;
             }
         }
 
         fclose($fp);
-        return($filesize);
+        return ($filesize);
     }
 
-    F_print_error('ERROR', basename($filetocheck).': '.$l['m_openfile_not']);
+    F_print_error('ERROR', basename($filetocheck) . ': ' . $l['m_openfile_not']);
     return false;
 }
 

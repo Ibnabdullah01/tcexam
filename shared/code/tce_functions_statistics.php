@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_statistics.php
 // Begin       : 2008-12-25
@@ -57,19 +58,19 @@ function F_getArrayStatistics($data)
         $datastr = [];
         foreach ($dataset as $num => $value) {
             ++$stats['number'][$set];
-            $stats['sum'][$set] += (float)$value;
-            $datastr[] = ''.$value.''; // convert value to string
+            $stats['sum'][$set] += (float) $value;
+            $datastr[] = '' . $value . ''; // convert value to string
         }
 
         if ($stats['number'][$set] > 0) {
             $stats['maximum'][$set] = $dataset[($stats['number'][$set] - 1)];
-            $stats['range'][$set] = (float)$stats['maximum'][$set] - (float)$stats['minimum'][$set];
+            $stats['range'][$set] = (float) $stats['maximum'][$set] - (float) $stats['minimum'][$set];
             $stats['mean'][$set] = $stats['sum'][$set] / $stats['number'][$set];
-            $nsdiv = (int)($stats['number'][$set] / 2);
+            $nsdiv = (int) ($stats['number'][$set] / 2);
             if (($nsdiv > 0) && (($stats['number'][$set] % 2) == 0)) {
-                $stats['median'][$set] = (((float)$dataset[$nsdiv] + (float)$dataset[($nsdiv - 1)]) / 2);
+                $stats['median'][$set] = (((float) $dataset[$nsdiv] + (float) $dataset[($nsdiv - 1)]) / 2);
             } else {
-                $stats['median'][$set] = (float)$dataset[(($stats['number'][$set] - 1) / 2)];
+                $stats['median'][$set] = (float) $dataset[(($stats['number'][$set] - 1) / 2)];
             }
 
             $freq = array_count_values($datastr);
@@ -79,7 +80,7 @@ function F_getArrayStatistics($data)
             $dev = 0;
             foreach ($dataset as $num => $value) {
                 // deviance
-                $dev += ((float)$value - (float)$stats['mean'][$set]) ** 2;
+                $dev += ((float) $value - (float) $stats['mean'][$set]) ** 2;
             }
 
             $stats['variance'][$set] = $dev / $stats['number'][$set];

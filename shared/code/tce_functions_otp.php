@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_otp.php
 // Begin       : 2012-01-09
@@ -54,7 +55,7 @@ function F_decodeBase32($code)
     // dictionary
     $dict = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';
     // remove invalid chars
-    $code = preg_replace('/[^'.$dict.']+/', '', $code);
+    $code = preg_replace('/[^' . $dict . ']+/', '', $code);
     $n = 0;
     $j = 0;
     $bin = '';
@@ -90,15 +91,15 @@ function F_getOTP($otpkey, $mtime = 0)
 
     $time = floor($mtime / 30);
     // convert timestamp into a binary string of 8 bytes
-    $bintime = pack('N*', 0).pack('N*', $time);
+    $bintime = pack('N*', 0) . pack('N*', $time);
     // calculate the SHA1 hash
     $hash = hash_hmac('sha1', $bintime, $binkey, true);
-    // get offset
+    
     $offset = (ord($hash[19]) & 0xf);
     // one time password
-    $otp = ((((ord($hash[($offset + 0)]) & 0x7f) << 24 )
-        | ((ord($hash[($offset + 1)]) & 0xff) << 16 )
-        | ((ord($hash[($offset + 2)]) & 0xff) << 8 )
+    $otp = ((((ord($hash[($offset + 0)]) & 0x7f) << 24)
+        | ((ord($hash[($offset + 1)]) & 0xff) << 16)
+        | ((ord($hash[($offset + 2)]) & 0xff) << 8)
         | (ord($hash[($offset + 3)]) & 0xff)) % 10 ** 6);
     return $otp;
 }

@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : index.php
 // Begin       : 2004-04-20
@@ -28,8 +29,7 @@
  * @since 2004-04-20
  */
 
-/**
- */
+
 
 require_once('../config/tce_config.php');
 
@@ -40,17 +40,17 @@ $thispage_description = $l['hp_public_index'];
 require_once('../../shared/code/tce_authorization.php');
 require_once('tce_page_header.php');
 
-echo '<div class="container">'.K_NEWLINE;
+echo '<div class="container">' . K_NEWLINE;
 
-echo '<div class="tcecontentbox">'.K_NEWLINE;
+echo '<div class="tcecontentbox">' . K_NEWLINE;
 require_once('../../shared/code/tce_functions_test.php');
 
 echo F_getUserTests();
-echo '</div>'.K_NEWLINE;
+echo '</div>' . K_NEWLINE;
 
-echo '<div class="pagehelp">'.$thispage_description.'</div>'.K_NEWLINE;
+echo '<div class="pagehelp">' . $thispage_description . '</div>' . K_NEWLINE;
 
-echo '</div>'.K_NEWLINE;
+echo '</div>' . K_NEWLINE;
 
 require_once('tce_page_footer.php');
 

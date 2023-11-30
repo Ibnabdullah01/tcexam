@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tcpdfex.php
 // Begin       : 2010-12-06
@@ -41,7 +42,7 @@
  * @author Nicola Asuni
  */
 
-require(__DIR__.'/../tcpdf/tcpdf.php');
+require(__DIR__ . '/../tcpdf/tcpdf.php');
 
 /**
  * @class TCPDFEX
@@ -52,7 +53,6 @@ require(__DIR__.'/../tcpdf/tcpdf.php');
  */
 class TCPDFEX extends TCPDF
 {
-
     public $header_xobjid;
 
     public $y;
@@ -84,25 +84,21 @@ class TCPDFEX extends TCPDF
     protected $tcexam_backlink = '';
 
     /**
-     *
      * @protected
      */
     protected $tce_cell_height_ratio;
 
     /**
-     *
      * @protected
      */
     protected $tce_page_width;
 
     /**
-     *
      * @protected
      */
     protected $tce_data_cell_height;
 
     /**
-     *
      * @protected
      */
     protected $tce_main_cell_height;
@@ -155,13 +151,13 @@ class TCPDFEX extends TCPDF
             $this->x = $this->rtl ? $this->w - $this->original_rMargin : $this->original_lMargin;
 
             if ($headerdata['logo'] && $headerdata['logo'] != K_BLANK_IMAGE) {
-                $imgtype = TCPDF_IMAGES::getImageFileType(K_PATH_IMAGES.$headerdata['logo']);
+                $imgtype = TCPDF_IMAGES::getImageFileType(K_PATH_IMAGES . $headerdata['logo']);
                 if ($imgtype == 'eps' || $imgtype == 'ai') {
-                    $this->ImageEps(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+                    $this->ImageEps(K_PATH_IMAGES . $headerdata['logo'], '', '', $headerdata['logo_width']);
                 } elseif ($imgtype == 'svg') {
-                    $this->ImageSVG(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+                    $this->ImageSVG(K_PATH_IMAGES . $headerdata['logo'], '', '', $headerdata['logo_width']);
                 } else {
-                    $this->Image(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
+                    $this->Image(K_PATH_IMAGES . $headerdata['logo'], '', '', $headerdata['logo_width']);
                 }
 
                 $imgy = $this->getImageRBY();
@@ -188,10 +184,24 @@ class TCPDFEX extends TCPDF
             $this->SetX($header_x);
             $this->MultiCell($cw, $cell_height, $headerdata['string'], 0, '', 0, 1, '', '', true, 0, false);
             // print an ending header line
-            $this->SetLineStyle(['width' => 0.85 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [0, 0, 0]]);
-            if (!empty($this->tcexam_backlink)) {
+            $this->SetLineStyle([
+                'width' => 0.85 / $this->k,
+                'cap' => 'butt',
+                'join' => 'miter',
+                'dash' => 0,
+                'color' => [0, 0, 0],
+            ]);
+            if (! empty($this->tcexam_backlink)) {
                 // set style for barcode
-                $style = ['border' => false, 'vpadding' => 0, 'hpadding' => 0, 'fgcolor' => [0, 0, 0], 'bgcolor' => false, 'module_width' => 1, 'module_height' => 1];
+                $style = [
+                    'border' => false,
+                    'vpadding' => 0,
+                    'hpadding' => 0,
+                    'fgcolor' => [0, 0, 0],
+                    'bgcolor' => false,
+                    'module_width' => 1,
+                    'module_height' => 1,
+                ];
                 // QRCODE
                 $w = (PDF_MARGIN_TOP - PDF_MARGIN_HEADER - (5.7 / $this->k));
                 $y = (PDF_MARGIN_HEADER);
@@ -242,7 +252,6 @@ class TCPDFEX extends TCPDF
      */
     public function printQuestionStats($stats, $display_mode = 2)
     {
-
         if ($display_mode < 2) {
             return;
         }
@@ -268,13 +277,13 @@ class TCPDFEX extends TCPDF
 
         $this->SetFont(PDF_FONT_NAME_DATA, 'B', (PDF_FONT_SIZE_DATA + 1));
 
-        $title = $l['w_statistics'].' ['.$l['w_all'].' + '.$l['w_module'].'';
+        $title = $l['w_statistics'] . ' [' . $l['w_all'] . ' + ' . $l['w_module'] . '';
         if ($display_mode > 2) {
-            $title .= ' + '.$l['w_subject'].'';
+            $title .= ' + ' . $l['w_subject'] . '';
             if ($display_mode > 3) {
-                $title .= ' + '.$l['w_question'].'';
+                $title .= ' + ' . $l['w_question'] . '';
                 if ($display_mode > 4) {
-                    $title .= ' + '.$l['w_answer'].'';
+                    $title .= ' + ' . $l['w_answer'] . '';
                 }
             }
         }
@@ -301,14 +310,14 @@ class TCPDFEX extends TCPDF
         $this->SetFillColor(255, 238, 238);
         $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_all'], 1, 0, 'L', true, '', 1);
         $this->SetFont($numberfont, 'B', $fontdatasize);
-        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['recurrence'].' '.F_formatPdfPercentage($stats['recurrence_perc'], false), 1, 0, 'R', true);
-        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, number_format($stats['average_score'], 3, '.', '').' '.F_formatPdfPercentage($stats['average_score_perc'], false), 1, 0, 'R', true);
+        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['recurrence'] . ' ' . F_formatPdfPercentage($stats['recurrence_perc'], false), 1, 0, 'R', true);
+        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, number_format($stats['average_score'], 3, '.', '') . ' ' . F_formatPdfPercentage($stats['average_score_perc'], false), 1, 0, 'R', true);
         $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, date('i:s', $stats['average_time']), 1, 0, 'R', true);
-        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['right'].' '.F_formatPdfPercentage($stats['right_perc'], false), 1, 0, 'R', true);
-        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['wrong'].' '.F_formatPdfPercentage($stats['wrong_perc'], false), 1, 0, 'R', true);
-        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['unanswered'].' '.F_formatPdfPercentage($stats['unanswered_perc'], false), 1, 0, 'R', true);
-        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['undisplayed'].' '.F_formatPdfPercentage($stats['undisplayed_perc'], false), 1, 0, 'R', true);
-        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['unrated'].' '.F_formatPdfPercentage($stats['unrated_perc'], false), 1, 1, 'R', true);
+        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['right'] . ' ' . F_formatPdfPercentage($stats['right_perc'], false), 1, 0, 'R', true);
+        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['wrong'] . ' ' . F_formatPdfPercentage($stats['wrong_perc'], false), 1, 0, 'R', true);
+        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['unanswered'] . ' ' . F_formatPdfPercentage($stats['unanswered_perc'], false), 1, 0, 'R', true);
+        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['undisplayed'] . ' ' . F_formatPdfPercentage($stats['undisplayed_perc'], false), 1, 0, 'R', true);
+        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $stats['unrated'] . ' ' . F_formatPdfPercentage($stats['unrated_perc'], false), 1, 1, 'R', true);
 
         $this->Ln(1);
 
@@ -318,15 +327,15 @@ class TCPDFEX extends TCPDF
 
             $this->SetFillColor(221, 238, 255);
             $this->SetFont($numberfont, 'B', $fontdatasize);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, 'M'.$num_module, 1, 0, 'L', true, '', 1);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['recurrence'].' '.F_formatPdfPercentage($module['recurrence_perc'], false), 1, 0, 'R', true);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, number_format($module['average_score'], 3, '.', '').' '.F_formatPdfPercentage($module['average_score_perc'], false), 1, 0, 'R', true);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, 'M' . $num_module, 1, 0, 'L', true, '', 1);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['recurrence'] . ' ' . F_formatPdfPercentage($module['recurrence_perc'], false), 1, 0, 'R', true);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, number_format($module['average_score'], 3, '.', '') . ' ' . F_formatPdfPercentage($module['average_score_perc'], false), 1, 0, 'R', true);
             $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, date('i:s', $module['average_time']), 1, 0, 'R', true);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['right'].' '.F_formatPdfPercentage($module['right_perc'], false), 1, 0, 'R', true);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['wrong'].' '.F_formatPdfPercentage($module['wrong_perc'], false), 1, 0, 'R', true);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['unanswered'].' '.F_formatPdfPercentage($module['unanswered_perc'], false), 1, 0, 'R', true);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['undisplayed'].' '.F_formatPdfPercentage($module['undisplayed_perc'], false), 1, 0, 'R', true);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['unrated'].' '.F_formatPdfPercentage($module['unrated_perc'], false), 1, 1, 'R', true);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['right'] . ' ' . F_formatPdfPercentage($module['right_perc'], false), 1, 0, 'R', true);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['wrong'] . ' ' . F_formatPdfPercentage($module['wrong_perc'], false), 1, 0, 'R', true);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['unanswered'] . ' ' . F_formatPdfPercentage($module['unanswered_perc'], false), 1, 0, 'R', true);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['undisplayed'] . ' ' . F_formatPdfPercentage($module['undisplayed_perc'], false), 1, 0, 'R', true);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $module['unrated'] . ' ' . F_formatPdfPercentage($module['unrated_perc'], false), 1, 1, 'R', true);
             $this->SetFont(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
             $this->writeHTMLCell(0, $this->tce_data_cell_height, (PDF_MARGIN_LEFT + (2 * $tce_data_cell_width_third)), $this->GetY(), F_decode_tcecode($module['name']), 1, 1);
 
@@ -337,15 +346,15 @@ class TCPDFEX extends TCPDF
 
                     $this->SetFillColor(221, 255, 221);
                     $this->SetFont($numberfont, 'B', $fontdatasize);
-                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, 'M'.$num_module.'S'.$num_subject, 1, 0, 'L', true, '', 1);
-                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['recurrence'].' '.F_formatPdfPercentage($subject['recurrence_perc'], false), 1, 0, 'R', true);
-                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, number_format($subject['average_score'], 3, '.', '').' '.F_formatPdfPercentage($subject['average_score_perc'], false), 1, 0, 'R', true);
+                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, 'M' . $num_module . 'S' . $num_subject, 1, 0, 'L', true, '', 1);
+                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['recurrence'] . ' ' . F_formatPdfPercentage($subject['recurrence_perc'], false), 1, 0, 'R', true);
+                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, number_format($subject['average_score'], 3, '.', '') . ' ' . F_formatPdfPercentage($subject['average_score_perc'], false), 1, 0, 'R', true);
                     $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, date('i:s', $subject['average_time']), 1, 0, 'R', true);
-                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['right'].' '.F_formatPdfPercentage($subject['right_perc'], false), 1, 0, 'R', true);
-                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['wrong'].' '.F_formatPdfPercentage($subject['wrong_perc'], false), 1, 0, 'R', true);
-                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['unanswered'].' '.F_formatPdfPercentage($subject['unanswered_perc'], false), 1, 0, 'R', true);
-                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['undisplayed'].' '.F_formatPdfPercentage($subject['undisplayed_perc'], false), 1, 0, 'R', true);
-                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['unrated'].' '.F_formatPdfPercentage($subject['unrated_perc'], false), 1, 1, 'R', true);
+                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['right'] . ' ' . F_formatPdfPercentage($subject['right_perc'], false), 1, 0, 'R', true);
+                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['wrong'] . ' ' . F_formatPdfPercentage($subject['wrong_perc'], false), 1, 0, 'R', true);
+                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['unanswered'] . ' ' . F_formatPdfPercentage($subject['unanswered_perc'], false), 1, 0, 'R', true);
+                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['undisplayed'] . ' ' . F_formatPdfPercentage($subject['undisplayed_perc'], false), 1, 0, 'R', true);
+                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $subject['unrated'] . ' ' . F_formatPdfPercentage($subject['unrated_perc'], false), 1, 1, 'R', true);
                     $this->SetFont(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
                     $this->writeHTMLCell(0, $this->tce_data_cell_height, (PDF_MARGIN_LEFT + (2 * $tce_data_cell_width_third)), $this->GetY(), F_decode_tcecode($subject['name']), 1, 1);
 
@@ -356,15 +365,15 @@ class TCPDFEX extends TCPDF
 
                             $this->SetFillColor(255, 250, 205);
                             $this->SetFont($numberfont, 'B', $fontdatasize);
-                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, 'M'.$num_module.'S'.$num_subject.'Q'.$num_question, 1, 0, 'L', true, '', 1);
-                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['recurrence'].' '.F_formatPdfPercentage($question['recurrence_perc'], false), 1, 0, 'R', true);
-                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, number_format($question['average_score'], 3, '.', '').' '.F_formatPdfPercentage($question['average_score_perc'], false), 1, 0, 'R', true);
+                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, 'M' . $num_module . 'S' . $num_subject . 'Q' . $num_question, 1, 0, 'L', true, '', 1);
+                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['recurrence'] . ' ' . F_formatPdfPercentage($question['recurrence_perc'], false), 1, 0, 'R', true);
+                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, number_format($question['average_score'], 3, '.', '') . ' ' . F_formatPdfPercentage($question['average_score_perc'], false), 1, 0, 'R', true);
                             $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, date('i:s', $question['average_time']), 1, 0, 'R', true);
-                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['right'].' '.F_formatPdfPercentage($question['right_perc'], false), 1, 0, 'R', true);
-                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['wrong'].' '.F_formatPdfPercentage($question['wrong_perc'], false), 1, 0, 'R', true);
-                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['unanswered'].' '.F_formatPdfPercentage($question['unanswered_perc'], false), 1, 0, 'R', true);
-                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['undisplayed'].' '.F_formatPdfPercentage($question['undisplayed_perc'], false), 1, 0, 'R', true);
-                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['unrated'].' '.F_formatPdfPercentage($question['unrated_perc'], false), 1, 1, 'R', true);
+                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['right'] . ' ' . F_formatPdfPercentage($question['right_perc'], false), 1, 0, 'R', true);
+                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['wrong'] . ' ' . F_formatPdfPercentage($question['wrong_perc'], false), 1, 0, 'R', true);
+                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['unanswered'] . ' ' . F_formatPdfPercentage($question['unanswered_perc'], false), 1, 0, 'R', true);
+                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['undisplayed'] . ' ' . F_formatPdfPercentage($question['undisplayed_perc'], false), 1, 0, 'R', true);
+                            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $question['unrated'] . ' ' . F_formatPdfPercentage($question['unrated_perc'], false), 1, 1, 'R', true);
                             $this->SetFont(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
                             $this->writeHTMLCell(0, $this->tce_data_cell_height, (PDF_MARGIN_LEFT + (2 * $tce_data_cell_width_third)), $this->GetY(), F_decode_tcecode($question['description']), 1, 1);
 
@@ -374,13 +383,13 @@ class TCPDFEX extends TCPDF
                                     ++$num_answer;
 
                                     $this->SetFont($numberfont, 'B', $fontdatasize);
-                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, 'M'.$num_module.'S'.$num_subject.'Q'.$num_question.'A'.$num_answer, 1, 0, 'L', 0, '', 1);
-                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $answer['recurrence'].' '.F_formatPdfPercentage($answer['recurrence_perc'], false), 1, 0, 'R', 0);
+                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, 'M' . $num_module . 'S' . $num_subject . 'Q' . $num_question . 'A' . $num_answer, 1, 0, 'L', 0, '', 1);
+                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $answer['recurrence'] . ' ' . F_formatPdfPercentage($answer['recurrence_perc'], false), 1, 0, 'R', 0);
                                     $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, '', 1, 0, 'R', 0);
                                     $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, '', 1, 0, 'R', 0);
-                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $answer['right'].' '.F_formatPdfPercentage($answer['right_perc'], false), 1, 0, 'R', 0);
-                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $answer['wrong'].' '.F_formatPdfPercentage($answer['wrong_perc'], false), 1, 0, 'R', 0);
-                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $answer['unanswered'].' '.F_formatPdfPercentage($answer['unanswered_perc'], false), 1, 0, 'R', 0);
+                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $answer['right'] . ' ' . F_formatPdfPercentage($answer['right_perc'], false), 1, 0, 'R', 0);
+                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $answer['wrong'] . ' ' . F_formatPdfPercentage($answer['wrong_perc'], false), 1, 0, 'R', 0);
+                                    $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $answer['unanswered'] . ' ' . F_formatPdfPercentage($answer['unanswered_perc'], false), 1, 0, 'R', 0);
                                     $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, '', 1, 0, 'R', 0);
                                     $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, '', 1, 1, 'R', 0);
                                     $this->SetFont(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
@@ -408,24 +417,24 @@ class TCPDFEX extends TCPDF
         if (preg_match_all('/[x]/', $svgdata, $match) > 1) {
             $this->SetFont(PDF_FONT_NAME_DATA, 'B', PDF_FONT_SIZE_DATA);
             // legend
-            $legend = '<span style="background-color:#ff0000;color:#ffffff;">&nbsp;'.$l['w_score'].'&nbsp;</span> <span style="background-color:#0000ff;color:#ffffff;">&nbsp;'.$l['w_answers_right'].'&nbsp;</span> / <span style="background-color:#dddddd;color:#000000;">&nbsp;'.$l['w_tests'].'&nbsp;</span></div>';
+            $legend = '<span style="background-color:#ff0000;color:#ffffff;">&nbsp;' . $l['w_score'] . '&nbsp;</span> <span style="background-color:#0000ff;color:#ffffff;">&nbsp;' . $l['w_answers_right'] . '&nbsp;</span> / <span style="background-color:#dddddd;color:#000000;">&nbsp;' . $l['w_tests'] . '&nbsp;</span></div>';
             $this->writeHTML($legend, true, false, true, false, 'C');
             $this->SetFont(PDF_FONT_NAME_DATA, '', 6);
             $w = $this->tce_page_width * $this->imgscale * $this->k;
             $h = round($this->tce_page_width * 9 / 16);
             $svg = F_getSVGGraphCode(substr($svgdata, 1), $w, $h);
             if (isset($svg[0]) && $svg[0] == '<') {
-                $this->ImageSVG('@'.$svg, '', '', $this->tce_page_width, 0, '', 'N', 'C', 0, false);
+                $this->ImageSVG('@' . $svg, '', '', $this->tce_page_width, 0, '', 'N', 'C', 0, false);
             }
         }
     }
 
     /**
-    * Print test stats table
-    * @param $data (array) Array containing test statistics.
-    * @param $pubmode (boolean) If true filter the results for the public interface.
-    * @param $stats (int) 2 = full stats; 1 = user stats; 0 = disabled stats;
-    */
+     * Print test stats table
+     * @param $data (array) Array containing test statistics.
+     * @param $pubmode (boolean) If true filter the results for the public interface.
+     * @param $stats (int) 2 = full stats; 1 = user stats; 0 = disabled stats;
+     */
     public function printTestResultStat($data, $pubmode = false, $stats = 2)
     {
         require_once('../config/tce_config.php');
@@ -459,14 +468,13 @@ class TCPDFEX extends TCPDF
 
         $this->SetFont(PDF_FONT_NAME_DATA, 'B', PDF_FONT_SIZE_DATA);
 
-
         // print table headings
         $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, '#', 1, 0, 'C', 1);
         $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_time_begin'], 1, 0, 'C', true, '', 1);
         $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_time'], 1, 0, 'C', true, '', 1);
         $this->Cell(4 * $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_test'], 1, 0, 'C', true, '', 1);
-        if (!$pubmode) {
-            $this->Cell((3 * $tce_data_cell_width), $this->tce_data_cell_height, $l['w_user'].' - '.$l['w_lastname'].', '.$l['w_firstname'], 1, 0, 'C', true, '', 1);
+        if (! $pubmode) {
+            $this->Cell((3 * $tce_data_cell_width), $this->tce_data_cell_height, $l['w_user'] . ' - ' . $l['w_lastname'] . ', ' . $l['w_firstname'], 1, 0, 'C', true, '', 1);
         }
 
         $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_score'], 1, 0, 'C', true, '', 1);
@@ -489,8 +497,8 @@ class TCPDFEX extends TCPDF
             $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['time_diff'], 1, 0, 'R', 0, '', 1);
             $this->SetFont(PDF_FONT_NAME_DATA, '', $fontdatasize);
             $this->Cell(4 * $tce_data_cell_width_third, $this->tce_data_cell_height, $tu['test']['test_name'], 1, 0, $tdalign, 0, '', 1);
-            if (!$pubmode) {
-                $this->Cell((3 * $tce_data_cell_width), $this->tce_data_cell_height, $tu['user_name'].' - '.$tu['user_lastname'].', '.$tu['user_firstname'], 1, 0, $tdalign, 0, '', 1);
+            if (! $pubmode) {
+                $this->Cell((3 * $tce_data_cell_width), $this->tce_data_cell_height, $tu['user_name'] . ' - ' . $tu['user_lastname'] . ', ' . $tu['user_firstname'], 1, 0, $tdalign, 0, '', 1);
             }
 
             $this->SetFont($numberfont, '', $fontdatasize);
@@ -501,14 +509,14 @@ class TCPDFEX extends TCPDF
                 $this->SetFillColor(255, 238, 238);
             }
 
-            $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, $tu['total_score'].' '.F_formatPdfPercentage($tu['total_score_perc'], false), 1, 0, 'R', true, '', 1);
+            $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, $tu['total_score'] . ' ' . F_formatPdfPercentage($tu['total_score_perc'], false), 1, 0, 'R', true, '', 1);
             if ($stats > 0) {
                 $this->SetFont($numberfont, '', $fontdatasize);
-                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['right'].' '.F_formatPdfPercentage($tu['right_perc'], false), 1, 0, 'R', 0, '', 1);
-                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['wrong'].' '.F_formatPdfPercentage($tu['wrong_perc'], false), 1, 0, 'R', 0, '', 1);
-                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['unanswered'].' '.F_formatPdfPercentage($tu['unanswered_perc'], false), 1, 0, 'R', 0, '', 1);
-                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['undisplayed'].' '.F_formatPdfPercentage($tu['undisplayed_perc'], false), 1, 0, 'R', 0, '', 1);
-                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['unrated'].' '.F_formatPdfPercentage($tu['unrated_perc'], false), 1, 0, 'R', 0, '', 1);
+                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['right'] . ' ' . F_formatPdfPercentage($tu['right_perc'], false), 1, 0, 'R', 0, '', 1);
+                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['wrong'] . ' ' . F_formatPdfPercentage($tu['wrong_perc'], false), 1, 0, 'R', 0, '', 1);
+                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['unanswered'] . ' ' . F_formatPdfPercentage($tu['unanswered_perc'], false), 1, 0, 'R', 0, '', 1);
+                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['undisplayed'] . ' ' . F_formatPdfPercentage($tu['undisplayed_perc'], false), 1, 0, 'R', 0, '', 1);
+                $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['unrated'] . ' ' . F_formatPdfPercentage($tu['unrated_perc'], false), 1, 0, 'R', 0, '', 1);
             }
 
             $this->Ln();
@@ -521,7 +529,7 @@ class TCPDFEX extends TCPDF
             $this->SetFillColor(255, 238, 238);
         }
 
-        $this->Cell(0, $this->tce_data_cell_height, $l['w_passed'].': '.$data['passed'].' '.F_formatPdfPercentage($data['passed_perc'], false), 1, 1, 'L', true, '', 1);
+        $this->Cell(0, $this->tce_data_cell_height, $l['w_passed'] . ': ' . $data['passed'] . ' ' . F_formatPdfPercentage($data['passed_perc'], false), 1, 1, 'L', true, '', 1);
         // print statistics
         $printstat = ['mean', 'median', 'mode', 'standard_deviation', 'skewness', 'kurtosi'];
         $noperc = ['skewness', 'kurtosi'];
@@ -529,9 +537,9 @@ class TCPDFEX extends TCPDF
             if (in_array($row, $printstat)) {
                 $this->SetFont(PDF_FONT_NAME_DATA, 'B', $fontdatasize);
                 if ($pubmode) {
-                    $this->Cell((4 * $tce_data_cell_width) + $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_'.$row], 1, 0, $tdalignr, 0, '', 1);
+                    $this->Cell((4 * $tce_data_cell_width) + $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_' . $row], 1, 0, $tdalignr, 0, '', 1);
                 } else {
-                    $this->Cell((7 * $tce_data_cell_width) + $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_'.$row], 1, 0, $tdalignr, 0, '', 1);
+                    $this->Cell((7 * $tce_data_cell_width) + $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_' . $row], 1, 0, $tdalignr, 0, '', 1);
                 }
 
                 $this->SetFont($numberfont, '', $fontdatasize);
@@ -547,13 +555,13 @@ class TCPDFEX extends TCPDF
 
                     $this->Ln();
                 } else {
-                    $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, round($col['score_perc']).'%', 1, 0, 'R', 0, '', 1);
+                    $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, round($col['score_perc']) . '%', 1, 0, 'R', 0, '', 1);
                     if ($stats > 0) {
-                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['right_perc']).'%', 1, 0, 'R', 0, '', 1);
-                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['wrong_perc']).'%', 1, 0, 'R', 0, '', 1);
-                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['unanswered_perc']).'%', 1, 0, 'R', 0, '', 1);
-                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['undisplayed_perc']).'%', 1, 0, 'R', 0, '', 1);
-                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['unrated_perc']).'%', 1, 0, 'R', 0, '', 1);
+                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['right_perc']) . '%', 1, 0, 'R', 0, '', 1);
+                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['wrong_perc']) . '%', 1, 0, 'R', 0, '', 1);
+                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['unanswered_perc']) . '%', 1, 0, 'R', 0, '', 1);
+                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['undisplayed_perc']) . '%', 1, 0, 'R', 0, '', 1);
+                        $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['unrated_perc']) . '%', 1, 0, 'R', 0, '', 1);
                     }
 
                     $this->Ln();
@@ -563,10 +571,10 @@ class TCPDFEX extends TCPDF
     }
 
     /**
-    * Print testuser data
-    * @param $data (array) Array containing test statistics.
-    * @param $onlytext (boolean) If true print only text questions.
-    */
+     * Print testuser data
+     * @param $data (array) Array containing test statistics.
+     * @param $onlytext (boolean) If true print only text questions.
+     */
     public function printTestUserInfo($data, $onlytext = false)
     {
         require_once('../config/tce_config.php');
@@ -585,7 +593,7 @@ class TCPDFEX extends TCPDF
         }
 
         // add a bookmark
-        $this->Bookmark($data['user_lastname'].' '.$data['user_firstname'].' ('.$data['user_name'].'), '.$data['total_score'].' '.F_formatPdfPercentage($data['total_score_perc'], false), 0, 0);
+        $this->Bookmark($data['user_lastname'] . ' ' . $data['user_firstname'] . ' (' . $data['user_name'] . '), ' . $data['total_score'] . ' ' . F_formatPdfPercentage($data['total_score_perc'], false), 0, 0);
 
         // --- display test info ---
 
@@ -595,7 +603,7 @@ class TCPDFEX extends TCPDF
 
         // test name
         $this->SetFont(PDF_FONT_NAME_DATA, 'B', PDF_FONT_SIZE_DATA * HEAD_MAGNIFICATION);
-        $this->Cell($this->tce_page_width, $this->tce_data_cell_height * HEAD_MAGNIFICATION, $l['w_test'].': '.$data['test']['test_name'], 1, 1, '', 1);
+        $this->Cell($this->tce_page_width, $this->tce_data_cell_height * HEAD_MAGNIFICATION, $l['w_test'] . ': ' . $data['test']['test_name'], 1, 1, '', 1);
 
         $this->SetFont(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
 
@@ -604,28 +612,28 @@ class TCPDFEX extends TCPDF
 
         $column_names_width = round($info_cell_width * 0.75, 2);
 
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_lastname'].': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_lastname'] . ': ', 0, 0, $dirlabel, 0, '', 1);
         $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['user_lastname'], 0, 1, $dirvalue, 0, '', 1);
 
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_firstname'].': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_firstname'] . ': ', 0, 0, $dirlabel, 0, '', 1);
         $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['user_firstname'], 0, 1, $dirvalue, 0, '', 1);
 
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_user'].': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_user'] . ': ', 0, 0, $dirlabel, 0, '', 1);
         $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['user_name'], 0, 1, $dirvalue, 0, '', 1);
 
         // test start time
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_time_begin'].': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_time_begin'] . ': ', 0, 0, $dirlabel, 0, '', 1);
         $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['test']['user_test_start_time'], 0, 1, $dirvalue, 0, '', 1);
 
         // test end time
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_time_end'].': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_time_end'] . ': ', 0, 0, $dirlabel, 0, '', 1);
         $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['test']['user_test_end_time'], 0, 1, $dirvalue, 0, '', 1);
 
         // test duration
         //$this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_test_time'].' ['.$l['w_minutes'].']: ', 0, 0, $dirlabel, 0, '', 1);
         //$this->Cell($info_cell_width, $this->tce_data_cell_height, $data['test']['test_duration_time'], 0, 1, $dirvalue, 0, '', 1);
 
-        if (!isset($data['test']['user_test_end_time']) || $data['test']['user_test_end_time'] <= 0 || strtotime($data['test']['user_test_end_time']) < strtotime($data['test']['user_test_start_time'])) {
+        if (! isset($data['test']['user_test_end_time']) || $data['test']['user_test_end_time'] <= 0 || strtotime($data['test']['user_test_end_time']) < strtotime($data['test']['user_test_start_time'])) {
             $time_diff = $data['test']['test_duration_time'] * 60;
         } else {
             $time_diff = strtotime($data['test']['user_test_end_time']) - strtotime($data['test']['user_test_start_time']); //sec
@@ -633,7 +641,7 @@ class TCPDFEX extends TCPDF
 
         $time_diff = gmdate('H:i:s', $time_diff);
         // elapsed time (time difference)
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_time'].': ', 0, 0, $dirlabel, 0);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_time'] . ': ', 0, 0, $dirlabel, 0);
         $this->Cell($info_cell_width, $this->tce_data_cell_height, $time_diff, 0, 1, $dirvalue, 0);
 
         //$this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_ip_range'].': ', 0, 0, $dirlabel, 0, '', 1);
@@ -654,37 +662,35 @@ class TCPDFEX extends TCPDF
 
         $passmsg = '';
         if ($data['test']['test_score_threshold'] > 0) {
-            $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_test_score_threshold'].': ', 0, 0, $dirlabel, 0, '', 1);
+            $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_test_score_threshold'] . ': ', 0, 0, $dirlabel, 0, '', 1);
             $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['test']['test_score_threshold'], 0, 1, $dirvalue, 0, '', 1);
             if ($data['total_score'] >= $data['test']['test_score_threshold']) {
-                $passmsg = ' - '.$l['w_passed'];
+                $passmsg = ' - ' . $l['w_passed'];
             } else {
-                $passmsg = ' - '.$l['w_not_passed'];
+                $passmsg = ' - ' . $l['w_not_passed'];
             }
         }
 
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_answers_right'].': ', 0, 0, $dirlabel, 0, '', 1);
-        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['right'].' / '.$data['recurrence'].' '.F_formatPdfPercentage($data['right_perc'], false), 0, 1, $dirvalue, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_answers_right'] . ': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['right'] . ' / ' . $data['recurrence'] . ' ' . F_formatPdfPercentage($data['right_perc'], false), 0, 1, $dirvalue, 0, '', 1);
 
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_answers_wrong'].': ', 0, 0, $dirlabel, 0, '', 1);
-        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['wrong'].' / '.$data['recurrence'].' '.F_formatPdfPercentage($data['wrong_perc'], false), 0, 1, $dirvalue, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_answers_wrong'] . ': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['wrong'] . ' / ' . $data['recurrence'] . ' ' . F_formatPdfPercentage($data['wrong_perc'], false), 0, 1, $dirvalue, 0, '', 1);
 
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_questions_unanswered'].': ', 0, 0, $dirlabel, 0, '', 1);
-        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['unanswered'].' / '.$data['recurrence'].' '.F_formatPdfPercentage($data['unanswered_perc'], false), 0, 1, $dirvalue, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_questions_unanswered'] . ': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['unanswered'] . ' / ' . $data['recurrence'] . ' ' . F_formatPdfPercentage($data['unanswered_perc'], false), 0, 1, $dirvalue, 0, '', 1);
 
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_questions_undisplayed'].': ', 0, 0, $dirlabel, 0, '', 1);
-        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['undisplayed'].' / '.$data['recurrence'].' '.F_formatPdfPercentage($data['undisplayed_perc'], false), 0, 1, $dirvalue, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_questions_undisplayed'] . ': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['undisplayed'] . ' / ' . $data['recurrence'] . ' ' . F_formatPdfPercentage($data['undisplayed_perc'], false), 0, 1, $dirvalue, 0, '', 1);
 
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_questions_unrated'].': ', 0, 0, $dirlabel, 0, '', 1);
-        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['unrated'].' / '.$data['recurrence'].' '.F_formatPdfPercentage($data['unrated_perc'], false), 0, 1, $dirvalue, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_questions_unrated'] . ': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['unrated'] . ' / ' . $data['recurrence'] . ' ' . F_formatPdfPercentage($data['unrated_perc'], false), 0, 1, $dirvalue, 0, '', 1);
 
         $this->SetFont(PDF_FONT_NAME_DATA, 'B', PDF_FONT_SIZE_DATA);
-        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_score'].': ', 0, 0, $dirlabel, 0, '', 1);
-        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['total_score'].' / '.$data['test']['test_max_score'].' '.F_formatPdfPercentage($data['total_score_perc'], false).$passmsg, 0, 1, $dirvalue, 0, '', 1);
+        $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_score'] . ': ', 0, 0, $dirlabel, 0, '', 1);
+        $this->Cell($info_cell_width, $this->tce_data_cell_height, $data['total_score'] . ' / ' . $data['test']['test_max_score'] . ' ' . F_formatPdfPercentage($data['total_score_perc'], false) . $passmsg, 0, 1, $dirvalue, 0, '', 1);
 
         $this->SetFont(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA);
-
-
 
         $boxEndY = $this->GetY();
 
@@ -702,9 +708,9 @@ class TCPDFEX extends TCPDF
         // --- end test info ---
 
         // print user's comments
-        if (!empty($data['test']['user_comment'])) {
+        if (! empty($data['test']['user_comment'])) {
             $this->Cell($this->tce_page_width, $this->tce_data_cell_height, '', 0, 1, '', 0);
-            $this->writeHTMLCell($this->tce_page_width, $this->tce_data_cell_height, '', '', '<b>'.$l['w_comment'].'</b>:<br />'.$data['test']['user_comment'], 1, 1);
+            $this->writeHTMLCell($this->tce_page_width, $this->tce_data_cell_height, '', '', '<b>' . $l['w_comment'] . '</b>:<br />' . $data['test']['user_comment'], 1, 1);
         }
 
         $this->Ln(4);
@@ -713,10 +719,10 @@ class TCPDFEX extends TCPDF
     }
 
     /**
-    * print test details for the selected user
-    * @param $data (array) Testuser data array.
-    * @param $onlytext (boolean) If true print only text questions.
-    */
+     * print test details for the selected user
+     * @param $data (array) Testuser data array.
+     * @param $onlytext (boolean) If true print only text questions.
+     */
     public function printUserTestDetails($data, $onlytext = false)
     {
         require_once('../config/tce_config.php');
@@ -735,9 +741,9 @@ class TCPDFEX extends TCPDF
 
         // display user questions
         $sql = 'SELECT *
-			FROM '.K_TABLE_QUESTIONS.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_SUBJECTS.', '.K_TABLE_MODULES.'
+			FROM ' . K_TABLE_QUESTIONS . ', ' . K_TABLE_TESTS_LOGS . ', ' . K_TABLE_SUBJECTS . ', ' . K_TABLE_MODULES . '
 			WHERE question_id=testlog_question_id
-				AND testlog_testuser_id='.$testuser_id.'
+				AND testlog_testuser_id=' . $testuser_id . '
 				AND question_subject_id=subject_id
 				AND subject_module_id=module_id';
         if ($onlytext) {
@@ -752,10 +758,10 @@ class TCPDFEX extends TCPDF
             $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, '#', 1, 0, 'C', 1);
             $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_score'], 1, 0, 'C', 1);
             $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_ip'], 1, 0, 'C', 1);
-            $this->Cell($tce_data_cell_width + $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_start'].' ['.$l['w_time_hhmmss'].']', 1, 0, 'C', 1);
-            $this->Cell($tce_data_cell_width + $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_end'].' ['.$l['w_time_hhmmss'].']', 1, 0, 'C', 1);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_time'].' ['.$l['w_time_mmss'].']', 1, 0, 'C', 1);
-            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_reaction'].' [sec]', 1, 1, 'C', 1);
+            $this->Cell($tce_data_cell_width + $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_start'] . ' [' . $l['w_time_hhmmss'] . ']', 1, 0, 'C', 1);
+            $this->Cell($tce_data_cell_width + $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_end'] . ' [' . $l['w_time_hhmmss'] . ']', 1, 0, 'C', 1);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_time'] . ' [' . $l['w_time_mmss'] . ']', 1, 0, 'C', 1);
+            $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_reaction'] . ' [sec]', 1, 1, 'C', 1);
             $this->Ln($this->tce_data_cell_height);
 
             // print table rows
@@ -764,13 +770,13 @@ class TCPDFEX extends TCPDF
             $itemcount = 1;
 
             while ($m = F_db_fetch_array($r)) {
-                $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, $itemcount.' '.$qtype[($m['question_type']-1)], 1, 0, 'R', 0);
+                $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, $itemcount . ' ' . $qtype[($m['question_type'] - 1)], 1, 0, 'R', 0);
                 $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $m['testlog_score'], 1, 0, 'C', 0);
                 $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, getIpAsString($m['testlog_user_ip']), 1, 0, 'C', 0);
                 if (isset($m['testlog_display_time']) && strlen($m['testlog_display_time']) > 0) {
-                    $display_time =  substr($m['testlog_display_time'], 11, 8);
+                    $display_time = substr($m['testlog_display_time'], 11, 8);
                 } else {
-                    $display_time =  '--:--:--';
+                    $display_time = '--:--:--';
                 }
 
                 if (isset($m['testlog_change_time']) && strlen($m['testlog_change_time']) > 0) {
@@ -786,9 +792,9 @@ class TCPDFEX extends TCPDF
                 }
 
                 if (isset($m['testlog_reaction_time']) && strlen($m['testlog_reaction_time']) > 0) {
-                    $reaction_time =  ($m['testlog_reaction_time'] / 1000);
+                    $reaction_time = ($m['testlog_reaction_time'] / 1000);
                 } else {
-                    $reaction_time =  '';
+                    $reaction_time = '';
                 }
 
                 $this->Cell($tce_data_cell_width + $tce_data_cell_width_third, $this->tce_data_cell_height, $display_time, 1, 0, 'C', 0);
@@ -797,7 +803,7 @@ class TCPDFEX extends TCPDF
                 $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $reaction_time, 1, 1, 'C', 0);
 
                 $this->writeHTMLCell(0, $this->tce_data_cell_height, (PDF_MARGIN_LEFT + $tce_data_cell_width_third), $this->GetY(), F_decode_tcecode($m['question_description']), 1, 1);
-                if (K_ENABLE_QUESTION_EXPLANATION && !empty($m['question_explanation'])) {
+                if (K_ENABLE_QUESTION_EXPLANATION && ! empty($m['question_explanation'])) {
                     $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, '', 0, 0, 'C', 0);
                     $this->SetFont('', 'BIU');
                     $this->Cell(0, $this->tce_data_cell_height, $l['w_explanation'], 'LTR', 1, '', 0, '', 0);
@@ -810,7 +816,7 @@ class TCPDFEX extends TCPDF
                     $this->writeHTMLCell(0, $this->tce_data_cell_height, (PDF_MARGIN_LEFT + (2 * $tce_data_cell_width_third)), $this->GetY(), F_decode_tcecode($m['testlog_answer_text']), 1, 1);
                 } else {
                     // display each answer option
-                    $sqla = 'SELECT * FROM '.K_TABLE_LOG_ANSWER.', '.K_TABLE_ANSWERS.' WHERE logansw_answer_id=answer_id AND logansw_testlog_id='.$m['testlog_id'].' ORDER BY logansw_order';
+                    $sqla = 'SELECT * FROM ' . K_TABLE_LOG_ANSWER . ', ' . K_TABLE_ANSWERS . ' WHERE logansw_answer_id=answer_id AND logansw_testlog_id=' . $m['testlog_id'] . ' ORDER BY logansw_order';
                     if ($ra = F_db_query($sqla, $db)) {
                         $idx = 0; // count items
                         while ($ma = F_db_fetch_array($ra)) {
@@ -851,7 +857,7 @@ class TCPDFEX extends TCPDF
                             }
 
                             if ($m['question_type'] == 4) {
-                                    $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, $ma['answer_position'], 1, 0, 'C', $posfill);
+                                $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, $ma['answer_position'], 1, 0, 'C', $posfill);
                             } elseif (F_getBoolean($ma['answer_isright'])) {
                                 $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, $idx, 1, 0, 'C', 1);
                             } else {
@@ -859,7 +865,7 @@ class TCPDFEX extends TCPDF
                             }
 
                             $this->writeHTMLCell(0, $this->tce_data_cell_height, (PDF_MARGIN_LEFT + $tce_data_cell_width), $this->GetY(), F_decode_tcecode($ma['answer_description']), 'LRTB', 1);
-                            if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
+                            if (K_ENABLE_ANSWER_EXPLANATION && ! empty($ma['answer_explanation'])) {
                                 $this->Cell((3 * $tce_data_cell_width_third), $this->tce_data_cell_height, '', 0, 0, 'C', 0);
                                 $this->SetFont('', 'BIU');
                                 $this->Cell(0, $this->tce_data_cell_height, $l['w_explanation'], 'LTR', 1, '', 0, '', 0);
@@ -872,7 +878,7 @@ class TCPDFEX extends TCPDF
                     }
                 }
 
-                 // end multiple answers
+                // end multiple answers
                 if (strlen($m['testlog_comment']) > 0) {
                     // teacher / supervisor comment
                     $this->SetTextColor(255, 0, 0);

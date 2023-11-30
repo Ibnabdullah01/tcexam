@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_latexrender.php
 // Begin       : 2007-05-18
@@ -40,7 +41,6 @@ require_once('../../shared/config/tce_latex.php');
  */
 class LatexRender
 {
-
     //  ---------- Variable Definitions ---------- * ---------- * ----------
 
     /**
@@ -118,7 +118,7 @@ class LatexRender
     /**
      * LaTeX class.
      * @protected
-    */
+     */
     protected $latexclass = K_LATEX_CLASS;
 
     /**
@@ -150,7 +150,7 @@ class LatexRender
     /**
      * Temporary filename.
      * @private
-    */
+     */
     private string $tmp_filename = '';
 
     /**
@@ -174,10 +174,7 @@ class LatexRender
 
     //  ---------- constructor / destructor functions ---------- * ---------- * ----------
 
-
-    /**
-     * Class Constructor.
-     */
+    
     public function __construct()
     {
         $this->tmp_filename = md5(random_int(0, mt_getrandmax()));
@@ -353,17 +350,16 @@ class LatexRender
      */
     public function getFormulaURL($latex_formula)
     {
-
         // circumvent certain security functions of web-software which
         // is pretty pointless right here
         $latex_formula = preg_replace("/&gt;/i", '>', $latex_formula);
         $latex_formula = preg_replace("/&lt;/i", '<', $latex_formula);
 
         $filename = $this->getFilename($latex_formula);
-        $full_path_filename = $this->picture_path.''.$filename;
+        $full_path_filename = $this->picture_path . '' . $filename;
 
         if (is_file($full_path_filename)) {
-            return $this->picture_path_httpd.''.$filename;
+            return $this->picture_path_httpd . '' . $filename;
         }
 
         // security filter: reject too long formulas
@@ -375,7 +371,7 @@ class LatexRender
         // security filter: try to match against LaTeX-Tags Blacklist
         $counter = count($this->latex_tags_blacklist);
         // security filter: try to match against LaTeX-Tags Blacklist
-        for ($i=0; $i<$counter; ++$i) {
+        for ($i = 0; $i < $counter; ++$i) {
             if (stristr($latex_formula, (string) $this->latex_tags_blacklist[$i])) {
                 $this->errorcode = 2;
                 return false;
@@ -384,7 +380,7 @@ class LatexRender
 
         // security checks assume correct formula, let's render it
         if ($this->renderLatex($latex_formula)) {
-            return $this->picture_path_httpd.''.$filename;
+            return $this->picture_path_httpd . '' . $filename;
         }
 
         return false;
@@ -420,7 +416,6 @@ class LatexRender
 
     //  --- private functions --------------------------------------------------
 
-
     /**
      * Wraps a minimalistic LaTeX document around the formula and returns a string
      * containing the whole document as string.
@@ -431,7 +426,7 @@ class LatexRender
      */
     private function getFilename($latex_formula)
     {
-        return $this->img_prefix.md5($latex_formula).'.'.$this->image_format;
+        return $this->img_prefix . md5($latex_formula) . '.' . $this->image_format;
     }
 
     /**
@@ -444,15 +439,15 @@ class LatexRender
      */
     private function wrapFormula($latex_formula)
     {
-        $string  = '\documentclass['.$this->font_size.'pt]{'.$this->latexclass.'}'."\n";
-        $string .= '\usepackage[latin1]{inputenc}'."\n";
-        $string .= '\usepackage{amsmath}'."\n";
-        $string .= '\usepackage{amsfonts}'."\n";
-        $string .= '\usepackage{amssymb}'."\n";
-        $string .= '\pagestyle{empty}'."\n";
-        $string .= '\begin{document}'."\n";
-        $string .= '$'.$latex_formula.'$'."\n";
-        return $string . ('\end{document}'."\n");
+        $string = '\documentclass[' . $this->font_size . 'pt]{' . $this->latexclass . '}' . "\n";
+        $string .= '\usepackage[latin1]{inputenc}' . "\n";
+        $string .= '\usepackage{amsmath}' . "\n";
+        $string .= '\usepackage{amsfonts}' . "\n";
+        $string .= '\usepackage{amssymb}' . "\n";
+        $string .= '\pagestyle{empty}' . "\n";
+        $string .= '\begin{document}' . "\n";
+        $string .= '$' . $latex_formula . '$' . "\n";
+        return $string . ('\end{document}' . "\n");
     }
 
     /**
@@ -463,12 +458,12 @@ class LatexRender
     private function cleanTemporaryDirectory($current_dir, $error_code = 0)
     {
         chdir($this->tmp_dir);
-        unlink($this->tmp_dir.''.$this->tmp_filename.'.tex');
-        unlink($this->tmp_dir.''.$this->tmp_filename.'.aux');
-        unlink($this->tmp_dir.''.$this->tmp_filename.'.log');
-        unlink($this->tmp_dir.''.$this->tmp_filename.'.dvi');
-        unlink($this->tmp_dir.''.$this->tmp_filename.'.ps');
-        unlink($this->tmp_dir.''.$this->tmp_filename.'.'.$this->image_format);
+        unlink($this->tmp_dir . '' . $this->tmp_filename . '.tex');
+        unlink($this->tmp_dir . '' . $this->tmp_filename . '.aux');
+        unlink($this->tmp_dir . '' . $this->tmp_filename . '.log');
+        unlink($this->tmp_dir . '' . $this->tmp_filename . '.dvi');
+        unlink($this->tmp_dir . '' . $this->tmp_filename . '.ps');
+        unlink($this->tmp_dir . '' . $this->tmp_filename . '.' . $this->image_format);
         chdir($current_dir);
         $this->errorcode = $error_code;
     }
@@ -482,7 +477,7 @@ class LatexRender
      */
     private function checkImageDimensions($filename)
     {
-        $output = exec($this->identify_path." ".$filename);
+        $output = exec($this->identify_path . " " . $filename);
         if ($output === '' || $output === false) {
             return false;
         }
@@ -518,37 +513,37 @@ class LatexRender
         chdir($this->tmp_dir);
 
         // create temporary latex file
-        $fp = fopen($this->tmp_dir.''.$this->tmp_filename.'.tex', 'a+');
+        $fp = fopen($this->tmp_dir . '' . $this->tmp_filename . '.tex', 'a+');
         fwrite($fp, $latex_document);
         fclose($fp);
 
         // create temporary DVI file
-        $command = $this->latex_path.' --interaction=nonstopmode '.$this->tmp_filename.'.tex';
+        $command = $this->latex_path . ' --interaction=nonstopmode ' . $this->tmp_filename . '.tex';
         $status_code = exec($command);
-        if (!$status_code) {
+        if (! $status_code) {
             $this->cleanTemporaryDirectory($current_dir, 4);
             return false;
         }
 
         // convert DVI file to postscript using DVIPS
-        $command = $this->dvips_path.' -E '.$this->tmp_filename.'.dvi'.' -o '.$this->tmp_filename.'.ps';
+        $command = $this->dvips_path . ' -E ' . $this->tmp_filename . '.dvi' . ' -o ' . $this->tmp_filename . '.ps';
         $status_code = exec($command);
 
         // ImageMagick convert PS to image and trim picture
-        $command = $this->convert_path.' -density '.$this->formula_density.' -background "#FFFFFF" -depth 8 '.$this->tmp_filename.'.ps '.$this->tmp_filename.'.'.$this->image_format;
+        $command = $this->convert_path . ' -density ' . $this->formula_density . ' -background "#FFFFFF" -depth 8 ' . $this->tmp_filename . '.ps ' . $this->tmp_filename . '.' . $this->image_format;
         $status_code = exec($command);
 
         // check picture dimensions
-        if (!$this->checkImageDimensions($this->tmp_filename.'.'.$this->image_format)) {
+        if (! $this->checkImageDimensions($this->tmp_filename . '.' . $this->image_format)) {
             $this->cleanTemporaryDirectory($current_dir, 7);
             return false;
         }
 
         // copy temporary formula file to cached formula directory
         $filename = $this->getFilename($latex_formula);
-        $status_code = copy($this->tmp_filename.'.'.$this->image_format, $filename);
+        $status_code = copy($this->tmp_filename . '.' . $this->image_format, $filename);
 
-        if (!$status_code) {
+        if (! $status_code) {
             $this->cleanTemporaryDirectory($current_dir, 8);
             return false;
         }

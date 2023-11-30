@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_authorization.php
 // Begin       : 2001-09-26
@@ -48,15 +49,15 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
     global $l;
     require_once('../config/tce_config.php');
     require_once('../../shared/config/tce_user_registration.php');
-     require_once('../../shared/code/tce_functions_form.php');
+    require_once('../../shared/code/tce_functions_form.php');
     $str = '';
-    $str .= '<div class="container">'.K_NEWLINE;
+    $str .= '<div class="container">' . K_NEWLINE;
     if (K_USRREG_ENABLED) {
-        $str .= '<small><a href="../../public/code/tce_user_registration.php" title="'.$l['t_user_registration'].'">'.$l['w_user_registration_link'].'</a></small>'.K_NEWLINE;
+        $str .= '<small><a href="../../public/code/tce_user_registration.php" title="' . $l['t_user_registration'] . '">' . $l['w_user_registration_link'] . '</a></small>' . K_NEWLINE;
     }
 
-    $str .= '<div class="tceformbox">'.K_NEWLINE;
-    $str .= '<form action="'.$faction.'" method="'.$fmethod.'" id="'.$fid.'" enctype="'.$fenctype.'">'.K_NEWLINE;
+    $str .= '<div class="tceformbox">' . K_NEWLINE;
+    $str .= '<form action="' . $faction . '" method="' . $fmethod . '" id="' . $fid . '" enctype="' . $fenctype . '">' . K_NEWLINE;
     // user name
     $str .= getFormRowTextInput('xuser_name', $l['w_username'], $l['h_login_name'], '', $username, '', 255, false, false, false, '');
     // password
@@ -68,22 +69,22 @@ function F_loginForm($faction, $fid, $fmethod, $fenctype, $username)
 
     if (defined('K_PASSWORD_RESET') && K_PASSWORD_RESET) {
         // print a link to password reset page
-        $str .= '<div class="row">'.K_NEWLINE;
-        $str .= '<span class="formw"><a href="../../public/code/tce_password_reset.php" title="'.$l['h_reset_password'].'" style="font-size:90%;">'.$l['w_forgot_password'].'</a></span>'.K_NEWLINE;
-        $str .= '</div>'.K_NEWLINE;
+        $str .= '<div class="row">' . K_NEWLINE;
+        $str .= '<span class="formw"><a href="../../public/code/tce_password_reset.php" title="' . $l['h_reset_password'] . '" style="font-size:90%;">' . $l['w_forgot_password'] . '</a></span>' . K_NEWLINE;
+        $str .= '</div>' . K_NEWLINE;
     }
 
     // buttons
-    $str .= '<div class="row">'.K_NEWLINE;
-    $str .= '<input type="submit" name="login" id="login" value="'.$l['w_login'].'" title="'.$l['h_login_button'].'" />'.K_NEWLINE;
+    $str .= '<div class="row">' . K_NEWLINE;
+    $str .= '<input type="submit" name="login" id="login" value="' . $l['w_login'] . '" title="' . $l['h_login_button'] . '" />' . K_NEWLINE;
     // the following field is used to check if the form has been submitted
-    $str .= '<input type="hidden" name="logaction" id="logaction" value="login" />'.K_NEWLINE;
-    $str .= '</div>'.K_NEWLINE;
-    $str .= F_getCSRFTokenField().K_NEWLINE;
-    $str .= '</form>'.K_NEWLINE;
-    $str .= '</div>'.K_NEWLINE;
-    $str .= '<div class="pagehelp">'.$l['hp_login'].'</div>'.K_NEWLINE;
-    return $str . ('</div>'.K_NEWLINE);
+    $str .= '<input type="hidden" name="logaction" id="logaction" value="login" />' . K_NEWLINE;
+    $str .= '</div>' . K_NEWLINE;
+    $str .= F_getCSRFTokenField() . K_NEWLINE;
+    $str .= '</form>' . K_NEWLINE;
+    $str .= '</div>' . K_NEWLINE;
+    $str .= '<div class="pagehelp">' . $l['hp_login'] . '</div>' . K_NEWLINE;
+    return $str . ('</div>' . K_NEWLINE);
 }
 
 /**
@@ -97,7 +98,7 @@ function F_login_form()
     require_once('../config/tce_config.php');
     // HTTP-Basic authentication
     require_once('../../shared/config/tce_httpbasic.php');
-    if (K_HTTPBASIC_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) {
+    if (K_HTTPBASIC_ENABLED && (! isset($_SESSION['logout']) || ! $_SESSION['logout'])) {
         // force HTTP Basic Authentication
         header('WWW-Authenticate: Basic realm="TCExam"');
         header('HTTP/1.0 401 Unauthorized');
@@ -109,21 +110,21 @@ function F_login_form()
 
     // Shibboleth authentication
     require_once('../../shared/config/tce_shibboleth.php');
-    if (K_SHIBBOLETH_ENABLED && (!isset($_SESSION['logout']) || !$_SESSION['logout'])) {
+    if (K_SHIBBOLETH_ENABLED && (! isset($_SESSION['logout']) || ! $_SESSION['logout'])) {
         // redirect to Shibboleth Login Page
-        header('Location: '.K_SHIBBOLETH_LOGIN);
+        header('Location: ' . K_SHIBBOLETH_LOGIN);
         // html redirect
-        echo '<?xml version="1.0" encoding="'.$l['a_meta_charset'].'"?'.'>'.K_NEWLINE;
-        echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">'.K_NEWLINE;
-        echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="'.$l['a_meta_language'].'" lang="'.$l['a_meta_language'].'" dir="'.$l['a_meta_dir'].'">'.K_NEWLINE;
-        echo '<head>'.K_NEWLINE;
-        echo '<title>LOGIN</title>'.K_NEWLINE;
-        echo '<meta http-equiv="refresh" content="0" />'.K_NEWLINE; //reload page
-        echo '</head>'.K_NEWLINE;
-        echo '<body>'.K_NEWLINE;
-        echo '<a href="'.K_SHIBBOLETH_LOGIN.'">LOGIN</a>'.K_NEWLINE;
-        echo '</body>'.K_NEWLINE;
-        echo '</html>'.K_NEWLINE;
+        echo '<?xml version="1.0" encoding="' . $l['a_meta_charset'] . '"?' . '>' . K_NEWLINE;
+        echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">' . K_NEWLINE;
+        echo '<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="' . $l['a_meta_language'] . '" lang="' . $l['a_meta_language'] . '" dir="' . $l['a_meta_dir'] . '">' . K_NEWLINE;
+        echo '<head>' . K_NEWLINE;
+        echo '<title>LOGIN</title>' . K_NEWLINE;
+        echo '<meta http-equiv="refresh" content="0" />' . K_NEWLINE; //reload page
+        echo '</head>' . K_NEWLINE;
+        echo '<body>' . K_NEWLINE;
+        echo '<a href="' . K_SHIBBOLETH_LOGIN . '">LOGIN</a>' . K_NEWLINE;
+        echo '</body>' . K_NEWLINE;
+        echo '</html>' . K_NEWLINE;
         exit(); //break page here
     }
 
@@ -146,23 +147,23 @@ function F_logout_form()
     require_once('../config/tce_config.php');
     require_once('../../shared/code/tce_functions_form.php');
     $str = K_NEWLINE;
-    $str .= '<div class="container">'.K_NEWLINE;
-    $str .= '<div class="tceformbox">'.K_NEWLINE;
-    $str .= '<form action="../code/tce_logout.php" method="post" id="form_logout" enctype="multipart/form-data">'.K_NEWLINE;
+    $str .= '<div class="container">' . K_NEWLINE;
+    $str .= '<div class="tceformbox">' . K_NEWLINE;
+    $str .= '<form action="../code/tce_logout.php" method="post" id="form_logout" enctype="multipart/form-data">' . K_NEWLINE;
     // description
-    $str .= '<div class="row">'.K_NEWLINE;
-    $str .= $l['d_logout_desc'].K_NEWLINE;
-    $str .= '</div>'.K_NEWLINE;
+    $str .= '<div class="row">' . K_NEWLINE;
+    $str .= $l['d_logout_desc'] . K_NEWLINE;
+    $str .= '</div>' . K_NEWLINE;
     // buttons
-    $str .= '<div class="row">'.K_NEWLINE;
+    $str .= '<div class="row">' . K_NEWLINE;
     // the following field is used to check if form has been submitted
-    $str .= '<input type="hidden" name="current_page" id="current_page" value="'.$_SERVER['SCRIPT_NAME'].'" />'.K_NEWLINE;
-    $str .= '<input type="hidden" name="logaction" id="logaction" value="" />'.K_NEWLINE;
-    $str .= '<input type="submit" name="login" id="login" value="'.$l['w_logout'].'" />'.K_NEWLINE;
-    $str .= '</div>'.K_NEWLINE;
-    $str .= F_getCSRFTokenField().K_NEWLINE;
-    $str .= '</form>'.K_NEWLINE;
-    return $str . ('</div>'.K_NEWLINE);
+    $str .= '<input type="hidden" name="current_page" id="current_page" value="' . $_SERVER['SCRIPT_NAME'] . '" />' . K_NEWLINE;
+    $str .= '<input type="hidden" name="logaction" id="logaction" value="" />' . K_NEWLINE;
+    $str .= '<input type="submit" name="login" id="login" value="' . $l['w_logout'] . '" />' . K_NEWLINE;
+    $str .= '</div>' . K_NEWLINE;
+    $str .= F_getCSRFTokenField() . K_NEWLINE;
+    $str .= '</form>' . K_NEWLINE;
+    return $str . ('</div>' . K_NEWLINE);
 }
 
 /**
@@ -205,14 +206,14 @@ function F_isAuthorizedUser($table, $field_id_name, $value_id, $field_user_id)
     }
 
     // check for original author
-    if (F_count_rows($table.' WHERE '.$field_id_name.'='.$value_id.' AND '.$field_user_id.'='.$user_id.' LIMIT 1') > 0) {
+    if (F_count_rows($table . ' WHERE ' . $field_id_name . '=' . $value_id . ' AND ' . $field_user_id . '=' . $user_id . ' LIMIT 1') > 0) {
         return true;
     }
 
     // check for author's groups
     // get author ID
     $author_id = 0;
-    $sql = 'SELECT '.$field_user_id.' FROM '.$table.' WHERE '.$field_id_name.'='.$value_id.' LIMIT 1';
+    $sql = 'SELECT ' . $field_user_id . ' FROM ' . $table . ' WHERE ' . $field_id_name . '=' . $value_id . ' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             $author_id = $m[0];
@@ -221,10 +222,10 @@ function F_isAuthorizedUser($table, $field_id_name, $value_id, $field_user_id)
         F_display_db_error();
     }
 
-    return $author_id > 1 && F_count_rows(K_TABLE_USERGROUP.' AS ta, '.K_TABLE_USERGROUP.' AS tb
+    return $author_id > 1 && F_count_rows(K_TABLE_USERGROUP . ' AS ta, ' . K_TABLE_USERGROUP . ' AS tb
 		WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
-			AND ta.usrgrp_user_id='.$author_id.'
-			AND tb.usrgrp_user_id='.$user_id.'
+			AND ta.usrgrp_user_id=' . $author_id . '
+			AND tb.usrgrp_user_id=' . $user_id . '
 			LIMIT 1') > 0;
 }
 
@@ -242,12 +243,12 @@ function F_getAuthorizedUsers($user_id)
     $str = ''; // string to return
     $user_id = (int) $user_id;
     $sql = 'SELECT tb.usrgrp_user_id
-		FROM '.K_TABLE_USERGROUP.' AS ta, '.K_TABLE_USERGROUP.' AS tb
+		FROM ' . K_TABLE_USERGROUP . ' AS ta, ' . K_TABLE_USERGROUP . ' AS tb
 		WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
-			AND ta.usrgrp_user_id='.$user_id.'';
+			AND ta.usrgrp_user_id=' . $user_id . '';
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) {
-            $str .= $m[0].',';
+            $str .= $m[0] . ',';
         }
     } else {
         F_display_db_error();
@@ -279,7 +280,7 @@ function F_syncUserGroups($usrid, $grpids)
         $newgrps = array_unique($newgrps, SORT_NUMERIC);
     } elseif ($grpids == 0) {
         // all available groups
-        $sqlg = 'SELECT group_id FROM '.K_TABLE_GROUPS.'';
+        $sqlg = 'SELECT group_id FROM ' . K_TABLE_GROUPS . '';
         if ($rg = F_db_query($sqlg, $db)) {
             while ($mg = F_db_fetch_array($rg)) {
                 $newgrps[] = $mg['group_id'];
@@ -298,7 +299,7 @@ function F_syncUserGroups($usrid, $grpids)
 
     // select existing group IDs
     $usrgrps = [];
-    $sqlu = 'SELECT usrgrp_group_id FROM '.K_TABLE_USERGROUP.' WHERE usrgrp_user_id='.$usrid.'';
+    $sqlu = 'SELECT usrgrp_group_id FROM ' . K_TABLE_USERGROUP . ' WHERE usrgrp_user_id=' . $usrid . '';
     if ($ru = F_db_query($sqlu, $db)) {
         while ($mu = F_db_fetch_array($ru)) {
             $usrgrps[] = $mu['usrgrp_group_id'];
@@ -313,14 +314,14 @@ function F_syncUserGroups($usrid, $grpids)
     foreach ($diffgrps as $grpid) {
         if ($grpid > 0) {
             // add user to default user groups
-            $sql = 'INSERT INTO '.K_TABLE_USERGROUP.' (
+            $sql = 'INSERT INTO ' . K_TABLE_USERGROUP . ' (
 				usrgrp_user_id,
 				usrgrp_group_id
 				) VALUES (
-				\''.$usrid.'\',
-				\''.$grpid.'\'
+				\'' . $usrid . '\',
+				\'' . $grpid . '\'
 				)';
-            if (!$r = F_db_query($sql, $db)) {
+            if (! $r = F_db_query($sql, $db)) {
                 F_display_db_error();
             }
         }
@@ -335,7 +336,7 @@ function F_syncUserGroups($usrid, $grpids)
  */
 function F_isSslCertificateValid()
 {
-    if (!isset($_SERVER['SSL_CLIENT_M_SERIAL']) || !isset($_SERVER['SSL_CLIENT_I_DN']) || !isset($_SERVER['SSL_CLIENT_V_END']) || !isset($_SERVER['SSL_CLIENT_VERIFY']) || $_SERVER['SSL_CLIENT_VERIFY'] !== 'SUCCESS' || !isset($_SERVER['SSL_CLIENT_V_REMAIN']) || $_SERVER['SSL_CLIENT_V_REMAIN'] <= 0) {
+    if (! isset($_SERVER['SSL_CLIENT_M_SERIAL']) || ! isset($_SERVER['SSL_CLIENT_I_DN']) || ! isset($_SERVER['SSL_CLIENT_V_END']) || ! isset($_SERVER['SSL_CLIENT_VERIFY']) || $_SERVER['SSL_CLIENT_VERIFY'] !== 'SUCCESS' || ! isset($_SERVER['SSL_CLIENT_V_REMAIN']) || $_SERVER['SSL_CLIENT_V_REMAIN'] <= 0) {
         // invalid certificate
         return false;
     }
@@ -362,7 +363,7 @@ function F_getSSLCertificateHash($cert, $pkcs12 = false)
 
     $ssldata = openssl_x509_parse($cert);
     $sslhash = '';
-    $sslhash .= isset($ssldata['serialNumber'])?bcdechex($ssldata['serialNumber']):'';
+    $sslhash .= isset($ssldata['serialNumber']) ? bcdechex($ssldata['serialNumber']) : '';
     $sslhash .= $ssldata['issuer']['C'] ?? '';
     $sslhash .= $ssldata['issuer']['ST'] ?? '';
     $sslhash .= $ssldata['issuer']['O'] ?? '';
@@ -390,7 +391,7 @@ function F_getSSLCertificateHash($cert, $pkcs12 = false)
 function F_getSSLClientHash()
 {
     $crthash = '';
-    $crthash .= isset($_SERVER['SSL_CLIENT_M_SERIAL'])?strtoupper($_SERVER['SSL_CLIENT_M_SERIAL']):'';
+    $crthash .= isset($_SERVER['SSL_CLIENT_M_SERIAL']) ? strtoupper($_SERVER['SSL_CLIENT_M_SERIAL']) : '';
     $crthash .= $_SERVER['SSL_CLIENT_I_DN_C'] ?? '';
     $crthash .= $_SERVER['SSL_CLIENT_I_DN_ST'] ?? '';
     $crthash .= $_SERVER['SSL_CLIENT_I_DN_O'] ?? '';
@@ -403,7 +404,7 @@ function F_getSSLClientHash()
     $crthash .= $_SERVER['SSL_CLIENT_S_DN_OU'] ?? '';
     $crthash .= $_SERVER['SSL_CLIENT_S_DN_CN'] ?? '';
     $crthash .= $_SERVER['SSL_CLIENT_S_DN_Email'] ?? '';
-    $crthash .= isset($_SERVER['SSL_CLIENT_V_END'])?strtotime($_SERVER['SSL_CLIENT_V_END']):'';
+    $crthash .= isset($_SERVER['SSL_CLIENT_V_END']) ? strtotime($_SERVER['SSL_CLIENT_V_END']) : '';
     return md5($crthash);
 }
 

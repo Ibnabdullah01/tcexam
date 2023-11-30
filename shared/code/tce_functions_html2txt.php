@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_functions_html2txt.php
 // Begin       : 2001-10-21
@@ -72,32 +73,35 @@ function F_html_to_text($str, $preserve_newlines = false, $display_links = false
     //remove applet and get alternative content
     $str = preg_replace_callback(
         "/<applet[^>]*?>(.*?)<\/applet>/si",
-        static fn($subs) => preg_replace("/<param[^>]*>/i", "", $subs[1]),
+        static fn ($subs) => preg_replace("/<param[^>]*>/i", "", $subs[1]),
         $str
     );
 
     //remove object and get alternative content
     $str = preg_replace_callback(
         "/<object[^>]*?>(.*?)<\/object>/si",
-        static fn($subs) => preg_replace("/<param[^>]*>/i", "", $subs[1]),
-        $str);
+        static fn ($subs) => preg_replace("/<param[^>]*>/i", "", $subs[1]),
+        $str
+    );
 
     //indent list elements
     $firstposition = 0;
-    while (($pos=strpos($str, "<ul")) > $firstposition) {
+    while (($pos = strpos($str, "<ul")) > $firstposition) {
         $str = preg_replace_callback(
             "/<ul[^>]*?>(.*?)<\/ul>/si",
-            static fn($subs) => preg_replace("/<li[^>]*>/i", "<li>\t", $subs[1]),
-            $str);
+            static fn ($subs) => preg_replace("/<li[^>]*>/i", "<li>\t", $subs[1]),
+            $str
+        );
         $firstposition = $pos;
     }
 
     $firstposition = 0;
-    while (($pos=strpos($str, "<ol")) > $firstposition) {
+    while (($pos = strpos($str, "<ol")) > $firstposition) {
         $str = preg_replace_callback(
             "/<ol[^>]*?>(.*?)<\/ol>/si",
-            static fn($subs) => preg_replace("/<li[^>]*>/i", "<li>\t", $subs[1]),
-            $str);
+            static fn ($subs) => preg_replace("/<li[^>]*>/i", "<li>\t", $subs[1]),
+            $str
+        );
         $firstposition = $pos;
     }
 
@@ -108,7 +112,7 @@ function F_html_to_text($str, $preserve_newlines = false, $display_links = false
         $str = preg_replace("'<a[^>]*href[\s]*=[\s]*[\"\']*([^\"\'<>]*)[\"\'][^>]*>(.*?)</a>'si", "\\2 [LINK: \\1]", $str);
     }
 
-    if (!$preserve_newlines) { //remove newlines
+    if (! $preserve_newlines) { //remove newlines
         $str = str_replace("\n", "", $str);
     }
 

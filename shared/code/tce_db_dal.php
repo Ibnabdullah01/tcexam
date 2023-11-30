@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_db_dal.php
 // Begin       : 2003-10-12
@@ -30,8 +31,7 @@
  * @since 2003-10-12
  */
 
-/**
- */
+
 
 match (K_DATABASE_TYPE) {
     'MYSQL' => require_once('../../shared/code/tce_db_dal_mysqli.php'),

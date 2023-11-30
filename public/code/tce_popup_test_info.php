@@ -1,4 +1,5 @@
 <?php
+
 //============================================================+
 // File name   : tce_popup_test_info.php
 // Begin       : 2004-05-28
@@ -28,8 +29,7 @@
  * @since 2004-05-28
  */
 
-/**
- */
+
 
 require_once('../config/tce_config.php');
 
@@ -40,17 +40,17 @@ require_once('../../shared/code/tce_authorization.php');
 
 require_once('../code/tce_page_header_popup.php');
 
-echo '<div class="popupcontainer">'.K_NEWLINE;
+echo '<div class="popupcontainer">' . K_NEWLINE;
 if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
     require_once('../../shared/code/tce_functions_test.php');
     echo F_printTestInfo((int) $_REQUEST['testid'], false);
 }
 
-echo '<div class="row">'.K_NEWLINE;
+echo '<div class="row">' . K_NEWLINE;
 require_once('../../shared/code/tce_functions_form.php');
 echo F_close_button();
-echo '</div>'.K_NEWLINE;
-echo '</div>'.K_NEWLINE;
+echo '</div>' . K_NEWLINE;
+echo '</div>' . K_NEWLINE;
 
 require_once('../code/tce_page_footer_popup.php');
 
