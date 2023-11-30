@@ -185,7 +185,17 @@ define('K_COOKIE_PATH', '/');
 /**
  * If true use secure cookies.
  */
-define('K_COOKIE_SECURE', false);
+define('K_COOKIE_SECURE', true);
+
+/**
+ * When true the cookie will be made accessible only through the HTTP protocol.
+ */
+define('K_COOKIE_HTTPONLY', true);
+
+/**
+ * The SameSite attribute lets servers specify whether/when cookies are sent with cross-site requests.
+ */
+define('K_COOKIE_SAMESITE', 'Strict');
 
 /**
  * Expiration time for cookies.

@@ -37,8 +37,12 @@
 //ini_set('session.save_handler', 'user');
 ini_set('session.name', 'PHPSESSID');
 //ini_set('session.gc_maxlifetime', K_SESSION_LIFE);
-//ini_set('session.cookie_lifetime', K_COOKIE_EXPIRE);
+ini_set('session.cookie_lifetime', 0);
 ini_set('session.use_cookies', true);
+ini_set('session.use_strict_mode', 'On');
+ini_set('session.cookie_httponly', K_COOKIE_HTTPONLY ? 'On' : 'Off');
+ini_set('session.cookie_secure', K_COOKIE_SECURE ? 'On' : 'Off');
+ini_set('session.cookie_samesite', K_COOKIE_SAMESITE);
 
 /**
  * Open session.

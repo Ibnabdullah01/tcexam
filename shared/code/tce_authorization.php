@@ -85,18 +85,28 @@ if ($rs = F_db_query($sqls, $db)) {
         // set client cookie
         $cookie_now_time = time(); // note: while time() function returns a 32 bit integer, it works fine until year 2038.
         $cookie_expire_time = $cookie_now_time + K_COOKIE_EXPIRE; // set cookie expiration time
-        setcookie('LastVisit', $cookie_now_time, [
-            'expires' => $cookie_expire_time,
-            'path' => K_COOKIE_PATH,
-            'domain' => K_COOKIE_DOMAIN,
-            'secure' => K_COOKIE_SECURE,
-        ]);
-        setcookie('PHPSESSID', $PHPSESSID, [
-            'expires' => $cookie_expire_time,
-            'path' => K_COOKIE_PATH,
-            'domain' => K_COOKIE_DOMAIN,
-            'secure' => K_COOKIE_SECURE,
-        ]);
+        setcookie(
+            'LastVisit', 
+            $cookie_now_time,
+            [
+                'expires' => $cookie_expire_time,
+                'path' => K_COOKIE_PATH,
+                'domain' => K_COOKIE_DOMAIN,
+                'secure' => K_COOKIE_SECURE,
+                'httponly' => K_COOKIE_HTTPONLY,
+                'samesite' => K_COOKIE_SAMESITE,
+            ]);
+        setcookie(
+            'PHPSESSID',
+            $PHPSESSID,
+            [
+                'expires' => $cookie_expire_time,
+                'path' => K_COOKIE_PATH,
+                'domain' => K_COOKIE_DOMAIN,
+                'secure' => K_COOKIE_SECURE,
+                'httponly' => K_COOKIE_HTTPONLY,
+                'samesite' => K_COOKIE_SAMESITE,
+            ]);
         // track when user request logout
         if (isset($_REQUEST['logout'])) {
             $_SESSION['logout'] = true;

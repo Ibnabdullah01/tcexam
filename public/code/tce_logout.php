@@ -37,12 +37,17 @@ require_once('../../shared/code/tce_functions_session.php');
 session_unset();
 session_destroy();
 // destroy session ID cookie
-setcookie('PHPSESSID', '', [
-    'expires' => 1,
-    'path' => K_COOKIE_PATH,
-    'domain' => K_COOKIE_DOMAIN,
-    'secure' => K_COOKIE_SECURE,
-]);
+setcookie(
+    'PHPSESSID',
+    '',
+    [
+        'expires' => 1,
+        'path' => K_COOKIE_PATH,
+        'domain' => K_COOKIE_DOMAIN,
+        'secure' => K_COOKIE_SECURE,
+        'httponly' => K_COOKIE_HTTPONLY,
+        'samesite' => K_COOKIE_SAMESITE,
+    ]);
 
 $login_page = '../code/index.php?logout=1';
 
