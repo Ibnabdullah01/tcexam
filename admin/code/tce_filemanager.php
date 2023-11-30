@@ -51,6 +51,7 @@ if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
         if (!@mkdir($usr_dir, 0744, true)) {
             F_print_error('ERROR', $l['m_directory_create_error']);
         }
+
         @umask($oldumask);
     }
 } else {
@@ -76,6 +77,7 @@ if (isset($_REQUEST['d'])) {
 } elseif (isset($_REQUEST['dir'])) {
     $dir = $_REQUEST['dir'];
 }
+
 # sanitize dir
 $dir = realpath($dir).'/';
 // get the authorized dirs
@@ -92,6 +94,7 @@ if (isset($_REQUEST['f'])) {
 } elseif (isset($_REQUEST['file'])) {
     $file = $_REQUEST['file'];
 }
+
 # sanitize file
 $file = realpath($file);
 // check if the user is authorized to use this file
@@ -100,11 +103,12 @@ if (!F_isAuthorizedDir($file.'/', $root_dir, $authdirs)) {
 }
 
 // upload multimedia file
-if (isset($_POST['sendfile']) and ($_FILES['userfile']['name'])) {
+if (isset($_POST['sendfile']) && $_FILES['userfile']['name']) {
     require_once('../code/tce_functions_upload.php');
     if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
         $dir = $usr_dir;
     }
+
     $file = F_upload_file('userfile', $dir);
     if (!empty($file)) {
         $file = $dir.$file;
@@ -127,10 +131,12 @@ switch ($menu_mode) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         // ask confirmation
         F_print_error('WARNING', $l['m_delete_confirm'].' [ '.basename($file).' ]');
         echo '<div class="confirmbox">'.K_NEWLINE;
@@ -153,23 +159,24 @@ switch ($menu_mode) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         if ($forcedelete == $l['w_delete']) {
             // check if this record is used (test_log)
             if (F_isUsedMediaFile($file)) {
                 F_print_error('WARNING', $l['m_used_file']);
+            } elseif (F_deleteMediaFile($file)) {
+                $file = '';
+                F_print_error('MESSAGE', $l['m_deleted']);
             } else {
-                if (F_deleteMediaFile($file)) {
-                    $file = '';
-                    F_print_error('MESSAGE', $l['m_deleted']);
-                } else {
-                    F_print_error('ERROR', $l['m_delete_file_error']);
-                }
+                F_print_error('ERROR', $l['m_delete_file_error']);
             }
         }
+
         break;
     }
 
@@ -179,10 +186,12 @@ switch ($menu_mode) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         // check if this record is used (test_log)
         if (F_file_exists($dir.$_REQUEST['newname'])) {
             F_print_error('WARNING', $l['m_file_already_exist']);
@@ -196,6 +205,7 @@ switch ($menu_mode) {
                 F_print_error('ERROR', $l['m_file_rename_error']);
             }
         }
+
         break;
     }
 
@@ -205,10 +215,12 @@ switch ($menu_mode) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         // check if this record is used (test_log)
         if (F_file_exists($dir.$_REQUEST['newdirname'])) {
             F_print_error('WARNING', $l['m_file_already_exist']);
@@ -220,6 +232,7 @@ switch ($menu_mode) {
                 F_print_error('ERROR', $l['m_directory_create_error']);
             }
         }
+
         break;
     }
 
@@ -229,16 +242,19 @@ switch ($menu_mode) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         if (!F_isAuthorizedDir($dir, $root_dir, $authdirs)) {
             F_print_error('WARNING', $l['m_authorization_denied']);
             break;
         }
+
         if (F_deleteMediaDir($dir)) {
             $dir = $root_dir;
             F_print_error('MESSAGE', $l['m_deleted']);
         } else {
             F_print_error('ERROR', $l['m_delete_file_error']);
         }
+
         break;
     }
 
@@ -277,6 +293,7 @@ if (!empty($file)) {
     if ($_SESSION['session_user_level'] >= K_AUTH_RENAME_MEDIAFILE) {
         F_submit_button('rename', $l['w_rename'], $l['w_rename']);
     }
+
     if ($_SESSION['session_user_level'] >= K_AUTH_DELETE_MEDIAFILE) {
         F_submit_button('delete', $l['w_delete'], $l['w_delete']);
     }
@@ -287,6 +304,7 @@ if (!empty($file)) {
     echo '<input type="file" name="userfile" id="userfile" size="20" title="'.$l['h_upload_file'].'" />'.K_NEWLINE;
     echo '<input type="submit" name="sendfile" id="sendfile" value="'.$l['w_upload'].'" title="'.$l['h_upload_file'].'" />'.K_NEWLINE;
 }
+
 echo '</fieldset>'.K_NEWLINE;
 
 // change view mode
@@ -300,6 +318,7 @@ if ($viewmode) {
     echo '<label for="viewmodet">'.$l['w_mode'].': </label>';
     F_submit_button('viewmodet', $l['w_table'], $l['w_mode']);
 }
+
 echo '</div>'.K_NEWLINE;
 
 // directory link path

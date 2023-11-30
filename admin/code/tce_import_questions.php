@@ -41,44 +41,40 @@ require_once('../../shared/code/tce_functions_form.php');
 require_once('../../shared/code/tce_functions_tcecode.php');
 require_once('../../shared/code/tce_functions_auth_sql.php');
 
-if (!isset($type) or (empty($type))) {
-    $type = 1;
-} else {
-    $type = intval($type);
-}
+$type = !isset($type) || empty($type) ? 1 : (int) $type;
 
-if (isset($menu_mode) and ($menu_mode == 'upload')) {
-    if ($_FILES['userfile']['name']) {
-        require_once('../code/tce_functions_upload.php');
-        // upload file
-        $uploadedfile = F_upload_file('userfile', K_PATH_CACHE);
-        if ($uploadedfile !== false) {
-            $qimp = false;
-            switch ($type) {
-                case 1: {
-                    // standard TCExam XML format
-                    require_once('../code/tce_class_import_xml.php');
-                    $qimp = new XMLQuestionImporter(K_PATH_CACHE.$uploadedfile);
-                    break;
-                }
-                case 2: {
-                    // standard TCExam TSV format
-                    $qimp = F_TSVQuestionImporter(K_PATH_CACHE.$uploadedfile);
-                    break;
-                }
-                case 3: {
-                    // Custom TCExam XML format
-                    require_once('../code/tce_import_custom.php');
-                    $qimp = new CustomQuestionImporter(K_PATH_CACHE.$uploadedfile);
-                    break;
-                }
+if ((isset($menu_mode) && $menu_mode == 'upload') && $_FILES['userfile']['name']) {
+    require_once('../code/tce_functions_upload.php');
+    // upload file
+    $uploadedfile = F_upload_file('userfile', K_PATH_CACHE);
+    if ($uploadedfile !== false) {
+        $qimp = false;
+        switch ($type) {
+            case 1: {
+                // standard TCExam XML format
+                require_once('../code/tce_class_import_xml.php');
+                $qimp = new XMLQuestionImporter(K_PATH_CACHE.$uploadedfile);
+                break;
             }
-            if ($qimp) {
-                F_print_error('MESSAGE', $l['m_importing_complete']);
+            case 2: {
+                // standard TCExam TSV format
+                $qimp = F_TSVQuestionImporter(K_PATH_CACHE.$uploadedfile);
+                break;
             }
+            case 3: {
+                // Custom TCExam XML format
+                require_once('../code/tce_import_custom.php');
+                $qimp = new CustomQuestionImporter(K_PATH_CACHE.$uploadedfile);
+                break;
+            }
+        }
+
+        if ($qimp) {
+            F_print_error('MESSAGE', $l['m_importing_complete']);
         }
     }
 }
+
 echo '<div class="container">'.K_NEWLINE;
 
 echo '<div class="tceformbox">'.K_NEWLINE;
@@ -105,6 +101,7 @@ echo '<input type="radio" name="type" id="type_xml" value="1" title="TCExam XML 
 if ($type == 1) {
     echo ' checked="checked"';
 }
+
 echo ' />';
 echo '<label for="type_xml">TCExam XML</label><br />'.K_NEWLINE;
 
@@ -112,15 +109,17 @@ echo '<input type="radio" name="type" id="type_tsv" value="2" title="TCExam TSV 
 if ($type == 2) {
     echo ' checked="checked"';
 }
+
 echo ' />';
 echo '<label for="type_tsv">TCExam TSV</label>'.K_NEWLINE;
 
 $custom_import = K_ENABLE_CUSTOM_IMPORT;
-if (!empty($custom_import)) {
+if ($custom_import !== '') {
     echo '<input type="radio" name="type" id="type_custom" value="3" title="'.$custom_import.'"'.K_NEWLINE;
     if ($type == 3) {
         echo ' checked="checked"';
     }
+
     echo ' />';
     echo '<label for="type_custom">'.$custom_import.'</label>'.K_NEWLINE;
 }
@@ -158,29 +157,32 @@ function F_TSVQuestionImporter($tsvfile)
     global $l, $db;
     require_once('../config/tce_config.php');
     require_once('../../shared/code/tce_functions_auth_sql.php');
-    $qtype = array('S' => 1, 'M' => 2, 'T' => 3, 'O' => 4);
+    $qtype = ['S' => 1, 'M' => 2, 'T' => 3, 'O' => 4];
     $tsvfp = fopen($tsvfile, 'r');
     if ($tsvfp === false) {
         return false;
     }
+
     $current_module_id = 0;
     $current_subject_id = 0;
     $current_question_id = 0;
     $current_answer_id = 0;
-    $questionhash = array();
+    $questionhash = [];
     // for each row
     while ($qdata=fgetcsv($tsvfp, 0, "\t", '"')) {
         if ($qdata === null) {
             continue;
         }
+
         // get user data into array
         switch ($qdata[0]) {
             case 'M': { // MODULE
                 $current_module_id = 0;
-                if (!isset($qdata[2]) or empty($qdata[2])) {
+                if (!isset($qdata[2]) || empty($qdata[2])) {
                     break;
                 }
-                $module_enabled = intval($qdata[1]);
+
+                $module_enabled = (int) $qdata[1];
                 $module_name = F_escape_sql($db, F_tsv_to_text($qdata[2]), false);
                 // check if this module already exist
                 $sql = 'SELECT module_id
@@ -217,22 +219,26 @@ function F_TSVQuestionImporter($tsvfile)
                 } else {
                     F_display_db_error();
                 }
+
                 break;
             }
             case 'S': { // SUBJECT
                 $current_subject_id = 0;
-                if ($current_module_id == 0) {
+                if ($current_module_id === 0) {
                     return;
                 }
-                if (!isset($qdata[2]) or empty($qdata[2])) {
+
+                if (!isset($qdata[2]) || empty($qdata[2])) {
                     break;
                 }
-                $subject_enabled = intval($qdata[1]);
+
+                $subject_enabled = (int) $qdata[1];
                 $subject_name = F_escape_sql($db, F_tsv_to_text($qdata[2]), false);
                 $subject_description = '';
                 if (isset($qdata[3])) {
                     $subject_description = F_empty_to_null(F_tsv_to_text($qdata[3]));
                 }
+
                 // check if this subject already exist
                 $sql = 'SELECT subject_id
 					FROM '.K_TABLE_SUBJECTS.'
@@ -268,57 +274,46 @@ function F_TSVQuestionImporter($tsvfile)
                 } else {
                     F_display_db_error();
                 }
+
                 break;
             }
             case 'Q': { // QUESTION
                 $current_question_id = 0;
-                if (($current_module_id == 0) or ($current_subject_id == 0)) {
+                if ($current_module_id === 0 || $current_subject_id === 0) {
                     return;
                 }
+
                 if (!isset($qdata[5])) {
                     break;
                 }
-                $question_enabled = intval($qdata[1]);
+
+                $question_enabled = (int) $qdata[1];
                 $question_description = F_escape_sql($db, F_tsv_to_text($qdata[2]), false);
                 $question_explanation = F_empty_to_null(F_tsv_to_text($qdata[3]));
                 $question_type = $qtype[$qdata[4]];
-                $question_difficulty = intval($qdata[5]);
-                if (isset($qdata[6])) {
-                    $question_position = F_zero_to_null($qdata[6]);
-                } else {
-                    $question_position = F_zero_to_null(0);
-                }
-                if (isset($qdata[7])) {
-                    $question_timer = intval($qdata[7]);
-                } else {
-                    $question_timer = 0;
-                }
-                if (isset($qdata[8])) {
-                    $question_fullscreen = intval($qdata[8]);
-                } else {
-                    $question_fullscreen = 0;
-                }
-                if (isset($qdata[9])) {
-                    $question_inline_answers = intval($qdata[9]);
-                } else {
-                    $question_inline_answers = 0;
-                }
-                if (isset($qdata[10])) {
-                    $question_auto_next = intval($qdata[10]);
-                } else {
-                    $question_auto_next = 0;
-                }
+                $question_difficulty = (int) $qdata[5];
+                $question_position = isset($qdata[6]) ? F_zero_to_null($qdata[6]) : F_zero_to_null(0);
+
+                $question_timer = isset($qdata[7]) ? (int) $qdata[7] : 0;
+
+                $question_fullscreen = isset($qdata[8]) ? (int) $qdata[8] : 0;
+
+                $question_inline_answers = isset($qdata[9]) ? (int) $qdata[9] : 0;
+
+                $question_auto_next = isset($qdata[10]) ? (int) $qdata[10] : 0;
+
                 // check if this question already exist
                 $sql = 'SELECT question_id
 					FROM '.K_TABLE_QUESTIONS.'
 					WHERE ';
                 if (K_DATABASE_TYPE == 'ORACLE') {
-                    $sql .= 'dbms_lob.instr(question_description,\''.$question_description.'\',1,1)>0';
-                } elseif ((K_DATABASE_TYPE == 'MYSQL') and K_MYSQL_QA_BIN_UNIQUITY) {
-                    $sql .= 'question_description=\''.$question_description.'\' COLLATE utf8_bin';
+                    $sql .= "dbms_lob.instr(question_description,'".$question_description."',1,1)>0";
+                } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+                    $sql .= "question_description='".$question_description."' COLLATE utf8_bin";
                 } else {
-                    $sql .= 'question_description=\''.$question_description.'\'';
+                    $sql .= "question_description='".$question_description."'";
                 }
+
                 $sql .= ' AND question_subject_id='.$current_subject_id.' LIMIT 1';
                 if ($r = F_db_query($sql, $db)) {
                     if ($m = F_db_fetch_array($r)) {
@@ -329,26 +324,30 @@ function F_TSVQuestionImporter($tsvfile)
                 } else {
                     F_display_db_error();
                 }
-                if (K_DATABASE_TYPE == 'MYSQL') {
+
+                if (K_DATABASE_TYPE === 'MYSQL') {
                     // this section is to avoid the problems on MySQL string comparison
                     $maxkey = 240;
                     $strkeylimit = min($maxkey, strlen($question_description));
                     $stop = $maxkey / 3;
-                    while (in_array(md5(strtolower(substr($current_subject_id.$question_description, 0, $strkeylimit))), $questionhash) and ($stop > 0)) {
+                    while (in_array(md5(strtolower(substr($current_subject_id.$question_description, 0, $strkeylimit))), $questionhash) && $stop > 0) {
                         // a similar question was already imported, so we change it a little bit to avoid duplicate keys
                         $question_description = '_'.$question_description;
                         $strkeylimit = min($maxkey, ($strkeylimit + 1));
-                        $stop--; // variable used to avoid infinite loop
+                        --$stop; // variable used to avoid infinite loop
                     }
+
                     if ($stop == 0) {
                         F_print_error('ERROR', 'Unable to get unique question ID');
                         return;
                     }
                 }
+
                 $sql = 'START TRANSACTION';
                 if (!$r = F_db_query($sql, $db)) {
                     F_display_db_error();
                 }
+
                 // insert question
                 $sql = 'INSERT INTO '.K_TABLE_QUESTIONS.' (
 					question_subject_id,
@@ -380,10 +379,11 @@ function F_TSVQuestionImporter($tsvfile)
                 } else {
                     // get new question ID
                     $current_question_id = F_db_insert_id($db, K_TABLE_QUESTIONS, 'question_id');
-                    if (K_DATABASE_TYPE == 'MYSQL') {
+                    if (K_DATABASE_TYPE === 'MYSQL') {
                         $questionhash[] = md5(strtolower(substr($current_subject_id.$question_description, 0, $strkeylimit)));
                     }
                 }
+
                 $sql = 'COMMIT';
                 if (!$r = F_db_query($sql, $db)) {
                     F_display_db_error();
@@ -393,37 +393,34 @@ function F_TSVQuestionImporter($tsvfile)
             }
             case 'A': { // ANSWER
                 $current_answer_id = 0;
-                if (($current_module_id == 0) or ($current_subject_id == 0) or ($current_question_id == 0)) {
+                if ($current_module_id === 0 || $current_subject_id === 0 || $current_question_id === 0) {
                     return;
                 }
+
                 if (!isset($qdata[4])) {
                     break;
                 }
-                $answer_enabled = intval($qdata[1]);
+
+                $answer_enabled = (int) $qdata[1];
                 $answer_description = F_escape_sql($db, F_tsv_to_text($qdata[2]), false);
                 $answer_explanation = F_empty_to_null(F_tsv_to_text($qdata[3]));
-                $answer_isright = intval($qdata[4]);
-                if (isset($qdata[5])) {
-                    $answer_position = F_zero_to_null($qdata[5]);
-                } else {
-                    $answer_position = F_zero_to_null(0);
-                }
-                if (isset($qdata[6])) {
-                    $answer_keyboard_key = F_empty_to_null(F_tsv_to_text($qdata[6]));
-                } else {
-                    $answer_keyboard_key = F_empty_to_null('');
-                }
+                $answer_isright = (int) $qdata[4];
+                $answer_position = isset($qdata[5]) ? F_zero_to_null($qdata[5]) : F_zero_to_null(0);
+
+                $answer_keyboard_key = isset($qdata[6]) ? F_empty_to_null(F_tsv_to_text($qdata[6])) : F_empty_to_null('');
+
                 // check if this answer already exist
                 $sql = 'SELECT answer_id
 					FROM '.K_TABLE_ANSWERS.'
 					WHERE ';
                 if (K_DATABASE_TYPE == 'ORACLE') {
-                    $sql .= 'dbms_lob.instr(answer_description, \''.$answer_description.'\',1,1)>0';
-                } elseif ((K_DATABASE_TYPE == 'MYSQL') and K_MYSQL_QA_BIN_UNIQUITY) {
-                    $sql .= 'answer_description=\''.$answer_description.'\' COLLATE utf8_bin';
+                    $sql .= "dbms_lob.instr(answer_description, '".$answer_description."',1,1)>0";
+                } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+                    $sql .= "answer_description='".$answer_description."' COLLATE utf8_bin";
                 } else {
-                    $sql .= 'answer_description=\''.$answer_description.'\'';
+                    $sql .= "answer_description='".$answer_description."'";
                 }
+
                 $sql .= ' AND answer_question_id='.$current_question_id.' LIMIT 1';
                 if ($r = F_db_query($sql, $db)) {
                     if ($m = F_db_fetch_array($r)) {
@@ -434,6 +431,7 @@ function F_TSVQuestionImporter($tsvfile)
                         if (!$r = F_db_query($sql, $db)) {
                             F_display_db_error();
                         }
+
                         $sql = 'INSERT INTO '.K_TABLE_ANSWERS.' (
 							answer_question_id,
 							answer_description,
@@ -458,6 +456,7 @@ function F_TSVQuestionImporter($tsvfile)
                             // get new answer ID
                             $current_answer_id = F_db_insert_id($db, K_TABLE_ANSWERS, 'answer_id');
                         }
+
                         $sql = 'COMMIT';
                         if (!$r = F_db_query($sql, $db)) {
                             F_display_db_error();
@@ -466,10 +465,13 @@ function F_TSVQuestionImporter($tsvfile)
                 } else {
                     F_display_db_error();
                 }
+
                 break;
             }
         } // end of switch
-    } // end of while
+    }
+
+     // end of while
     return true;
 }
 

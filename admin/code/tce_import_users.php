@@ -57,18 +57,22 @@ switch ($menu_mode) {
                         if (F_import_tsv_users(K_PATH_CACHE.$uploadedfile)) {
                             F_print_error('MESSAGE', $l['m_importing_complete']);
                         }
+
                         break;
                     }
                 }
             }
         }
+
         break;
     }
 
     default: {
         break;
     }
-} //end of switch
+}
+
+ //end of switch
 ?>
 
 <div class="container">
@@ -131,11 +135,13 @@ require_once('../code/tce_page_footer.php');
 class XMLUserImporter
 {
 
+    public $parser;
+
     /**
      * String Current data element.
      * @private
      */
-    private $current_element = '';
+    private string $current_element = '';
 
     /**
      * String Current data value.
@@ -147,34 +153,30 @@ class XMLUserImporter
      * Array Array for storing user data.
      * @private
      */
-    private $user_data = array();
+    private $user_data = [];
 
     /**
      * Array for storing user's group data.
      * @private
      */
-    private $group_data = array();
+    private $group_data = [];
 
     /**
      * Int ID of last inserted user (counter)
      * @private
      */
-    private $user_id = 0;
-
-    /**
-     * String XML file
-     * @private
-     */
-    private $xmlfile = '';
+    private int $user_id = 0;
 
     /**
      * Class constructor.
      * @param $xmlfile (string) XML file name
      */
-    public function __construct($xmlfile)
+    public function __construct(/**
+     * String XML file
+     * @private
+     */
+    private $xmlfile)
     {
-        // set xml file
-        $this->xmlfile = $xmlfile;
         // creates a new XML parser to be used by the other XML functions
         $this->parser = xml_parser_create();
         // the following function allows to use parser inside object
@@ -186,13 +188,14 @@ class XMLUserImporter
         // sets the character data handler function for the XML parser
         xml_set_character_data_handler($this->parser, 'segContentHandler');
         // start parsing an XML document
-        if (!xml_parse($this->parser, file_get_contents($xmlfile))) {
+        if (xml_parse($this->parser, file_get_contents($xmlfile)) === 0) {
             die(sprintf(
                 'ERROR xmlResourceBundle :: XML error: %s at line %d',
                 xml_error_string(xml_get_error_code($this->parser)),
                 xml_get_current_line_number($this->parser)
             ));
         }
+
         // free this XML parser
         xml_parser_free($this->parser);
     }
@@ -218,8 +221,8 @@ class XMLUserImporter
         $name = strtolower($name);
         switch ($name) {
             case 'user': {
-                $this->user_data = array();
-                $this->group_data = array();
+                $this->user_data = [];
+                $this->group_data = [];
                 $this->current_data = '';
                 break;
             }
@@ -312,6 +315,7 @@ class XMLUserImporter
                 } else {
                     F_display_db_error();
                 }
+
                 break;
             }
             case 'user': {
@@ -320,12 +324,15 @@ class XMLUserImporter
                     if (empty($this->user_data['user_regdate'])) {
                         $this->user_data['user_regdate'] = date(K_TIMESTAMP_FORMAT);
                     }
+
                     if (empty($this->user_data['user_ip'])) {
                         $this->user_data['user_ip'] = getNormalizedIP($_SERVER['REMOTE_ADDR']);
                     }
-                    if (!isset($this->user_data['user_level']) or (strlen($this->user_data['user_level']) == 0)) {
+
+                    if (!isset($this->user_data['user_level']) || strlen($this->user_data['user_level']) == 0) {
                         $this->user_data['user_level'] = 1;
                     }
+
                     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
                         // you cannot edit a user with a level equal or higher than yours
                         $this->user_data['user_level'] = min(max(0, ($_SESSION['session_user_level'] - 1)), $this->user_data['user_level']);
@@ -333,11 +340,13 @@ class XMLUserImporter
                         if (empty($this->group_data)) {
                             break;
                         }
+
                         $common_groups = array_intersect(F_get_user_groups($_SESSION['session_user_id']), $this->group_data);
-                        if (empty($common_groups)) {
+                        if ($common_groups === []) {
                             break;
                         }
                     }
+
                     // check if user already exist
                     $sql = 'SELECT user_id,user_level
 						FROM '.K_TABLE_USERS.'
@@ -349,7 +358,7 @@ class XMLUserImporter
                         if ($m = F_db_fetch_array($r)) {
                             // the user has been already added
                             $user_id = $m['user_id'];
-                            if (($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) or ($_SESSION['session_user_level'] > $m['user_level'])) {
+                            if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR || $_SESSION['session_user_level'] > $m['user_level']) {
                                 //update user data
                                 $sqlu = 'UPDATE '.K_TABLE_USERS.' SET
 									user_regdate=\''.$this->user_data['user_regdate'].'\',
@@ -358,8 +367,9 @@ class XMLUserImporter
 									user_email='.F_empty_to_null($this->user_data['user_email']).',';
                                 // update password only if it is specified
                                 if (!empty($this->user_data['user_password'])) {
-                                    $sqlu .= ' user_password=\''.F_escape_sql($db, getPasswordHash($this->user_data['user_password'])).'\',';
+                                    $sqlu .= " user_password='".F_escape_sql($db, getPasswordHash($this->user_data['user_password']))."',";
                                 }
+
                                 $sqlu .= '
 									user_regnumber='.F_empty_to_null($this->user_data['user_regnumber']).',
 									user_firstname='.F_empty_to_null($this->user_data['user_firstname']).',
@@ -377,7 +387,7 @@ class XMLUserImporter
                                 }
                             } else {
                                 // no user is updated, so empty groups
-                                $this->group_data = array();
+                                $this->group_data = [];
                             }
                         } else {
                             // add new user
@@ -415,9 +425,9 @@ class XMLUserImporter
                             if (!$ru = F_db_query($sqlu, $db)) {
                                 F_display_db_error(false);
                                 return false;
-                            } else {
-                                $user_id = F_db_insert_id($db, K_TABLE_USERS, 'user_id');
                             }
+
+                            $user_id = F_db_insert_id($db, K_TABLE_USERS, 'user_id');
                         }
                     } else {
                         F_display_db_error(false);
@@ -455,6 +465,7 @@ class XMLUserImporter
                         }
                     }
                 }
+
                 break;
             }
             default: {
@@ -496,7 +507,7 @@ function F_import_tsv_users($tsvfile)
     }
 
     $nrows = count($tsvrows);
-    for ($i = 1; $i < $nrows; $i++) {
+    for ($i = 1; $i < $nrows; ++$i) {
         $rowdata = $tsvrows[$i];
 
         // get user data into array
@@ -506,13 +517,16 @@ function F_import_tsv_users($tsvfile)
         if (empty($userdata[4])) {
             $userdata[4] = date(K_TIMESTAMP_FORMAT);
         }
+
         if (empty($userdata[5])) {
             $userdata[5] = getNormalizedIP($_SERVER['REMOTE_ADDR']);
         }
+
         // user level
-        if (!isset($userdata[12]) or (strlen($userdata[12]) == 0)) {
+        if (!isset($userdata[12]) || strlen($userdata[12]) == 0) {
             $userdata[12] = 1;
         }
+
         if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
             // you cannot edit a user with a level equal or higher than yours
             $userdata[12] = min(max(0, ($_SESSION['session_user_level'] - 1)), $userdata[12]);
@@ -520,12 +534,14 @@ function F_import_tsv_users($tsvfile)
             if (empty($userdata[15])) {
                 break;
             }
+
             $usrgroups = explode(',', addslashes($userdata[15]));
             $common_groups = array_intersect(F_get_user_groups($_SESSION['session_user_id']), $usrgroups);
-            if (empty($common_groups)) {
+            if ($common_groups === []) {
                 break;
             }
         }
+
         // check if user already exist
         $sql = 'SELECT user_id,user_level
 			FROM '.K_TABLE_USERS.'
@@ -537,14 +553,15 @@ function F_import_tsv_users($tsvfile)
             if ($m = F_db_fetch_array($r)) {
                 // the user has been already added
                 $user_id = $m['user_id'];
-                if (($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) or ($_SESSION['session_user_level'] > $m['user_level'])) {
+                if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR || $_SESSION['session_user_level'] > $m['user_level']) {
                     //update user data
                     $sqlu = 'UPDATE '.K_TABLE_USERS.' SET
-						user_name=\''.F_escape_sql($db, $userdata[1]).'\',';
+						user_name=\''.F_escape_sql($db, $userdata[1])."',";
                     // update password only if it is specified
                     if (!empty($userdata[2])) {
-                        $sqlu .= ' user_password=\''.F_escape_sql($db, getPasswordHash($userdata[2])).'\',';
+                        $sqlu .= " user_password='".F_escape_sql($db, getPasswordHash($userdata[2]))."',";
                     }
+
                     $sqlu .= '
 						user_email='.F_empty_to_null($userdata[3]).',
 						user_regdate=\''.F_escape_sql($db, $userdata[4]).'\',
@@ -555,7 +572,7 @@ function F_import_tsv_users($tsvfile)
 						user_birthplace='.F_empty_to_null($userdata[9]).',
 						user_regnumber='.F_empty_to_null($userdata[10]).',
 						user_ssn='.F_empty_to_null($userdata[11]).',
-						user_level=\''.intval($userdata[12]).'\',
+						user_level=\''.(int) $userdata[12].'\',
 						user_verifycode='.F_empty_to_null($userdata[13]).',
 						user_otpkey='.F_empty_to_null($userdata[14]).'
 						WHERE user_id='.$user_id.'';
@@ -596,16 +613,16 @@ function F_import_tsv_users($tsvfile)
 					'.F_empty_to_null($userdata[9]).',
 					'.F_empty_to_null($userdata[10]).',
 					'.F_empty_to_null($userdata[11]).',
-					\''.intval($userdata[12]).'\',
+					\''.(int) $userdata[12].'\',
 					'.F_empty_to_null($userdata[13]).',
 					'.F_empty_to_null($userdata[14]).'
 					)';
                 if (!$ru = F_db_query($sqlu, $db)) {
                     F_display_db_error(false);
                     return false;
-                } else {
-                    $user_id = F_db_insert_id($db, K_TABLE_USERS, 'user_id');
                 }
+
+                $user_id = F_db_insert_id($db, K_TABLE_USERS, 'user_id');
             }
         } else {
             F_display_db_error(false);
@@ -637,14 +654,15 @@ function F_import_tsv_users($tsvfile)
                         if (!$ri = F_db_query($sqli, $db)) {
                             F_display_db_error(false);
                             return false;
-                        } else {
-                            $group_id = F_db_insert_id($db, K_TABLE_GROUPS, 'group_id');
                         }
+
+                        $group_id = F_db_insert_id($db, K_TABLE_GROUPS, 'group_id');
                     }
                 } else {
                     F_display_db_error(false);
                     return false;
                 }
+
                 // check if user-group already exist
                 $sqls = 'SELECT *
 					FROM '.K_TABLE_USERGROUP.'

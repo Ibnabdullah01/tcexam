@@ -44,14 +44,17 @@ require_once('../../shared/code/tce_functions_auth_sql.php');
 if (isset($selectcategory)) {
     $changecategory = 1;
 }
+
 if (isset($testlog_id)) {
-    $testlog_id = intval($testlog_id);
+    $testlog_id = (int) $testlog_id;
 }
+
 if (!isset($testlog_comment)) {
     $testlog_comment = '';
 }
-if (isset($_REQUEST['test_id']) and ($_REQUEST['test_id'] > 0)) {
-    $test_id = intval($_REQUEST['test_id']);
+
+if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
+    $test_id = (int) $_REQUEST['test_id'];
     // check user's authorization
     if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
@@ -66,29 +69,29 @@ $_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_score'], ENT_COMPAT, $l
 
 switch ($menu_mode) {
     case 'update': { // Update
-        if ($formstatus = F_check_form_fields()) {
-            if (isset($testlog_score) and isset($max_score)) {
-                // score cannot be greater than max_score
-                $testlog_score = floatval($testlog_score);
-                $max_score = floatval($max_score);
-                if ($testlog_score > $max_score) {
-                    F_print_error('WARNING', $l['m_score_higher_than_max']);
-                    break;
-                }
-                $sql = 'UPDATE '.K_TABLE_TESTS_LOGS.' SET
+        if (($formstatus = F_check_form_fields()) && (isset($testlog_score) && isset($max_score))) {
+            // score cannot be greater than max_score
+            $testlog_score = (float) $testlog_score;
+            $max_score = (float) $max_score;
+            if ($testlog_score > $max_score) {
+                F_print_error('WARNING', $l['m_score_higher_than_max']);
+                break;
+            }
+
+            $sql = 'UPDATE '.K_TABLE_TESTS_LOGS.' SET
 					testlog_score='.$testlog_score.',
 					testlog_comment=\''.F_escape_sql($db, $testlog_comment).'\'
 					WHERE testlog_id='.$testlog_id.'';
-                if (!$r = F_db_query($sql, $db)) {
-                    F_display_db_error(false);
-                } else {
-                    F_print_error('MESSAGE', $l['m_updated']);
-                    $testlog_score = '';
-                    $testlog_id = '';
-                    $testlog_comment = '';
-                }
+            if (!$r = F_db_query($sql, $db)) {
+                F_display_db_error(false);
+            } else {
+                F_print_error('MESSAGE', $l['m_updated']);
+                $testlog_score = '';
+                $testlog_id = '';
+                $testlog_comment = '';
             }
         }
+
         break;
     }
     default: {
@@ -102,6 +105,7 @@ switch ($menu_mode) {
 if (!isset($display_user_info)) {
     $display_user_info = 0;
 }
+
 // flag to select only unrated answers
 if (!isset($display_all)) {
     $display_all = 0;
@@ -116,6 +120,7 @@ if (empty($display_all)) {
 if (!isset($sqlordermode)) {
     $sqlordermode = 0;
 }
+
 switch ($sqlordermode) {
     case 2: {
         // ordered by test and question creation time
@@ -135,21 +140,17 @@ switch ($sqlordermode) {
     }
 }
 
-if (!isset($test_id) or empty($test_id)) {
+if (!isset($test_id) || $test_id === 0) {
     // select one executed test
     $sql = F_select_executed_tests_sql().' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            $test_id = $m['test_id'];
-        } else {
-            $test_id = 0;
-        }
+        $test_id = ($m = F_db_fetch_array($r)) ? $m['test_id'] : 0;
     } else {
         F_display_db_error();
     }
 }
 
-if ((isset($changecategory) and ($changecategory > 0)) or (!isset($testlog_id)) or empty($testlog_id)) {
+if (isset($changecategory) && $changecategory > 0 || !isset($testlog_id) || empty($testlog_id)) {
     $sql = 'SELECT test_id, test_score_right, test_score_wrong, test_score_unanswered, testlog_id, testlog_score, testlog_answer_text, testlog_comment, question_description, question_difficulty, question_explanation
 		FROM '.K_TABLE_TESTS.', '.K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_QUESTIONS.'
 		WHERE testuser_test_id=test_id
@@ -172,7 +173,7 @@ if ((isset($changecategory) and ($changecategory > 0)) or (!isset($testlog_id)) 
 		LIMIT 1';
 }
 
-if ($sql) {
+if ($sql !== '' && $sql !== '0') {
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             $testlog_id = $m['testlog_id'];
@@ -221,19 +222,22 @@ if ($r = F_db_query($sql, $db)) {
         if ($m['test_id'] == $test_id) {
             echo ' selected="selected"';
         }
+
         echo '>'.substr($m['test_begin_time'], 0, 10).' : '.htmlspecialchars($m['test_name'], ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
-        $countitem++;
+        ++$countitem;
     }
+
     if ($countitem == 1) {
         echo '<option value="0">&nbsp;</option>'.K_NEWLINE;
     }
 } else {
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 
 // link for user selection popup
-$jsaction = 'selectWindow=window.open(\'tce_select_tests_popup.php?cid=test_id\', \'selectWindow\', \'dependent, height=600, width=800, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no\');return false;';
+$jsaction = "selectWindow=window.open('tce_select_tests_popup.php?cid=test_id', 'selectWindow', 'dependent, height=600, width=800, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no');return false;";
 echo '<a href="#" onclick="'.$jsaction.'" class="xmlbutton" title="'.$l['w_select'].'">...</a>';
 
 echo '</span>'.K_NEWLINE;
@@ -247,7 +251,7 @@ echo '<label for="testlog_id">'.$l['w_answer'].'</label>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '<span class="formw">'.K_NEWLINE;
 echo '<select name="testlog_id" id="testlog_id" size="0" onchange="document.getElementById(\'form_ratingeditor\').submit()" title="'.$l['h_select_answer'].'">'.K_NEWLINE;
-$sql = 'SELECT testlog_id, testlog_score, user_lastname, user_firstname, user_name, question_description FROM '.K_TABLE_TESTS_LOGS.', '.K_TABLE_TEST_USER.', '.K_TABLE_USERS.', '.K_TABLE_QUESTIONS.' WHERE testlog_testuser_id=testuser_id AND testuser_user_id=user_id AND testlog_question_id=question_id AND testuser_test_id='.intval($test_id).' AND testuser_status>0 AND testuser_status<5 AND question_type=3 '.$sqlfilter.' '.$sqlorder.'';
+$sql = 'SELECT testlog_id, testlog_score, user_lastname, user_firstname, user_name, question_description FROM '.K_TABLE_TESTS_LOGS.', '.K_TABLE_TEST_USER.', '.K_TABLE_USERS.', '.K_TABLE_QUESTIONS.' WHERE testlog_testuser_id=testuser_id AND testuser_user_id=user_id AND testlog_question_id=question_id AND testuser_test_id='.(int) $test_id.' AND testuser_status>0 AND testuser_status<5 AND question_type=3 '.$sqlfilter.' '.$sqlorder.'';
 if ($r = F_db_query($sql, $db)) {
     $countitem = 1;
     while ($m = F_db_fetch_array($r)) {
@@ -255,25 +259,30 @@ if ($r = F_db_query($sql, $db)) {
         if ($m['testlog_id'] == $testlog_id) {
             echo ' selected="selected"';
         }
+
         echo '>';
         if (!empty($m['testlog_score'])) {
             echo '+';
         } else {
             echo '-';
         }
+
         echo ' '.$m['testlog_id'].'';
         if ($display_user_info) {
             echo ' :: '.htmlspecialchars($m['user_lastname'].' '.$m['user_firstname'].' - '.$m['user_name'].'', ENT_NOQUOTES, $l['a_meta_charset']).'';
         }
+
         echo '</option>'.K_NEWLINE;
-        $countitem++;
+        ++$countitem;
     }
+
     if ($countitem == 1) {
         echo '<option value="0">&nbsp;</option>'.K_NEWLINE;
     }
 } else {
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
@@ -290,16 +299,19 @@ echo '<option value="0"';
 if ($sqlordermode == 0) {
     echo ' selected="selected"';
 }
+
 echo '>'.$l['w_user'].'</option>'.K_NEWLINE;
 echo '<option value="1"';
 if ($sqlordermode == 1) {
     echo ' selected="selected"';
 }
+
 echo '>'.$l['w_question'].'</option>'.K_NEWLINE;
 echo '<option value="2"';
 if ($sqlordermode == 2) {
     echo ' selected="selected"';
 }
+
 echo '>'.$l['w_time'].'</option>'.K_NEWLINE;
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
@@ -322,7 +334,7 @@ echo '&nbsp;'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
 
-if (K_ENABLE_QUESTION_EXPLANATION and !empty($explanation)) {
+if (K_ENABLE_QUESTION_EXPLANATION && !empty($explanation)) {
     echo '<div class="row">'.K_NEWLINE;
     echo '<span class="label">'.K_NEWLINE;
     echo '<span title="'.$l['w_explanation'].'">'.$l['w_explanation'].'</span>'.K_NEWLINE;
@@ -371,7 +383,7 @@ echo getFormRowTextBox('testlog_comment', $l['w_comment'], $l['w_comment'], $tes
 echo '<div class="row">'.K_NEWLINE;
 
 // show buttons by case
-if (isset($testlog_id) and ($testlog_id > 0)) {
+if (isset($testlog_id) && $testlog_id > 0) {
     F_submit_button("update", $l['w_update'], $l['h_update']);
 }
 

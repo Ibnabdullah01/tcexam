@@ -68,14 +68,14 @@ implements CAS_Exception
     public function __construct($client,$failure,$cas_url,$no_response,
         $bad_response='',$cas_response='',$err_code='',$err_msg=''
     ) {
-        $messages = array();
+        $messages = [];
         phpCAS::traceBegin();
         $lang = $client->getLangObj();
         $client->printHTMLHeader($lang->getAuthenticationFailed());
         printf(
             $lang->getYouWereNotAuthenticated(),
             htmlentities($client->getURL()),
-            isset($_SERVER['SERVER_ADMIN']) ? $_SERVER['SERVER_ADMIN']:''
+            $_SERVER['SERVER_ADMIN'] ?? ''
         );
         phpCAS::trace($messages[] = 'CAS URL: '.$cas_url);
         phpCAS::trace($messages[] = 'Authentication failure: '.$failure);
@@ -96,11 +96,14 @@ implements CAS_Exception
                     } else {
                         phpCAS::trace($messages[] = 'Reason: ['.$err_code.'] CAS error: '.$err_msg);
                     }
+
                     break;
                 }
             }
+
             phpCAS::trace($messages[] = 'CAS response: '.$cas_response);
         }
+
         $client->printHTMLFooter();
         phpCAS::traceExit();
 

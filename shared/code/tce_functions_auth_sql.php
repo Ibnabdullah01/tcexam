@@ -49,8 +49,8 @@ function F_select_modules_sql($andwhere = '')
             $sql .= ' AND '.$andwhere;
         }
     }
-    $sql .= ' ORDER BY module_name';
-    return $sql;
+
+    return $sql . ' ORDER BY module_name';
 }
 
 /**
@@ -82,11 +82,12 @@ function F_select_module_subjects_sql($andwhere = '')
         $authorized_users = F_getAuthorizedUsers($_SESSION['session_user_id']);
         $sql .= ' AND (module_user_id IN ('.$authorized_users.') OR subject_user_id IN ('.$authorized_users.'))';
     }
+
     if (!empty($andwhere)) {
         $sql .= ' AND '.$andwhere;
     }
-    $sql .= ' ORDER BY module_name,subject_name';
-    return $sql;
+
+    return $sql . ' ORDER BY module_name,subject_name';
 }
 
 /**
@@ -103,8 +104,8 @@ function F_select_tests_sql()
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
         $sql .= ' WHERE test_user_id IN ('.F_getAuthorizedUsers($_SESSION['session_user_id']).')';
     }
-    $sql .= ' ORDER BY test_begin_time DESC, test_name';
-    return $sql;
+
+    return $sql . ' ORDER BY test_begin_time DESC, test_name';
 }
 
 /**
@@ -127,8 +128,8 @@ function F_select_executed_tests_sql()
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
         $sql .= ' AND test_user_id IN ('.F_getAuthorizedUsers($_SESSION['session_user_id']).')';
     }
-    $sql .= ' ORDER BY test_begin_time DESC, test_name';
-    return $sql;
+
+    return $sql . ' ORDER BY test_begin_time DESC, test_name';
 }
 
 //============================================================+

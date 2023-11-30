@@ -44,33 +44,31 @@ require_once('tce_functions_user_select.php');
 if (!isset($order_field)) {
     $order_field='user_lastname,user_firstname';
 }
+
 if (!isset($orderdir)) {
     $orderdir=0;
 }
+
 if (!isset($firstrow)) {
     $firstrow=0;
 }
+
 if (!isset($rowsperpage)) {
     $rowsperpage=K_MAX_ROWS_PER_PAGE;
 }
+
 if (!isset($searchterms)) {
     $searchterms='';
 }
-if (!isset($cid)) {
-    $cid='';
-} else {
-    $cid = preg_replace('/[^a-z0-9_]/', '', $cid);
-} // ID of the calling form field
-if (!isset($uids)) {
-    $uids='';
-} else {
-    $uids = preg_replace('/[^x0-9]/', '', $uids);
-}  // selected user IDs
-if (isset($_REQUEST['group_id'])) {
-    $group_id = intval($_REQUEST['group_id']);
-} else {
-    $group_id = 0;
-}
+
+$cid = isset($cid) ? preg_replace('/[^a-z0-9_]/', '', $cid) : '';
+
+// ID of the calling form field
+$uids = isset($uids) ? preg_replace('/[^x0-9]/', '', $uids) : '';
+
+// selected user IDs
+$group_id = isset($_REQUEST['group_id']) ? (int) $_REQUEST['group_id'] : 0;
+
 if (!F_isAuthorizedEditorForGroup($group_id)) {
     F_print_error('ERROR', $l['m_authorization_denied'], true);
 }
@@ -91,6 +89,7 @@ echo '<option value="0"';
 if ($group_id == 0) {
     echo ' selected="selected"';
 }
+
 echo '>&nbsp;</option>'.K_NEWLINE;
 $sql = F_user_group_select_sql();
 if ($r = F_db_query($sql, $db)) {
@@ -99,12 +98,14 @@ if ($r = F_db_query($sql, $db)) {
         if ($m['group_id'] == $group_id) {
             echo ' selected="selected"';
         }
+
         echo '>'.htmlspecialchars($m['group_name'], ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
     }
 } else {
     echo '</select></span></div>'.K_NEWLINE;
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 
 echo '<input type="text" name="searchterms" id="searchterms" value="'.htmlspecialchars($searchterms, ENT_COMPAT, $l['a_meta_charset']).'" size="20" maxlength="255" title="'.$l['w_search'].'" />';
@@ -116,27 +117,30 @@ if (strlen($searchterms) > 0) {
     $terms = preg_split("/[\s]+/i", $searchterms); // Get all the words into an array
     foreach ($terms as $word) {
         $word = F_escape_sql($db, $word);
-        $wherequery .= ' AND ((user_name LIKE \'%'.$word.'%\')';
-        $wherequery .= ' OR (user_email LIKE \'%'.$word.'%\')';
-        $wherequery .= ' OR (user_firstname LIKE \'%'.$word.'%\')';
-        $wherequery .= ' OR (user_lastname LIKE \'%'.$word.'%\')';
-        $wherequery .= ' OR (user_regnumber LIKE \'%'.$word.'%\')';
-        $wherequery .= ' OR (user_ssn LIKE \'%'.$word.'%\'))';
+        $wherequery .= " AND ((user_name LIKE '%".$word."%')";
+        $wherequery .= " OR (user_email LIKE '%".$word."%')";
+        $wherequery .= " OR (user_firstname LIKE '%".$word."%')";
+        $wherequery .= " OR (user_lastname LIKE '%".$word."%')";
+        $wherequery .= " OR (user_regnumber LIKE '%".$word."%')";
+        $wherequery .= " OR (user_ssn LIKE '%".$word."%'))";
     }
+
     $wherequery = '('.substr($wherequery, 5).')';
 }
 
 // select only specified User IDs
-if (isset($uids) and !empty($uids)) {
+if (isset($uids) && !empty($uids)) {
     $uid_list = '';
     $uids = explode('x', $uids);
     foreach ($uids as $id) {
-        $uid_list .= ','.intval($id);
+        $uid_list .= ','.(int) $id;
     }
-    if (!empty($uid_list)) {
-        if (!empty($wherequery)) {
+
+    if ($uid_list !== '') {
+        if ($wherequery !== '') {
             $wherequery .= ' AND ';
         }
+
         $wherequery .= '(user_id IN ('.substr($uid_list, 1).'))';
     }
 }

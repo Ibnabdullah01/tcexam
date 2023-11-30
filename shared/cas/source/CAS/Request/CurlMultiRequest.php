@@ -42,8 +42,9 @@
 class CAS_Request_CurlMultiRequest
 implements CAS_Request_MultiRequestInterface
 {
-    private $_requests = array();
-    private $_sent = false;
+    private array $_requests = [];
+
+    private bool $_sent = false;
 
     /*********************************************************
      * Add Requests
@@ -68,6 +69,7 @@ implements CAS_Request_MultiRequestInterface
                 'Request has already been sent cannot '.__METHOD__
             );
         }
+
         if (!$request instanceof CAS_Request_CurlRequest) {
             throw new CAS_InvalidArgumentException(
                 'As a CAS_Request_CurlMultiRequest, I can only work with CAS_Request_CurlRequest objects.'
@@ -89,6 +91,7 @@ implements CAS_Request_MultiRequestInterface
                 'Request has already been sent cannot '.__METHOD__
             );
         }
+
         return count($this->_requests);
     }
 
@@ -110,7 +113,8 @@ implements CAS_Request_MultiRequestInterface
                 'Request has already been sent cannot send again.'
             );
         }
-        if (!count($this->_requests)) {
+
+        if ($this->_requests === []) {
             throw new CAS_OutOfSequenceException(
                 'At least one request must be added via addRequest() before the multi-request can be sent.'
             );
@@ -119,7 +123,7 @@ implements CAS_Request_MultiRequestInterface
         $this->_sent = true;
 
         // Initialize our handles and configure all requests.
-        $handles = array();
+        $handles = [];
         $multiHandle = curl_multi_init();
         foreach ($this->_requests as $i => $request) {
             $handle = $request->initAndConfigure();

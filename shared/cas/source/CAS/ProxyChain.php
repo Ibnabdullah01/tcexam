@@ -43,7 +43,7 @@ class CAS_ProxyChain
 implements CAS_ProxyChain_Interface
 {
 
-    protected $chain = array();
+    protected $chain = [];
 
     /**
      * A chain is an array of strings or regexp strings that will be matched
@@ -89,20 +89,19 @@ implements CAS_ProxyChain_Interface
                         $mismatch = true;
                         break;
                     }
+                } elseif (strncasecmp($search, $proxy_url, strlen($search)) == 0) {
+                    phpCAS::trace(
+                        "Found string " .  $search . " matching " . $proxy_url
+                    );
                 } else {
-                    if (strncasecmp($search, $proxy_url, strlen($search)) == 0) {
-                        phpCAS::trace(
-                            "Found string " .  $search . " matching " . $proxy_url
-                        );
-                    } else {
-                        phpCAS::trace(
-                            "No match " .  $search . " != " . $proxy_url
-                        );
-                        $mismatch = true;
-                        break;
-                    }
+                    phpCAS::trace(
+                        "No match " .  $search . " != " . $proxy_url
+                    );
+                    $mismatch = true;
+                    break;
                 }
             }
+
             if (!$mismatch) {
                 phpCAS::trace("Proxy chain matches");
                 return true;
@@ -110,6 +109,7 @@ implements CAS_ProxyChain_Interface
         } else {
             phpCAS::trace("Proxy chain skipped: size mismatch");
         }
+
         return false;
     }
 
@@ -122,6 +122,6 @@ implements CAS_ProxyChain_Interface
      */
     protected function isSizeValid (array $list)
     {
-        return (sizeof($this->chain) == sizeof($list));
+        return (count($this->chain) === count($list));
     }
 }

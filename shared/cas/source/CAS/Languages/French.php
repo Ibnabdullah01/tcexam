@@ -109,7 +109,7 @@ class CAS_Languages_French implements CAS_Languages_LanguageInterface
      */
     public function getServiceUnavailable()
     {
-        return 'Le service `<b>%s</b>\' est indisponible (<b>%s</b>)';
+        return "Le service `<b>%s</b>' est indisponible (<b>%s</b>)";
     }
 }
 

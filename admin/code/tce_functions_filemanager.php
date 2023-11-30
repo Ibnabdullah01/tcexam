@@ -40,15 +40,26 @@ function F_deleteMediaFile($filename)
         // insufficient user level
         return false;
     }
+
     $allowed_extensions = unserialize(K_ALLOWED_UPLOAD_EXTENSIONS);
     $path_parts = pathinfo($filename);
-    if ((strpos($path_parts['dirname'].'/', K_PATH_CACHE) !== false)
-        and in_array(strtolower($path_parts['extension']), $allowed_extensions)
-        and (strpos($filename.'/', K_PATH_LANG_CACHE) === false)
-        and (strpos($filename.'/', K_PATH_BACKUP) === false)) {
-        return unlink($filename);
+    if (!str_contains($path_parts['dirname'].'/', K_PATH_CACHE)) {
+        return false;
     }
-    return false;
+
+    if (!in_array(strtolower($path_parts['extension']), $allowed_extensions)) {
+        return false;
+    }
+
+    if (str_contains($filename.'/', K_PATH_LANG_CACHE)) {
+        return false;
+    }
+
+    if (str_contains($filename.'/', K_PATH_BACKUP)) {
+        return false;
+    }
+
+    return unlink($filename);
 }
 
 /**
@@ -65,20 +76,43 @@ function F_renameMediaFile($filename, $newname)
         // insufficient user level
         return false;
     }
+
     $allowed_extensions = unserialize(K_ALLOWED_UPLOAD_EXTENSIONS);
     $path_parts = pathinfo($filename);
     $path_parts_new = pathinfo($newname);
-    if ((strpos($path_parts['dirname'].'/', K_PATH_CACHE) !== false)
-        and in_array(strtolower($path_parts['extension']), $allowed_extensions)
-        and (strpos($filename.'/', K_PATH_LANG_CACHE) === false)
-        and (strpos($filename.'/', K_PATH_BACKUP) === false)
-        and (strpos($path_parts_new['dirname'].'/', K_PATH_CACHE) !== false)
-        and in_array(strtolower($path_parts_new['extension']), $allowed_extensions)
-        and (strpos($newname.'/', K_PATH_LANG_CACHE) === false)
-        and (strpos($newname.'/', K_PATH_BACKUP) === false)) {
-        return rename($filename, $newname);
+    if (!str_contains($path_parts['dirname'].'/', K_PATH_CACHE)) {
+        return false;
     }
-    return false;
+
+    if (!in_array(strtolower($path_parts['extension']), $allowed_extensions)) {
+        return false;
+    }
+
+    if (str_contains($filename.'/', K_PATH_LANG_CACHE)) {
+        return false;
+    }
+
+    if (str_contains($filename.'/', K_PATH_BACKUP)) {
+        return false;
+    }
+
+    if (!str_contains($path_parts_new['dirname'].'/', K_PATH_CACHE)) {
+        return false;
+    }
+
+    if (!in_array(strtolower($path_parts_new['extension']), $allowed_extensions)) {
+        return false;
+    }
+
+    if (str_contains($newname.'/', K_PATH_LANG_CACHE)) {
+        return false;
+    }
+
+    if (str_contains($newname.'/', K_PATH_BACKUP)) {
+        return false;
+    }
+
+    return rename($filename, $newname);
 }
 
 /**
@@ -94,12 +128,14 @@ function F_createMediaDir($dirname)
         // insufficient user level
         return false;
     }
-    if (strpos($dirname.'/', K_PATH_CACHE) !== false) {
+
+    if (str_contains($dirname.'/', K_PATH_CACHE)) {
         $oldumask = @umask(0);
         $ret = @mkdir($dirname, 0744, false);
         @umask($oldumask);
         return $ret;
     }
+
     return false;
 }
 
@@ -116,10 +152,16 @@ function F_deleteMediaDir($dirname)
         // insufficient user level
         return false;
     }
-    if ((strpos($dirname.'/', K_PATH_CACHE) !== false) and (count(scandir($dirname)) <= 2)) {
-        return @rmdir($dirname);
+
+    if (!str_contains($dirname.'/', K_PATH_CACHE)) {
+        return false;
     }
-    return false;
+
+    if (count(scandir($dirname)) > 2) {
+        return false;
+    }
+
+    return @rmdir($dirname);
 }
 
 /**
@@ -136,28 +178,27 @@ function F_getFileInfo($file)
     $info['lastmod'] = date("Y-m-d H:i:s", @filemtime($file));
     $info['owner'] = @fileowner($file);
     $info['perms'] = @fileperms($file);
-    if ($info['dir']) {
-        $info['aperms'] = 'd';
-    } else {
-        $info['aperms'] = '-';
-    }
-    $info['aperms'] .= ($info['perms'] & 00400) ? 'r' : '-';
-    $info['aperms'] .= ($info['perms'] & 00200) ? 'w' : '-';
-    $info['aperms'] .= ($info['perms'] & 00100) ? 'x' : '-';
-    $info['aperms'] .= ($info['perms'] & 00040) ? 'r' : '-';
-    $info['aperms'] .= ($info['perms'] & 00020) ? 'w' : '-';
-    $info['aperms'] .= ($info['perms'] & 00010) ? 'x' : '-';
-    $info['aperms'] .= ($info['perms'] & 00004) ? 'r' : '-';
-    $info['aperms'] .= ($info['perms'] & 00002) ? 'w' : '-';
-    $info['aperms'] .= ($info['perms'] & 00001) ? 'x' : '-';
+    $info['aperms'] = $info['dir'] ? 'd' : '-';
+
+    $info['aperms'] .= (($info['perms'] & 00400) !== 0) ? 'r' : '-';
+    $info['aperms'] .= (($info['perms'] & 00200) !== 0) ? 'w' : '-';
+    $info['aperms'] .= (($info['perms'] & 00100) !== 0) ? 'x' : '-';
+    $info['aperms'] .= (($info['perms'] & 00040) !== 0) ? 'r' : '-';
+    $info['aperms'] .= (($info['perms'] & 00020) !== 0) ? 'w' : '-';
+    $info['aperms'] .= (($info['perms'] & 00010) !== 0) ? 'x' : '-';
+    $info['aperms'] .= (($info['perms'] & 00004) !== 0) ? 'r' : '-';
+    $info['aperms'] .= (($info['perms'] & 00002) !== 0) ? 'w' : '-';
+    $info['aperms'] .= (($info['perms'] & 00001) !== 0) ? 'x' : '-';
     $info['size'] = @filesize($file);
     $info['link'] = is_link($file);
     if ($info['link']) {
         $info['linkto'] = readlink($file);
     }
+
     if (!isset($info['extension'])) {
         $info['extension'] = '';
     }
+
     $info['tcefile'] = substr($file, strlen(K_PATH_CACHE));
     $info['tcename'] = substr($info['tcefile'], 0, -(strlen($info['extension']) + 1));
     return $info;
@@ -172,14 +213,15 @@ function F_getFileInfo($file)
 function F_formatFileSize($size)
 {
     $out = ''; // string to be returned
-    $mult = array('B ', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'); // multipliers
+    $mult = ['B ', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']; // multipliers
     if ($size == 0) {
         $out = '0';
     } else {
         $i = floor(log($size, 1024));
-        $out .= round(($size / pow(1024, $i)), $i > 1 ? 2 : 0);
+        $out .= round(($size / 1024 ** $i), $i > 1 ? 2 : 0);
         $out .= ' '.$mult[$i];
     }
+
     return $out;
 }
 
@@ -194,7 +236,7 @@ function F_getMediaDirPathLink($dirpath, $viewmode = true)
 {
     global $l, $db;
     require_once('../config/tce_config.php');
-    $mode = intval($viewmode);
+    $mode = (int) $viewmode;
     $out = ''; //string to be returned
     // write root link
     $out .= '<a href="'.$_SERVER['SCRIPT_NAME'].'?d='.urlencode(K_PATH_CACHE).'&amp;v='.$mode.'" title="CACHE ROOT">[CACHE]</a> /';
@@ -211,6 +253,7 @@ function F_getMediaDirPathLink($dirpath, $viewmode = true)
             $out .= ' <a href="'.$_SERVER['SCRIPT_NAME'].'?d='.urlencode($current_dir).'&amp;v='.$mode.'" title="'.$l['w_change_dir'].'">'.$dir.'</a> /';
         }
     }
+
     return $out;
 }
 
@@ -224,19 +267,20 @@ function F_getMediaDirPathLink($dirpath, $viewmode = true)
  */
 function F_getDirFiles($dir, $rootdir = K_PATH_CACHE, $authdirs = '')
 {
-    $data['dirs'] = array();
-    $data['files'] = array();
+    $data['dirs'] = [];
+    $data['files'] = [];
     // open dir
     $dirhdl = @opendir($dir);
     if ($dirhdl === false) {
         return $data;
     }
+
     while ($file = readdir($dirhdl)) {
-        if (($file != '.') and ($file != '..')) {
+        if ($file != '.' && $file != '..') {
             $filename = $dir.$file;
             if (F_isAuthorizedDir($filename.'/', $rootdir, $authdirs)) {
                 if (is_dir($filename)) {
-                    if ((strpos($filename.'/', K_PATH_LANG_CACHE) === false) and (strpos($filename.'/', K_PATH_BACKUP) === false)) {
+                    if (!str_contains($filename.'/', K_PATH_LANG_CACHE) && !str_contains($filename.'/', K_PATH_BACKUP)) {
                         $data['dirs'][] = $filename;
                     }
                 } else {
@@ -245,6 +289,7 @@ function F_getDirFiles($dir, $rootdir = K_PATH_CACHE, $authdirs = '')
             }
         }
     }
+
     // sort files alphabetically
     natcasesort($data['dirs']);
     natcasesort($data['files']);
@@ -264,7 +309,7 @@ function F_isUsedMediaFile($file)
     // remove cache root from file path
     $file = substr($file, strlen(K_PATH_CACHE));
     // search on questions
-    $sql = 'SELECT question_id FROM '.K_TABLE_QUESTIONS.' WHERE question_description LIKE \'%'.$file.'[/object%\' OR question_explanation LIKE \'%'.$file.'[/object%\' LIMIT 1';
+    $sql = 'SELECT question_id FROM '.K_TABLE_QUESTIONS." WHERE question_description LIKE '%".$file."[/object%' OR question_explanation LIKE '%".$file."[/object%' LIMIT 1";
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             return true;
@@ -272,8 +317,9 @@ function F_isUsedMediaFile($file)
     } else {
         F_display_db_error();
     }
+
     // search on answers
-    $sql = 'SELECT answer_id FROM '.K_TABLE_ANSWERS.' WHERE answer_description LIKE \'%'.$file.'[/object%\' OR answer_explanation LIKE \'%'.$file.'[/object%\' LIMIT 1';
+    $sql = 'SELECT answer_id FROM '.K_TABLE_ANSWERS." WHERE answer_description LIKE '%".$file."[/object%' OR answer_explanation LIKE '%".$file."[/object%' LIMIT 1";
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             return true;
@@ -281,6 +327,7 @@ function F_isUsedMediaFile($file)
     } else {
         F_display_db_error();
     }
+
     return false;
 }
 
@@ -319,23 +366,26 @@ function F_getDirTable($dir, $selected = '', $params = '', $rootdir = K_PATH_CAC
         } else {
             $out .= '<tr style="background-color:#dddddd;font-family:monospace;color:#660000;">';
         }
+
         $out .= '<td><strong><a href="'.$_SERVER['SCRIPT_NAME'].'?d='.$current_dir.'&amp;v=1'.$params.'" title="'.$l['w_change_dir'].'" style="text-decoration:underline;">'.$info['basename'].'</a></strong></td>';
         $out .= '<td style="text-align:right;">'.F_formatFileSize($info['size']).'</td>';
         $out .= '<td>'.$info['lastmod'].'</td>';
         $out .= '<td>'.$info['aperms'].'</td>';
         $out .= '</tr>'.K_NEWLINE;
     }
+
     // files
     $current_dir = urlencode($dir);
     foreach ($data['files'] as $file) {
         $info = F_getFileInfo($file);
-        if (isset($info['extension']) and in_array(strtolower($info['extension']), $allowed_extensions) and (substr($info['basename'], 0, 6) != 'latex_')) {
+        if (isset($info['extension']) && in_array(strtolower($info['extension']), $allowed_extensions) && !str_starts_with($info['basename'], 'latex_')) {
             $current_file = urlencode($dir.$info['basename']);
             if ($info['basename'] == $selected) {
                 $out .= '<tr style="background-color:#ffffcc;font-family:monospace;">';
             } else {
                 $out .= '<tr style="font-family:monospace;">';
             }
+
             $out .= '<td><a href="'.$_SERVER['SCRIPT_NAME'].'?d='.$current_dir.'&amp;f='.urlencode($current_file).'&amp;v=1'.$params.'" title="'.$l['w_select'].'">'.$info['basename'].'</a></td>';
             $out .= '<td style="text-align:right;">'.F_formatFileSize($info['size']).'</td>';
             //$out .= '<td style="text-align:right;">'.$info['size'].'</td>';
@@ -344,8 +394,8 @@ function F_getDirTable($dir, $selected = '', $params = '', $rootdir = K_PATH_CAC
             $out .= '</tr>'.K_NEWLINE;
         }
     }
-    $out .= '</table>'.K_NEWLINE;
-    return $out;
+
+    return $out . ('</table>'.K_NEWLINE);
 }
 
 /**
@@ -362,7 +412,7 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
 {
     global $l;
     require_once('../config/tce_config.php');
-    $imgformats = array('gif', 'jpg', 'jpeg', 'png', 'svg');
+    $imgformats = ['gif', 'jpg', 'jpeg', 'png', 'svg'];
     $allowed_extensions = unserialize(K_ALLOWED_UPLOAD_EXTENSIONS);
     $out = ''; // html string to be returned
     $data = F_getDirFiles($dir, $rootdir, $authdirs);
@@ -376,6 +426,7 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
         if (strlen($filename) > 20) {
             $filename = substr($filename, 0, 20).'...';
         }
+
         $out .= $filename;
         $out .= '</th></tr>';
         $out .= '<tr style="height:160px;"><td style="text-align:center;vertical-align:middle;background-color:white;">';
@@ -383,17 +434,15 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
         $out .= '</td></tr>';
         $out .= '</table>';
     }
+
     // files
     $current_dir = urlencode($dir);
     foreach ($data['files'] as $file) {
         $info = F_getFileInfo($file);
-        if (isset($info['extension']) and in_array(strtolower($info['extension']), $allowed_extensions) and (substr($info['basename'], 0, 6) != 'latex_')) {
+        if (isset($info['extension']) && in_array(strtolower($info['extension']), $allowed_extensions) && !str_starts_with($info['basename'], 'latex_')) {
             $current_file = urlencode($dir.$info['basename']);
-            if ($info['basename'] == $selected) {
-                $bgcolor = '#009900';
-            } else {
-                $bgcolor = '#333333';
-            }
+            $bgcolor = $info['basename'] == $selected ? '#009900' : '#333333';
+
             if (in_array(strtolower($info['extension']), $imgformats)) {
                 $w = 150;
                 $h = 150;
@@ -401,12 +450,14 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
             } else {
                 $imgicon = '<img src="'.K_PATH_IMAGES.'file.png" width="39" height="50" alt="'.$l['w_select'].' : '.$info['basename'].' ('.F_formatFileSize($info['size']).')'.'" style="border:none;" />';
             }
+
             $out .= '<table style="float:left;border:none;margin:1px;padding:0;width:158px;background-color:'.$bgcolor.';">';
             $out .= '<tr style="height:16px;font-family:monospace;font-size:12px;color:white;"><th>';
             $filename = $info['basename'];
             if (strlen($filename) > 20) {
                 $filename = substr(substr($filename, 0, -(strlen($info['extension']) + 1)), 0, 15).'&rarr;.'.$info['extension'];
             }
+
             $out .= $filename;
             $out .= '</th></tr>';
             $out .= '<tr style="height:160px;"><td style="text-align:center;vertical-align:middle;background-color:white;">';
@@ -415,8 +466,8 @@ function F_getDirVisualTable($dir, $selected = '', $params = '', $rootdir = K_PA
             $out .= '</table>';
         }
     }
-    $out .= '<br style="clear:both;" />';
-    return $out;
+
+    return $out . '<br style="clear:both;" />';
 }
 
 /**
@@ -430,6 +481,7 @@ function F_getAuthorizedDirs()
     if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
         return '[^/]*';
     }
+
     $reg = F_getAuthorizedUsers($_SESSION['session_user_id']);
     return str_replace(',', '|', $reg);
 }
@@ -447,10 +499,8 @@ function F_isAuthorizedDir($dir, $rootdir, $authdirs = '')
     if (empty($authdirs)) {
         $authdirs = F_getAuthorizedDirs();
     }
-    if (preg_match('#^'.$rootdir.'('.$authdirs.')/#', $dir) > 0) {
-        return true;
-    }
-    return false;
+
+    return preg_match('#^'.$rootdir.'('.$authdirs.')/#', $dir) > 0;
 }
 
 //============================================================+

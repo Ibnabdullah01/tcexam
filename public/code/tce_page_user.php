@@ -45,6 +45,7 @@ echo '<ul>'.K_NEWLINE;
 foreach ($menu['tce_page_user.php']['sub'] as $link => $data) {
     echo F_menu_link($link, $data, 1);
 }
+
 echo '</ul>'.K_NEWLINE;
 
 echo '</div>'.K_NEWLINE;

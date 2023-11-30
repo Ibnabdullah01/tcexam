@@ -39,25 +39,15 @@ $thispage_title = $l['t_sslcerts'];
 require_once('../code/tce_page_header.php');
 require_once('../../shared/code/tce_functions_form.php');
 require_once('../../shared/code/tce_functions_authorization.php');
-
 // set default values
-if (!isset($ssl_enabled) or (empty($ssl_enabled))) {
-    $ssl_enabled = false;
-} else {
-    $ssl_enabled = F_getBoolean($ssl_enabled);
-}
-if (isset($ssl_name)) {
-    $ssl_name = utrim($ssl_name);
-} else {
-    $ssl_name = '';
-}
-if (isset($ssl_user_id)) {
-    $ssl_user_id = intval($ssl_user_id);
-} else {
-    $ssl_user_id = intval($_SESSION['session_user_id']);
-}
-if (isset($_REQUEST['ssl_id']) and ($_REQUEST['ssl_id'] > 0)) {
-    $ssl_id = intval($_REQUEST['ssl_id']);
+$ssl_enabled = !isset($ssl_enabled) || empty($ssl_enabled) ? false : F_getBoolean($ssl_enabled);
+
+$ssl_name = isset($ssl_name) ? utrim($ssl_name) : '';
+
+$ssl_user_id = isset($ssl_user_id) ? (int) $ssl_user_id : (int) $_SESSION['session_user_id'];
+
+if (isset($_REQUEST['ssl_id']) && $_REQUEST['ssl_id'] > 0) {
+    $ssl_id = (int) $_REQUEST['ssl_id'];
     // check user's authorization for this certificate
     if (!F_isAuthorizedUser(K_TABLE_SSLCERTS, 'ssl_id', $ssl_id, 'ssl_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
@@ -69,14 +59,14 @@ if (isset($_REQUEST['ssl_id']) and ($_REQUEST['ssl_id'] > 0)) {
 // extract hash and end date from uploaded file
 $ssl_hash = '';
 $ssl_end_date = '';
-if (isset($_FILES['userfile']['name']) and (!empty($_FILES['userfile']['name']))) {
+if (isset($_FILES['userfile']['name']) && !empty($_FILES['userfile']['name'])) {
     require_once('../code/tce_functions_upload.php');
     // upload file
     $uploadedfile = F_upload_file('userfile', K_PATH_CACHE);
     if ($uploadedfile !== false) {
         $cert = file_get_contents(K_PATH_CACHE.$uploadedfile);
-        $pkcs12 = (substr($uploadedfile, -4) == '.pfx');
-        list($ssl_hash, $ssl_end_date) = F_getSSLCertificateHash($cert, $pkcs12);
+        $pkcs12 = (str_ends_with($uploadedfile, '.pfx'));
+        [$ssl_hash, $ssl_end_date] = F_getSSLCertificateHash($cert, $pkcs12);
         //remove certificate file
         unlink(K_PATH_CACHE.$uploadedfile);
     }
@@ -94,6 +84,7 @@ switch ($menu_mode) {
             if (!$r = F_db_query($sql, $db)) {
                 F_display_db_error();
             }
+
             F_print_error('WARNING', $l['m_disabled_vs_deleted']);
         } else {
             // ask confirmation
@@ -110,6 +101,7 @@ switch ($menu_mode) {
             echo '</form>'.K_NEWLINE;
             echo '</div>'.K_NEWLINE;
         }
+
         break;
     }
 
@@ -124,32 +116,36 @@ switch ($menu_mode) {
                 F_print_error('MESSAGE', $ssl_name.': '.$l['m_deleted']);
             }
         }
+
         break;
     }
 
     case 'update':{ // Update
         // check if the confirmation chekbox has been selected
-        if (!isset($_REQUEST['confirmupdate']) or ($_REQUEST['confirmupdate'] != 1)) {
+        if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
             F_print_error('WARNING', $l['m_form_missing_fields'].': '.$l['w_confirm'].' &rarr; '.$l['w_update']);
             F_stripslashes_formfields();
             break;
         }
+
         if ($formstatus = F_check_form_fields()) {
             // check if name is unique
-            if (!F_check_unique(K_TABLE_SSLCERTS, 'ssl_name=\''.F_escape_sql($db, $ssl_name).'\'', 'ssl_id', $ssl_id)) {
+            if (!F_check_unique(K_TABLE_SSLCERTS, "ssl_name='".F_escape_sql($db, $ssl_name)."'", 'ssl_id', $ssl_id)) {
                 F_print_error('WARNING', $l['m_duplicate_name']);
                 $formstatus = false;
                 F_stripslashes_formfields();
                 break;
             }
+
             if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
-                $ssl_user_id = intval($ssl_user_id);
+                $ssl_user_id = (int) $ssl_user_id;
             } else {
-                $ssl_user_id = intval($_SESSION['session_user_id']);
+                $ssl_user_id = (int) $_SESSION['session_user_id'];
             }
+
             $sql = 'UPDATE '.K_TABLE_SSLCERTS.' SET
 				ssl_name=\''.F_escape_sql($db, $ssl_name).'\',
-				ssl_enabled=\''.intval($ssl_enabled).'\',
+				ssl_enabled=\''.(int) $ssl_enabled.'\',
 				ssl_user_id=\''.$ssl_user_id.'\'
 				WHERE ssl_id='.$ssl_id.'';
             if (!$r = F_db_query($sql, $db)) {
@@ -158,23 +154,26 @@ switch ($menu_mode) {
                 F_print_error('MESSAGE', $l['m_updated']);
             }
         }
+
         break;
     }
 
     case 'add':{ // Add
-        if (($formstatus = F_check_form_fields()) and (strlen($ssl_hash) == 32)) {
+        if (($formstatus = F_check_form_fields()) && strlen($ssl_hash) == 32) {
             // check if name is unique
-            if (!F_check_unique(K_TABLE_SSLCERTS, 'ssl_name=\''.F_escape_sql($db, $ssl_name).'\'')) {
+            if (!F_check_unique(K_TABLE_SSLCERTS, "ssl_name='".F_escape_sql($db, $ssl_name)."'")) {
                 F_print_error('WARNING', $l['m_duplicate_name']);
                 $formstatus = false;
                 F_stripslashes_formfields();
                 break;
             }
+
             if ($_SESSION['session_user_level'] >= K_AUTH_ADMINISTRATOR) {
-                $ssl_user_id = intval($ssl_user_id);
+                $ssl_user_id = (int) $ssl_user_id;
             } else {
-                $ssl_user_id = intval($_SESSION['session_user_id']);
+                $ssl_user_id = (int) $_SESSION['session_user_id'];
             }
+
             $sql = 'INSERT INTO '.K_TABLE_SSLCERTS.' (
 				ssl_name,
 				ssl_hash,
@@ -185,7 +184,7 @@ switch ($menu_mode) {
 				\''.F_escape_sql($db, $ssl_name).'\',
 				\''.$ssl_hash.'\',
 				\''.$ssl_end_date.'\',
-				\''.intval($ssl_enabled).'\',
+				\''.(int) $ssl_enabled.'\',
 				\''.$ssl_user_id.'\'
 				)';
             if (!$r = F_db_query($sql, $db)) {
@@ -194,6 +193,7 @@ switch ($menu_mode) {
                 $ssl_id = F_db_insert_id($db, K_TABLE_SSLCERTS, 'ssl_id');
             }
         }
+
         break;
     }
 
@@ -202,7 +202,7 @@ switch ($menu_mode) {
         $ssl_hash = '';
         $ssl_end_date = '';
         $ssl_enabled = true;
-        $ssl_user_id = intval($_SESSION['session_user_id']);
+        $ssl_user_id = (int) $_SESSION['session_user_id'];
         break;
     }
 
@@ -212,35 +212,33 @@ switch ($menu_mode) {
 } //end of switch
 
 // --- Initialize variables
-if ($formstatus) {
-    if ($menu_mode != 'clear') {
-        if (!isset($ssl_id) or empty($ssl_id)) {
-            $ssl_id = 0;
-            $ssl_name = '';
-            $ssl_hash = '';
-            $ssl_end_date = '';
-            $ssl_enabled = true;
-            $ssl_user_id = intval($_SESSION['session_user_id']);
-        } else {
-            $sql =  'SELECT * FROM '.K_TABLE_SSLCERTS.' WHERE ssl_id='.$ssl_id.' LIMIT 1';
-            if ($r = F_db_query($sql, $db)) {
-                if ($m = F_db_fetch_array($r)) {
-                    $ssl_id = $m['ssl_id'];
-                    $ssl_name = $m['ssl_name'];
-                    $ssl_hash = $m['ssl_hash'];
-                    $ssl_end_date = $m['ssl_end_date'];
-                    $ssl_enabled = F_getBoolean($m['ssl_enabled']);
-                    $ssl_user_id = intval($m['ssl_user_id']);
-                } else {
-                    $ssl_name = '';
-                    $ssl_hash = '';
-                    $ssl_end_date = '';
-                    $ssl_enabled = true;
-                    $ssl_user_id = intval($_SESSION['session_user_id']);
-                }
+if ($formstatus && $menu_mode != 'clear') {
+    if (!isset($ssl_id) || $ssl_id === 0) {
+        $ssl_id = 0;
+        $ssl_name = '';
+        $ssl_hash = '';
+        $ssl_end_date = '';
+        $ssl_enabled = true;
+        $ssl_user_id = (int) $_SESSION['session_user_id'];
+    } else {
+        $sql =  'SELECT * FROM '.K_TABLE_SSLCERTS.' WHERE ssl_id='.$ssl_id.' LIMIT 1';
+        if ($r = F_db_query($sql, $db)) {
+            if ($m = F_db_fetch_array($r)) {
+                $ssl_id = $m['ssl_id'];
+                $ssl_name = $m['ssl_name'];
+                $ssl_hash = $m['ssl_hash'];
+                $ssl_end_date = $m['ssl_end_date'];
+                $ssl_enabled = F_getBoolean($m['ssl_enabled']);
+                $ssl_user_id = (int) $m['ssl_user_id'];
             } else {
-                F_display_db_error();
+                $ssl_name = '';
+                $ssl_hash = '';
+                $ssl_end_date = '';
+                $ssl_enabled = true;
+                $ssl_user_id = (int) $_SESSION['session_user_id'];
             }
+        } else {
+            F_display_db_error();
         }
     }
 }
@@ -260,6 +258,7 @@ echo '<option value="0" style="background-color:#009900;color:white;"';
 if ($ssl_id == 0) {
     echo ' selected="selected"';
 }
+
 echo '>+</option>'.K_NEWLINE;
 $sql = 'SELECT * FROM '.K_TABLE_SSLCERTS.' ORDER BY ssl_name';
 if ($r = F_db_query($sql, $db)) {
@@ -269,12 +268,14 @@ if ($r = F_db_query($sql, $db)) {
         if ($m['ssl_id'] == $ssl_id) {
             echo ' selected="selected"';
         }
+
         echo '>'.$countitem.'. ['.$m['ssl_id'].']';
         echo ' '.htmlspecialchars($m['ssl_name'], ENT_NOQUOTES, $l['a_meta_charset']);
         echo ' ('.htmlspecialchars($m['ssl_end_date'], ENT_NOQUOTES, $l['a_meta_charset']).')';
         echo '&nbsp;</option>'.K_NEWLINE;
-        $countitem++;
+        ++$countitem;
     }
+
     if ($countitem == 1) {
         echo '<option value="0">&nbsp;</option>'.K_NEWLINE;
     }
@@ -282,6 +283,7 @@ if ($r = F_db_query($sql, $db)) {
     echo '</select></span></div>'.K_NEWLINE;
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
@@ -292,7 +294,7 @@ echo '<div class="row"><hr /></div>'.K_NEWLINE;
 
 echo getFormRowTextInput('ssl_name', $l['w_name'], $l['w_name'], '', $ssl_name, '', 255, false, false, false, '');
 
-if (!isset($ssl_id) or ($ssl_id <= 0)) {
+if (!isset($ssl_id) || $ssl_id <= 0) {
     echo '<div class="row">'.K_NEWLINE;
     echo '<span class="label">'.K_NEWLINE;
     echo '<label for="userfile">'.$l['w_upload_file'].'</label>'.K_NEWLINE;
@@ -311,7 +313,7 @@ echo getFormRowCheckBox('ssl_enabled', $l['w_enabled'], $l['h_enabled'], '', 1, 
 echo '<div class="row">'.K_NEWLINE;
 
 // show buttons by case
-if (isset($ssl_id) and ($ssl_id > 0)) {
+if (isset($ssl_id) && $ssl_id > 0) {
     echo '<span style="background-color:#999999;">';
     echo '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="confirm &rarr; update" />';
     F_submit_button('update', $l['w_update'], $l['h_update']);
@@ -321,6 +323,7 @@ if (isset($ssl_id) and ($ssl_id > 0)) {
 } else {
     F_submit_button('add', $l['w_add'], $l['h_add']);
 }
+
 F_submit_button('clear', $l['w_clear'], $l['h_clear']);
 
 echo '</div>'.K_NEWLINE;

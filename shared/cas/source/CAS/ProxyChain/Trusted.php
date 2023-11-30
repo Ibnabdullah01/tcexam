@@ -53,7 +53,7 @@ implements CAS_ProxyChain_Interface
      */
     protected function isSizeValid (array $list)
     {
-        return (sizeof($this->chain) <= sizeof($list));
+        return (count($this->chain) <= count($list));
     }
 
 }

@@ -45,9 +45,10 @@ function F_db_connect($host = 'localhost', $port = '3306', $username = 'root', $
     if (!$db = @mysqli_connect($host, $username, $password, $database, $port)) {
         return false;
     }
+
     // set the correct charset encoding
-    mysqli_query($db, 'SET NAMES \'utf8\' COLLATE \'utf8_unicode_ci\'');
-    mysqli_query($db, 'SET CHARACTER SET \'utf8\'');
+    mysqli_query($db, "SET NAMES 'utf8' COLLATE 'utf8_unicode_ci'");
+    mysqli_query($db, "SET CHARACTER SET 'utf8'");
     return $db;
 }
 
@@ -70,6 +71,7 @@ function F_db_error($link_identifier = null)
     if (empty($link_identifier)) {
         return '';
     }
+
     return '['.mysqli_errno($link_identifier).']: '.mysqli_error($link_identifier).'';
 
 }
@@ -167,6 +169,7 @@ function F_escape_sql($link_identifier, $str, $stripslashes = true)
     if ($stripslashes) {
         $str = stripslashes($str);
     }
+
     return mysqli_real_escape_string($link_identifier, $str);
 }
 

@@ -41,7 +41,7 @@
  * @author Nicola Asuni
  */
 
-require(dirname(__FILE__).'/../tcpdf/tcpdf.php');
+require(__DIR__.'/../tcpdf/tcpdf.php');
 
 /**
  * @class TCPDFEX
@@ -52,6 +52,30 @@ require(dirname(__FILE__).'/../tcpdf/tcpdf.php');
  */
 class TCPDFEX extends TCPDF
 {
+
+    public $header_xobjid;
+
+    public $y;
+
+    public $rtl;
+
+    public $x;
+
+    public $cell_height_ratio;
+
+    public $k;
+
+    public $original_rMargin;
+
+    public $original_lMargin;
+
+    public $w;
+
+    public $booklet;
+
+    public $page;
+
+    public $imgscale;
 
     /**
      * URL link that points back to TCExam website.
@@ -128,24 +152,23 @@ class TCPDFEX extends TCPDF
             $headerfont = $this->getHeaderFont();
             $headerdata = $this->getHeaderData();
             $this->y = $this->header_margin;
-            if ($this->rtl) {
-                $this->x = $this->w - $this->original_rMargin;
-            } else {
-                $this->x = $this->original_lMargin;
-            }
-            if (($headerdata['logo']) and ($headerdata['logo'] != K_BLANK_IMAGE)) {
+            $this->x = $this->rtl ? $this->w - $this->original_rMargin : $this->original_lMargin;
+
+            if ($headerdata['logo'] && $headerdata['logo'] != K_BLANK_IMAGE) {
                 $imgtype = TCPDF_IMAGES::getImageFileType(K_PATH_IMAGES.$headerdata['logo']);
-                if (($imgtype == 'eps') or ($imgtype == 'ai')) {
+                if ($imgtype == 'eps' || $imgtype == 'ai') {
                     $this->ImageEps(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
                 } elseif ($imgtype == 'svg') {
                     $this->ImageSVG(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
                 } else {
                     $this->Image(K_PATH_IMAGES.$headerdata['logo'], '', '', $headerdata['logo_width']);
                 }
+
                 $imgy = $this->getImageRBY();
             } else {
                 $imgy = $this->y;
             }
+
             $cell_height = round(($this->cell_height_ratio * $headerfont[2]) / $this->k, 2);
             // set starting margin for text data cell
             if ($this->getRTL()) {
@@ -153,6 +176,7 @@ class TCPDFEX extends TCPDF
             } else {
                 $header_x = $this->original_lMargin + ($headerdata['logo_width'] * 1.1);
             }
+
             $cw = $this->w - $this->original_lMargin - $this->original_rMargin - ($headerdata['logo_width'] * 1.1);
             $this->SetTextColor(0, 0, 0);
             // header title
@@ -164,50 +188,40 @@ class TCPDFEX extends TCPDF
             $this->SetX($header_x);
             $this->MultiCell($cw, $cell_height, $headerdata['string'], 0, '', 0, 1, '', '', true, 0, false);
             // print an ending header line
-            $this->SetLineStyle(array('width' => 0.85 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => array(0, 0, 0)));
+            $this->SetLineStyle(['width' => 0.85 / $this->k, 'cap' => 'butt', 'join' => 'miter', 'dash' => 0, 'color' => [0, 0, 0]]);
             if (!empty($this->tcexam_backlink)) {
                 // set style for barcode
-                $style = array(
-                    'border' => false,
-                    'vpadding' => 0,
-                    'hpadding' => 0,
-                    'fgcolor' => array(0,0,0),
-                    'bgcolor' => false,
-                    'module_width' => 1,
-                    'module_height' => 1
-                );
+                $style = ['border' => false, 'vpadding' => 0, 'hpadding' => 0, 'fgcolor' => [0, 0, 0], 'bgcolor' => false, 'module_width' => 1, 'module_height' => 1];
                 // QRCODE
                 $w = (PDF_MARGIN_TOP - PDF_MARGIN_HEADER - (5.7 / $this->k));
                 $y = (PDF_MARGIN_HEADER);
-                if ($this->rtl) {
-                    $x = PDF_MARGIN_LEFT + $w;
-                } else {
-                    $x = $this->w - PDF_MARGIN_RIGHT - $w;
-                }
+                $x = $this->rtl ? PDF_MARGIN_LEFT + $w : $this->w - PDF_MARGIN_RIGHT - $w;
+
                 // write QR-Code on header
                 $this->write2DBarcode($this->tcexam_backlink, 'QRCODE,L', $x, $y, $w, $w, $style, 'N');
             }
+
             $this->SetY((2.835 / $this->k) + max($imgy, $this->y));
             if ($this->rtl) {
                 $this->SetX($this->original_rMargin);
             } else {
                 $this->SetX($this->original_lMargin);
             }
+
             $this->Cell(($this->w - $this->original_lMargin - $this->original_rMargin), 0, '', 'T', 0, 'C');
             $this->endTemplate();
         }
+
         // print header template
         $x = 0;
         $dx = 0;
-        if ($this->booklet and (($this->page % 2) == 0)) {
+        if ($this->booklet && ($this->page % 2) == 0) {
             // adjust margins for booklet mode
             $dx = ($this->original_lMargin - $this->original_rMargin);
         }
-        if ($this->rtl) {
-            $x = $this->w + $dx;
-        } else {
-            $x = 0 + $dx;
-        }
+
+        $x = $this->rtl ? $this->w + $dx : 0 + $dx;
+
         $this->printTemplate($this->header_xobjid, $x, 0, 0, 0, '', '', false);
     }
 
@@ -232,7 +246,7 @@ class TCPDFEX extends TCPDF
         if ($display_mode < 2) {
             return;
         }
-        
+
         require_once('../config/tce_config.php');
         require_once('../../shared/code/tce_functions_tcecode.php');
         global $l;
@@ -264,6 +278,7 @@ class TCPDFEX extends TCPDF
                 }
             }
         }
+
         $title .= ']';
         $this->Cell(0, $this->tce_data_cell_height, $title, 'T', 1, 'C', 0);
         $this->Ln(1);
@@ -299,7 +314,7 @@ class TCPDFEX extends TCPDF
 
         $num_module = 0;
         foreach ($stats['module'] as $module) {
-            $num_module++;
+            ++$num_module;
 
             $this->SetFillColor(221, 238, 255);
             $this->SetFont($numberfont, 'B', $fontdatasize);
@@ -318,7 +333,7 @@ class TCPDFEX extends TCPDF
             if ($display_mode > 2) {
                 $num_subject = 0;
                 foreach ($module['subject'] as $subject) {
-                    $num_subject++;
+                    ++$num_subject;
 
                     $this->SetFillColor(221, 255, 221);
                     $this->SetFont($numberfont, 'B', $fontdatasize);
@@ -337,7 +352,7 @@ class TCPDFEX extends TCPDF
                     if ($display_mode > 3) {
                         $num_question = 0;
                         foreach ($subject['question'] as $question) {
-                            $num_question++;
+                            ++$num_question;
 
                             $this->SetFillColor(255, 250, 205);
                             $this->SetFont($numberfont, 'B', $fontdatasize);
@@ -356,7 +371,7 @@ class TCPDFEX extends TCPDF
                             if ($display_mode > 4) {
                                 $num_answer = 0;
                                 foreach ($question['answer'] as $answer) {
-                                    $num_answer++;
+                                    ++$num_answer;
 
                                     $this->SetFont($numberfont, 'B', $fontdatasize);
                                     $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, 'M'.$num_module.'S'.$num_subject.'Q'.$num_question.'A'.$num_answer, 1, 0, 'L', 0, '', 1);
@@ -399,7 +414,7 @@ class TCPDFEX extends TCPDF
             $w = $this->tce_page_width * $this->imgscale * $this->k;
             $h = round($this->tce_page_width * 9 / 16);
             $svg = F_getSVGGraphCode(substr($svgdata, 1), $w, $h);
-            if (isset($svg[0]) and ($svg[0] == '<')) {
+            if (isset($svg[0]) && $svg[0] == '<') {
                 $this->ImageSVG('@'.$svg, '', '', $this->tce_page_width, 0, '', 'N', 'C', 0, false);
             }
         }
@@ -425,14 +440,12 @@ class TCPDFEX extends TCPDF
             $tdalign = 'L';
         }
 
-        if ($pubmode) {
-            $num_column = 11;
-        } else {
-            $num_column = 14;
-        }
+        $num_column = $pubmode ? 11 : 14;
+
         if ($stats < 1) {
             $num_column -= 5;
         }
+
         $tce_data_cell_width = round($this->tce_page_width / $num_column, 2);
         $tce_data_cell_width_third = round($tce_data_cell_width / 3, 2);
         $tce_data_cell_width_half = round($tce_data_cell_width / 2, 2);
@@ -455,6 +468,7 @@ class TCPDFEX extends TCPDF
         if (!$pubmode) {
             $this->Cell((3 * $tce_data_cell_width), $this->tce_data_cell_height, $l['w_user'].' - '.$l['w_lastname'].', '.$l['w_firstname'], 1, 0, 'C', true, '', 1);
         }
+
         $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_score'], 1, 0, 'C', true, '', 1);
         if ($stats > 0) {
             $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_answers_right_th'], 1, 0, 'C', true, '', 1);
@@ -463,6 +477,7 @@ class TCPDFEX extends TCPDF
             $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_questions_undisplayed_th'], 1, 0, 'C', true, '', 1);
             $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $l['w_questions_unrated_th'], 1, 0, 'C', true, '', 1);
         }
+
         $this->Ln();
         $this->Ln(2);
 
@@ -477,6 +492,7 @@ class TCPDFEX extends TCPDF
             if (!$pubmode) {
                 $this->Cell((3 * $tce_data_cell_width), $this->tce_data_cell_height, $tu['user_name'].' - '.$tu['user_lastname'].', '.$tu['user_firstname'], 1, 0, $tdalign, 0, '', 1);
             }
+
             $this->SetFont($numberfont, '', $fontdatasize);
             if ($tu['passmsg']) {
                 $this->SetFillColor(221, 255, 221);
@@ -484,6 +500,7 @@ class TCPDFEX extends TCPDF
             } else {
                 $this->SetFillColor(255, 238, 238);
             }
+
             $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, $tu['total_score'].' '.F_formatPdfPercentage($tu['total_score_perc'], false), 1, 0, 'R', true, '', 1);
             if ($stats > 0) {
                 $this->SetFont($numberfont, '', $fontdatasize);
@@ -493,18 +510,21 @@ class TCPDFEX extends TCPDF
                 $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['undisplayed'].' '.F_formatPdfPercentage($tu['undisplayed_perc'], false), 1, 0, 'R', 0, '', 1);
                 $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $tu['unrated'].' '.F_formatPdfPercentage($tu['unrated_perc'], false), 1, 0, 'R', 0, '', 1);
             }
+
             $this->Ln();
         }
+
         $this->SetFont(PDF_FONT_NAME_DATA, 'B', $fontdatasize);
         if ($data['passed_perc'] > 50) {
             $this->SetFillColor(221, 255, 221);
         } else {
             $this->SetFillColor(255, 238, 238);
         }
+
         $this->Cell(0, $this->tce_data_cell_height, $l['w_passed'].': '.$data['passed'].' '.F_formatPdfPercentage($data['passed_perc'], false), 1, 1, 'L', true, '', 1);
         // print statistics
-        $printstat = array('mean', 'median', 'mode', 'standard_deviation', 'skewness', 'kurtosi');
-        $noperc = array('skewness', 'kurtosi');
+        $printstat = ['mean', 'median', 'mode', 'standard_deviation', 'skewness', 'kurtosi'];
+        $noperc = ['skewness', 'kurtosi'];
         foreach ($data['statistics'] as $row => $col) {
             if (in_array($row, $printstat)) {
                 $this->SetFont(PDF_FONT_NAME_DATA, 'B', $fontdatasize);
@@ -513,6 +533,7 @@ class TCPDFEX extends TCPDF
                 } else {
                     $this->Cell((7 * $tce_data_cell_width) + $tce_data_cell_width_third, $this->tce_data_cell_height, $l['w_'.$row], 1, 0, $tdalignr, 0, '', 1);
                 }
+
                 $this->SetFont($numberfont, '', $fontdatasize);
                 if (in_array($row, $noperc)) {
                     $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, F_formatFloat($col['score_perc']), 1, 0, 'R', 0, '', 1);
@@ -523,6 +544,7 @@ class TCPDFEX extends TCPDF
                         $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, F_formatFloat($col['undisplayed_perc']), 1, 0, 'R', 0, '', 1);
                         $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, F_formatFloat($col['unrated_perc']), 1, 0, 'R', 0, '', 1);
                     }
+
                     $this->Ln();
                 } else {
                     $this->Cell(5 * $tce_data_cell_width_third, $this->tce_data_cell_height, round($col['score_perc']).'%', 1, 0, 'R', 0, '', 1);
@@ -533,6 +555,7 @@ class TCPDFEX extends TCPDF
                         $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['undisplayed_perc']).'%', 1, 0, 'R', 0, '', 1);
                         $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, round($col['unrated_perc']).'%', 1, 0, 'R', 0, '', 1);
                     }
+
                     $this->Ln();
                 }
             }
@@ -544,7 +567,7 @@ class TCPDFEX extends TCPDF
     * @param $data (array) Array containing test statistics.
     * @param $onlytext (boolean) If true print only text questions.
     */
-    function printTestUserInfo($data, $onlytext = false)
+    public function printTestUserInfo($data, $onlytext = false)
     {
         require_once('../config/tce_config.php');
         global $l;
@@ -602,11 +625,12 @@ class TCPDFEX extends TCPDF
         //$this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_test_time'].' ['.$l['w_minutes'].']: ', 0, 0, $dirlabel, 0, '', 1);
         //$this->Cell($info_cell_width, $this->tce_data_cell_height, $data['test']['test_duration_time'], 0, 1, $dirvalue, 0, '', 1);
 
-        if (!isset($data['test']['user_test_end_time']) or ($data['test']['user_test_end_time'] <= 0) or (strtotime($data['test']['user_test_end_time']) < strtotime($data['test']['user_test_start_time']))) {
+        if (!isset($data['test']['user_test_end_time']) || $data['test']['user_test_end_time'] <= 0 || strtotime($data['test']['user_test_end_time']) < strtotime($data['test']['user_test_start_time'])) {
             $time_diff = $data['test']['test_duration_time'] * 60;
         } else {
             $time_diff = strtotime($data['test']['user_test_end_time']) - strtotime($data['test']['user_test_start_time']); //sec
         }
+
         $time_diff = gmdate('H:i:s', $time_diff);
         // elapsed time (time difference)
         $this->Cell($column_names_width, $this->tce_data_cell_height, $l['w_time'].': ', 0, 0, $dirlabel, 0);
@@ -699,8 +723,8 @@ class TCPDFEX extends TCPDF
         require_once('../../shared/code/tce_functions_test_stats.php');
         require_once('../../shared/code/tce_functions_tcecode.php');
         global $db, $l;
-        $testuser_id = intval($data['id']);
-        $qtype = array('S', 'M', 'T', 'O'); // question types
+        $testuser_id = (int) $data['id'];
+        $qtype = ['S', 'M', 'T', 'O']; // question types
 
         $num_column = 7;
         $tce_data_cell_width = round($this->tce_page_width / $num_column, 2);
@@ -720,6 +744,7 @@ class TCPDFEX extends TCPDF
             // display only TEXT questions
             $sql .= ' AND question_type=3';
         }
+
         $sql .= ' ORDER BY testlog_id';
         if ($r = F_db_query($sql, $db)) {
             $this->SetFont(PDF_FONT_NAME_DATA, 'B', PDF_FONT_SIZE_DATA);
@@ -742,33 +767,37 @@ class TCPDFEX extends TCPDF
                 $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, $itemcount.' '.$qtype[($m['question_type']-1)], 1, 0, 'R', 0);
                 $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $m['testlog_score'], 1, 0, 'C', 0);
                 $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, getIpAsString($m['testlog_user_ip']), 1, 0, 'C', 0);
-                if (isset($m['testlog_display_time']) and (strlen($m['testlog_display_time']) > 0)) {
+                if (isset($m['testlog_display_time']) && strlen($m['testlog_display_time']) > 0) {
                     $display_time =  substr($m['testlog_display_time'], 11, 8);
                 } else {
                     $display_time =  '--:--:--';
                 }
-                if (isset($m['testlog_change_time']) and (strlen($m['testlog_change_time']) > 0)) {
+
+                if (isset($m['testlog_change_time']) && strlen($m['testlog_change_time']) > 0) {
                     $change_time = substr($m['testlog_change_time'], 11, 8);
                 } else {
                     $change_time = '--:--:--';
                 }
-                if (isset($m['testlog_display_time']) and isset($m['testlog_change_time'])) {
+
+                if (isset($m['testlog_display_time']) && isset($m['testlog_change_time'])) {
                     $diff_time = date('i:s', (strtotime($m['testlog_change_time']) - strtotime($m['testlog_display_time'])));
                 } else {
                     $diff_time = '--:--';
                 }
-                if (isset($m['testlog_reaction_time']) and (strlen($m['testlog_reaction_time']) > 0)) {
+
+                if (isset($m['testlog_reaction_time']) && strlen($m['testlog_reaction_time']) > 0) {
                     $reaction_time =  ($m['testlog_reaction_time'] / 1000);
                 } else {
                     $reaction_time =  '';
                 }
+
                 $this->Cell($tce_data_cell_width + $tce_data_cell_width_third, $this->tce_data_cell_height, $display_time, 1, 0, 'C', 0);
                 $this->Cell($tce_data_cell_width + $tce_data_cell_width_third, $this->tce_data_cell_height, $change_time, 1, 0, 'C', 0);
                 $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $diff_time, 1, 0, 'C', 0);
                 $this->Cell($tce_data_cell_width, $this->tce_data_cell_height, $reaction_time, 1, 1, 'C', 0);
 
                 $this->writeHTMLCell(0, $this->tce_data_cell_height, (PDF_MARGIN_LEFT + $tce_data_cell_width_third), $this->GetY(), F_decode_tcecode($m['question_description']), 1, 1);
-                if (K_ENABLE_QUESTION_EXPLANATION and !empty($m['question_explanation'])) {
+                if (K_ENABLE_QUESTION_EXPLANATION && !empty($m['question_explanation'])) {
                     $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, '', 0, 0, 'C', 0);
                     $this->SetFont('', 'BIU');
                     $this->Cell(0, $this->tce_data_cell_height, $l['w_explanation'], 'LTR', 1, '', 0, '', 0);
@@ -786,7 +815,7 @@ class TCPDFEX extends TCPDF
                         $idx = 0; // count items
                         while ($ma = F_db_fetch_array($ra)) {
                             $posfill = 0;
-                            $idx++;
+                            ++$idx;
                             $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, '', 0, 0, 'C', 0);
                             if ($m['question_type'] == 4) {
                                 if ($ma['logansw_position'] > 0) {
@@ -809,19 +838,18 @@ class TCPDFEX extends TCPDF
                             } elseif ($m['question_type'] == 1) {
                                 // MCSA
                                 $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, ' ', 1, 0, 'C', 0);
-                            } else {
-                                if ($ma['logansw_selected'] == 0) {
-                                    // unselected
-                                    if (F_getBoolean($ma['answer_isright'])) {
-                                        $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, '-', 1, 0, 'C', 0);
-                                    } else {
-                                        $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, '+', 1, 0, 'C', 0);
-                                    }
+                            } elseif ($ma['logansw_selected'] == 0) {
+                                // unselected
+                                if (F_getBoolean($ma['answer_isright'])) {
+                                    $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, '-', 1, 0, 'C', 0);
                                 } else {
-                                    // no answer
-                                    $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, ' ', 1, 0, 'C', 0);
+                                    $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, '+', 1, 0, 'C', 0);
                                 }
+                            } else {
+                                // no answer
+                                $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, ' ', 1, 0, 'C', 0);
                             }
+
                             if ($m['question_type'] == 4) {
                                     $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, $ma['answer_position'], 1, 0, 'C', $posfill);
                             } elseif (F_getBoolean($ma['answer_isright'])) {
@@ -829,8 +857,9 @@ class TCPDFEX extends TCPDF
                             } else {
                                 $this->Cell($tce_data_cell_width_third, $this->tce_data_cell_height, $idx, 1, 0, 'C', 0);
                             }
+
                             $this->writeHTMLCell(0, $this->tce_data_cell_height, (PDF_MARGIN_LEFT + $tce_data_cell_width), $this->GetY(), F_decode_tcecode($ma['answer_description']), 'LRTB', 1);
-                            if (K_ENABLE_ANSWER_EXPLANATION and !empty($ma['answer_explanation'])) {
+                            if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
                                 $this->Cell((3 * $tce_data_cell_width_third), $this->tce_data_cell_height, '', 0, 0, 'C', 0);
                                 $this->SetFont('', 'BIU');
                                 $this->Cell(0, $this->tce_data_cell_height, $l['w_explanation'], 'LTR', 1, '', 0, '', 0);
@@ -841,19 +870,23 @@ class TCPDFEX extends TCPDF
                     } else {
                         F_display_db_error();
                     }
-                } // end multiple answers
+                }
+
+                 // end multiple answers
                 if (strlen($m['testlog_comment']) > 0) {
                     // teacher / supervisor comment
                     $this->SetTextColor(255, 0, 0);
                     $this->writeHTMLCell(0, $this->tce_data_cell_height, (PDF_MARGIN_LEFT + (2 * $tce_data_cell_width_third)), $this->GetY(), F_decode_tcecode($m['testlog_comment']), 'LRTB', 1);
                     $this->SetTextColor(0, 0, 0);
                 }
+
                 $this->Ln($this->tce_data_cell_height);
-                $itemcount++;
+                ++$itemcount;
             }
         } else {
             F_display_db_error();
         }
+
         $stats = F_getTestStat($data['test']['test_id'], 0, $data['user_id'], 0, 0, $data['id']);
         $this->printQuestionStats($stats['qstats'], 1);
     }

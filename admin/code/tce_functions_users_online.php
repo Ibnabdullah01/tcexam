@@ -63,16 +63,17 @@ function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
     require_once('../config/tce_config.php');
     require_once('../../shared/code/tce_functions_page.php');
     require_once('tce_functions_user_select.php');
-    
+
     //initialize variables
-    $orderdir = intval($orderdir);
-    $firstrow = intval($firstrow);
-    $rowsperpage = intval($rowsperpage);
-    
+    $orderdir = (int) $orderdir;
+    $firstrow = (int) $firstrow;
+    $rowsperpage = (int) $rowsperpage;
+
     // order fields for SQL query
-    if (empty($order_field) or (!in_array($order_field, array('cpsession_id', 'cpsession_data')))) {
+    if (empty($order_field) || !in_array($order_field, ['cpsession_id', 'cpsession_data'])) {
         $order_field = 'cpsession_expiry';
     }
+
     if ($orderdir == 0) {
         $nextorderdir = 1;
         $full_order_field = $order_field;
@@ -92,6 +93,7 @@ function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
         $wherequery = F_escape_sql($db, $wherequery);
         $sql = 'SELECT * FROM '.K_TABLE_SESSIONS.' '.$wherequery.' ORDER BY '.$full_order_field.'';
     }
+
     if (K_DATABASE_TYPE == 'ORACLE') {
         $sql = 'SELECT * FROM ('.$sql.') WHERE rownum BETWEEN '.$firstrow.' AND '.($firstrow + $rowsperpage).'';
     } else {
@@ -115,9 +117,11 @@ function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
             if ($this_session['session_user_lastname']) {
                 $user_str .= urldecode($this_session['session_user_lastname']).', ';
             }
+
             if ($this_session['session_user_firstname']) {
                 $user_str .= urldecode($this_session['session_user_firstname']).'';
             }
+
             $user_str .= ' ('.urldecode($this_session['session_user_name']).')';
             $user_str = unhtmlentities(strip_tags($user_str));
             if (F_isAuthorizedEditorForUser($this_session['session_user_id'])) {
@@ -125,6 +129,7 @@ function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
             } else {
                 echo $user_str;
             }
+
             echo '</td>';
             echo '<td>'.$this_session['session_user_level'].'</td>';
             echo '<td>'.$this_session['session_user_ip'].'</td>';
@@ -133,6 +138,7 @@ function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
     } else {
         F_display_db_error();
     }
+
     echo '</table>'.K_NEWLINE;
 
     // --- ------------------------------------------------------
@@ -142,12 +148,15 @@ function F_list_online_users($wherequery, $order_field, $orderdir, $firstrow, $r
         if (!empty($order_field)) {
             $param_array = '&amp;order_field='.urlencode($order_field).'';
         }
-        if (!empty($orderdir)) {
+
+        if ($orderdir !== 0) {
             $param_array .= '&amp;orderdir='.$orderdir.'';
         }
+
         $param_array .= '&amp;submitted=1';
         F_show_page_navigator($_SERVER['SCRIPT_NAME'], $sql, $firstrow, $rowsperpage, $param_array);
     }
+
     echo '<div class="pagehelp">'.$l['hp_online_users'].'</div>'.K_NEWLINE;
     echo '</div>'.K_NEWLINE;
     return true;

@@ -37,8 +37,8 @@ $pagelevel = K_AUTH_ADMIN_RESULTS;
 require_once('../../shared/code/tce_authorization.php');
 require_once('../../shared/code/tce_functions_test_stats.php');
 
-if (isset($_REQUEST['test_id']) and ($_REQUEST['test_id'] > 0)) {
-    $test_id = intval($_REQUEST['test_id']);
+if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
+    $test_id = (int) $_REQUEST['test_id'];
     // check user's authorization
     require_once('../../shared/code/tce_authorization.php');
     if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
@@ -47,16 +47,11 @@ if (isset($_REQUEST['test_id']) and ($_REQUEST['test_id'] > 0)) {
 } else {
     $test_id = 0;
 }
-if (isset($_REQUEST['group_id']) and ($_REQUEST['group_id'] > 0)) {
-    $group_id = intval($_REQUEST['group_id']);
-} else {
-    $group_id = 0;
-}
-if (isset($_REQUEST['user_id'])) {
-    $user_id = intval($_REQUEST['user_id']);
-} else {
-    $user_id = 0;
-}
+
+$group_id = isset($_REQUEST['group_id']) && $_REQUEST['group_id'] > 0 ? (int) $_REQUEST['group_id'] : 0;
+
+$user_id = isset($_REQUEST['user_id']) ? (int) $_REQUEST['user_id'] : 0;
+
 if (isset($_REQUEST['startdate'])) {
     $startdate = $_REQUEST['startdate'];
     $startdate_time = strtotime($startdate);
@@ -64,6 +59,7 @@ if (isset($_REQUEST['startdate'])) {
 } else {
     $startdate = 0;
 }
+
 if (isset($_REQUEST['enddate'])) {
     $enddate = $_REQUEST['enddate'];
     $enddate_time = strtotime($enddate);
@@ -71,21 +67,20 @@ if (isset($_REQUEST['enddate'])) {
 } else {
     $enddate = 0;
 }
-if (isset($_REQUEST['order_field']) and !empty($_REQUEST['order_field']) and (in_array($_REQUEST['order_field'], array('testuser_creation_time', 'testuser_end_time', 'user_name', 'user_lastname', 'user_firstname', 'total_score')))) {
+
+if (isset($_REQUEST['order_field']) && !empty($_REQUEST['order_field']) && in_array($_REQUEST['order_field'], ['testuser_creation_time', 'testuser_end_time', 'user_name', 'user_lastname', 'user_firstname', 'total_score'])) {
     $order_field = $_REQUEST['order_field'];
 } else {
     $order_field = 'total_score, user_lastname, user_firstname';
 }
-if (!isset($_REQUEST['orderdir']) or empty($_REQUEST['orderdir'])) {
+
+if (!isset($_REQUEST['orderdir']) || empty($_REQUEST['orderdir'])) {
     $full_order_field = $order_field;
 } else {
     $full_order_field = $order_field.' DESC';
 }
-if (isset($_REQUEST['display_mode'])) {
-    $display_mode = max(0, min(5, intval($_REQUEST['display_mode'])));
-} else {
-    $display_mode = 0;
-}
+
+$display_mode = isset($_REQUEST['display_mode']) ? max(0, min(5, (int) $_REQUEST['display_mode'])) : 0;
 
 // send headers
 header('Content-Description: TXT File Transfer');
@@ -111,10 +106,11 @@ $table .= F_printTestStat($test_id, $group_id, $user_id, $startdate, $enddate, 0
 echo F_html_to_TSV($table);
 
 if ($user_id == 0) {
-    $users = array();
+    $users = [];
     foreach ($data['testuser'] as $tu) {
         $users[$tu['user_id']] = $tu['user_id'];
     }
+
     if (count($users) > 1) {
         echo K_NEWLINE.K_NEWLINE.K_NEWLINE.'<<< DETAILS >>>'.K_NEWLINE;
         // display detailed stats for each user

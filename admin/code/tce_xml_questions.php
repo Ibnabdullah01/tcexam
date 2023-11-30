@@ -54,24 +54,12 @@ if (!F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $module_id, 'module_user_i
 }
 
 // set XML file name
-switch ($expmode) {
-    case 1: {
-        $out_filename = 'tcexam_subject_'.$subject_id;
-        break;
-    }
-    case 2: {
-        $out_filename = 'tcexam_module_'.$module_id;
-        break;
-    }
-    case 3: {
-        $out_filename = 'tcexam_all_modules';
-        break;
-    }
-    default: {
-        $out_filename = 'tcexam_export';
-        break;
-    }
-}
+$out_filename = match ($expmode) {
+    1 => 'tcexam_subject_'.$subject_id,
+    2 => 'tcexam_module_'.$module_id,
+    3 => 'tcexam_all_modules',
+    default => 'tcexam_export',
+};
 $out_filename .= '_'.date('YmdHi');
 
 // get the XML code
@@ -93,7 +81,7 @@ switch ($output_format) {
         header('Content-Disposition: attachment; filename='.$out_filename.'.json;');
         header('Content-Transfer-Encoding: binary');
         $xmlobj = new SimpleXMLElement($xml);
-        echo json_encode($xmlobj);
+        echo json_encode($xmlobj, JSON_THROW_ON_ERROR);
         break;
     }
     case 'XML':
@@ -132,16 +120,16 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
     require_once('../config/tce_config.php');
     require_once('../../shared/code/tce_authorization.php');
     require_once('../../shared/code/tce_functions_auth_sql.php');
-    $module_id = intval($module_id);
-    $subject_id = intval($subject_id);
-    $expmode = intval($expmode);
+    $module_id = (int) $module_id;
+    $subject_id = (int) $subject_id;
+    $expmode = (int) $expmode;
 
-    $boolean = array('false', 'true');
-    $type = array('single', 'multiple', 'text', 'ordering');
+    $boolean = ['false', 'true'];
+    $type = ['single', 'multiple', 'text', 'ordering'];
 
     $xml = ''; // XML data to be returned
 
-    $xml .= '<'.'?xml version="1.0" encoding="UTF-8" ?'.'>'.K_NEWLINE;
+    $xml .= '<?xml version="1.0" encoding="UTF-8" ?>'.K_NEWLINE;
     $xml .= '<tcexamquestions version="'.K_TCEXAM_VERSION.'">'.K_NEWLINE;
     $xml .=  K_TAB.'<header';
     $xml .= ' lang="'.K_USER_LANG.'"';
@@ -154,6 +142,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
     if ($expmode < 3) {
         $andmodwhere = 'module_id='.$module_id.'';
     }
+
     $sqlm = F_select_modules_sql($andmodwhere);
     if ($rm = F_db_query($sqlm, $db)) {
         while ($mm = F_db_fetch_array($rm)) {
@@ -164,7 +153,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
             $xml .= '</name>'.K_NEWLINE;
 
             $xml .= K_TAB.K_TAB.K_TAB.'<enabled>';
-            $xml .= $boolean[intval(F_getBoolean($mm['module_enabled']))];
+            $xml .= $boolean[(int) F_getBoolean($mm['module_enabled'])];
             $xml .= '</enabled>'.K_NEWLINE;
 
             // ---- topic
@@ -172,6 +161,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
             if ($expmode < 2) {
                 $where_sqls .= ' AND subject_id='.$subject_id.'';
             }
+
             $sqls = F_select_subjects_sql($where_sqls);
             if ($rs = F_db_query($sqls, $db)) {
                 while ($ms = F_db_fetch_array($rs)) {
@@ -186,7 +176,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                     $xml .= '</description>'.K_NEWLINE;
 
                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<enabled>';
-                    $xml .= $boolean[intval(F_getBoolean($ms['subject_enabled']))];
+                    $xml .= $boolean[(int) F_getBoolean($ms['subject_enabled'])];
                     $xml .= '</enabled>'.K_NEWLINE;
 
                     // ---- questions
@@ -199,7 +189,7 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                             $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<question>'.K_NEWLINE;
 
                             $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<enabled>';
-                            $xml .= $boolean[intval(F_getBoolean($m['question_enabled']))];
+                            $xml .= $boolean[(int) F_getBoolean($m['question_enabled'])];
                             $xml .= '</enabled>'.K_NEWLINE;
 
                             $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<type>';
@@ -219,15 +209,15 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                             $xml .= '</timer>'.K_NEWLINE;
 
                             $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<fullscreen>';
-                            $xml .= $boolean[intval(F_getBoolean($m['question_fullscreen']))];
+                            $xml .= $boolean[(int) F_getBoolean($m['question_fullscreen'])];
                             $xml .= '</fullscreen>'.K_NEWLINE;
 
                             $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<inline_answers>';
-                            $xml .= $boolean[intval(F_getBoolean($m['question_inline_answers']))];
+                            $xml .= $boolean[(int) F_getBoolean($m['question_inline_answers'])];
                             $xml .= '</inline_answers>'.K_NEWLINE;
 
                             $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<auto_next>';
-                            $xml .= $boolean[intval(F_getBoolean($m['question_auto_next']))];
+                            $xml .= $boolean[(int) F_getBoolean($m['question_auto_next'])];
                             $xml .= '</auto_next>'.K_NEWLINE;
 
                             $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<description>';
@@ -248,11 +238,11 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
                                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<answer>'.K_NEWLINE;
 
                                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<enabled>';
-                                    $xml .= $boolean[intval(F_getBoolean($ma['answer_enabled']))];
+                                    $xml .= $boolean[(int) F_getBoolean($ma['answer_enabled'])];
                                     $xml .= '</enabled>'.K_NEWLINE;
 
                                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<isright>';
-                                    $xml .= $boolean[intval(F_getBoolean($ma['answer_isright']))];
+                                    $xml .= $boolean[(int) F_getBoolean($ma['answer_isright'])];
                                     $xml .= '</isright>'.K_NEWLINE;
 
                                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.K_TAB.'<position>';
@@ -296,9 +286,8 @@ function F_xml_export_questions($module_id, $subject_id, $expmode)
     }
 
     $xml .= K_TAB.'</body>'.K_NEWLINE;
-    $xml .= '</tcexamquestions>'.K_NEWLINE;
 
-    return $xml;
+    return $xml . ('</tcexamquestions>'.K_NEWLINE);
 }
 
 //============================================================+

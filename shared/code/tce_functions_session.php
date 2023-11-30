@@ -79,10 +79,11 @@ function F_session_read($key)
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             return $m['cpsession_data'];
-        } else {
-            return('');
         }
+
+        return('');
     }
+
     return('');
 }
 
@@ -95,12 +96,11 @@ function F_session_read($key)
 function F_session_write($key, $val)
 {
     global $db;
-    if ((!isset($db)) or (!$db)) {
-        // workaround for PHP bug 41230
-        if (!$db = @F_db_connect(K_DATABASE_HOST, K_DATABASE_PORT, K_DATABASE_USER_NAME, K_DATABASE_USER_PASSWORD, K_DATABASE_NAME)) {
-            return;
-        }
+    // workaround for PHP bug 41230
+    if ((!isset($db) || !$db) && !$db = @F_db_connect(K_DATABASE_HOST, K_DATABASE_PORT, K_DATABASE_USER_NAME, K_DATABASE_USER_PASSWORD, K_DATABASE_NAME)) {
+        return;
     }
+
     $key = F_escape_sql($db, $key);
     $val = F_escape_sql($db, $val);
     $expiry = date(K_TIMESTAMP_FORMAT, (time() + K_SESSION_LIFE));
@@ -115,7 +115,7 @@ function F_session_write($key, $val)
             $sqlup = 'UPDATE '.K_TABLE_SESSIONS.' SET
 				cpsession_expiry=\''.$expiry.'\',
 				cpsession_data=\''.$val.'\'
-				WHERE cpsession_id=\''.$key.'\'';
+				WHERE cpsession_id=\''.$key."'";
         } else {
             // SQL to insert new session
             $sqlup = 'INSERT INTO '.K_TABLE_SESSIONS.' (
@@ -128,8 +128,10 @@ function F_session_write($key, $val)
 				\''.$val.'\'
 				)';
         }
+
         return (F_db_query($sqlup, $db) !== FALSE);
     }
+
     return false;
 }
 
@@ -142,7 +144,7 @@ function F_session_destroy($key)
 {
     global $db;
     $key = F_escape_sql($db, $key);
-    $sql = 'DELETE FROM '.K_TABLE_SESSIONS.' WHERE cpsession_id=\''.$key.'\'';
+    $sql = 'DELETE FROM '.K_TABLE_SESSIONS." WHERE cpsession_id='".$key."'";
     return F_db_query($sql, $db);
 }
 
@@ -156,10 +158,11 @@ function F_session_gc()
 {
     global $db;
     $expiry_time = date(K_TIMESTAMP_FORMAT);
-    $sql = 'DELETE FROM '.K_TABLE_SESSIONS.' WHERE cpsession_expiry<=\''.$expiry_time.'\'';
+    $sql = 'DELETE FROM '.K_TABLE_SESSIONS." WHERE cpsession_expiry<='".$expiry_time."'";
     if (!$r = F_db_query($sql, $db)) {
         return false;
     }
+
     return F_db_affected_rows($db, $r);
 }
 
@@ -172,14 +175,15 @@ function F_session_gc()
  */
 function F_session_string_to_array($sd)
 {
-    $sess_array = array();
+    $sess_array = [];
     $vars = preg_split('/[;}]/', $sd);
-    for ($i=0; $i < count($vars)-1; $i++) {
+    for ($i=0; $i < count($vars)-1; ++$i) {
         $parts = explode('|', $vars[$i]);
         $key = $parts[0];
         $val = unserialize($parts[1].';');
         $sess_array[$key] = $val;
     }
+
     return $sess_array;
 }
 
@@ -195,21 +199,27 @@ function getClientFingerprint()
     if (isset($_SERVER['HTTP_USER_AGENT'])) {
         $sid .= $_SERVER['HTTP_USER_AGENT'];
     }
+
     if (isset($_SERVER['HTTP_ACCEPT'])) {
         $sid .= $_SERVER['HTTP_ACCEPT'];
     }
+
     if (isset($_SERVER['HTTP_ACCEPT_ENCODING'])) {
         $sid .= $_SERVER['HTTP_ACCEPT_ENCODING'];
     }
+
     if (isset($_SERVER['HTTP_ACCEPT_LANGUAGE'])) {
         $sid .= $_SERVER['HTTP_ACCEPT_LANGUAGE'];
     }
+
     if (isset($_SERVER['HTTP_DNT'])) {
         $sid .= $_SERVER['HTTP_DNT'];
     }
+
     if (isset($_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS'])) {
         $sid .= $_SERVER['HTTP_UPGRADE_INSECURE_REQUESTS'];
     }
+
     return md5($sid);
 }
 
@@ -288,6 +298,7 @@ if (isset($_COOKIE['PHPSESSID'])) {
     // cookie takes precedence
     $_REQUEST['PHPSESSID'] = $_COOKIE['PHPSESSID'];
 }
+
 if (isset($_REQUEST['PHPSESSID'])) {
     // sanitize $PHPSESSID from get/post/cookie
     $PHPSESSID = preg_replace('/[^0-9a-f]*/', '', $_REQUEST['PHPSESSID']);
@@ -300,7 +311,7 @@ if (isset($_REQUEST['PHPSESSID'])) {
     $PHPSESSID = getNewSessionID();
 }
 
-if ((!isset($_REQUEST['menu_mode'])) or ($_REQUEST['menu_mode'] != 'startlongprocess')) {
+if (!isset($_REQUEST['menu_mode']) || $_REQUEST['menu_mode'] != 'startlongprocess') {
     // fix flush problem on long processes
     session_id($PHPSESSID); //set session id
 }

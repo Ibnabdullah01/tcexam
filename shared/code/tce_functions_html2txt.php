@@ -41,7 +41,7 @@ function F_html_to_text($str, $preserve_newlines = false, $display_links = false
     $dollar_replacement = ":.dlr.:"; //string replacement for dollar symbol
 
     //tags conversion table
-    $tags2textTable = array (
+    $tags2textTable = [
         "'<br[^>]*?>'i" => "\n",
         "'<p[^>]*?>'i" => "\n",
         "'</p>'i" => "\n",
@@ -55,10 +55,12 @@ function F_html_to_text($str, $preserve_newlines = false, $display_links = false
         "'<li[^>]*?>\t'i" => "\n",
         "'<h[0-9][^>]*?>'i" => "\n\n",
         "'</h[0-9]>'i" => "\n",
-        "'<head[^>]*?>.*?</head>'si" => "\n",  // Strip out head
-        "'<style[^>]*?>.*?</style>'si" => "\n",  // Strip out style
-        "'<script[^>]*?>.*?</script>'si" => "\n"  // Strip out javascript
-    );
+        "'<head[^>]*?>.*?</head>'si" => "\n",
+        // Strip out head
+        "'<style[^>]*?>.*?</style>'si" => "\n",
+        // Strip out style
+        "'<script[^>]*?>.*?</script>'si" => "\n",
+    ];
 
     $str = str_replace("\r\n", "\n", $str);
 
@@ -70,18 +72,14 @@ function F_html_to_text($str, $preserve_newlines = false, $display_links = false
     //remove applet and get alternative content
     $str = preg_replace_callback(
         "/<applet[^>]*?>(.*?)<\/applet>/si",
-        function($subs) {
-            return preg_replace("/<param[^>]*>/i", "", $subs[1]);
-        },
+        static fn($subs) => preg_replace("/<param[^>]*>/i", "", $subs[1]),
         $str
     );
 
     //remove object and get alternative content
     $str = preg_replace_callback(
         "/<object[^>]*?>(.*?)<\/object>/si",
-        function($subs) {
-            return preg_replace("/<param[^>]*>/i", "", $subs[1]);
-        },
+        static fn($subs) => preg_replace("/<param[^>]*>/i", "", $subs[1]),
         $str);
 
     //indent list elements
@@ -89,19 +87,16 @@ function F_html_to_text($str, $preserve_newlines = false, $display_links = false
     while (($pos=strpos($str, "<ul")) > $firstposition) {
         $str = preg_replace_callback(
             "/<ul[^>]*?>(.*?)<\/ul>/si",
-            function($subs) {
-                return preg_replace("/<li[^>]*>/i", "<li>\t", $subs[1]);
-            },
+            static fn($subs) => preg_replace("/<li[^>]*>/i", "<li>\t", $subs[1]),
             $str);
         $firstposition = $pos;
     }
+
     $firstposition = 0;
     while (($pos=strpos($str, "<ol")) > $firstposition) {
         $str = preg_replace_callback(
             "/<ol[^>]*?>(.*?)<\/ol>/si",
-            function($subs) {
-                return preg_replace("/<li[^>]*>/i", "<li>\t", $subs[1]);
-            },
+            static fn($subs) => preg_replace("/<li[^>]*>/i", "<li>\t", $subs[1]),
             $str);
         $firstposition = $pos;
     }

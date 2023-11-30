@@ -92,9 +92,10 @@ function F_tsv_export_users()
         $sql .= ' AND user_id IN (SELECT tb.usrgrp_user_id
 			FROM '.K_TABLE_USERGROUP.' AS ta, '.K_TABLE_USERGROUP.' AS tb
 			WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
-				AND ta.usrgrp_user_id='.intval($_SESSION['session_user_id']).'
+				AND ta.usrgrp_user_id='.(int) $_SESSION['session_user_id'].'
 				AND tb.usrgrp_user_id=user_id)';
     }
+
     $sql .= ' ORDER BY user_lastname,user_firstname,user_name';
     if ($r = F_db_query($sql, $db)) {
         while ($m = F_db_fetch_array($r)) {
@@ -128,7 +129,8 @@ function F_tsv_export_users()
             } else {
                 F_display_db_error();
             }
-            if (!empty($grp)) {
+
+            if ($grp !== '') {
                 // add user's groups removing last comma
                 $tsv .= substr($grp, 0, -1);
             }
@@ -136,6 +138,7 @@ function F_tsv_export_users()
     } else {
         F_display_db_error();
     }
+
     return $tsv;
 }
 

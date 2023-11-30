@@ -47,10 +47,11 @@ if ($_SESSION['session_user_level'] > 0) {
     // display login link
     echo ' <a href="tce_login.php" class="loginbutton" title="'.$l['h_login_button'].'">'.$l['w_login'].'</a>'.K_NEWLINE;
 }
+
 echo '</div>'.K_NEWLINE;
 
 // language selector
-if (K_LANGUAGE_SELECTOR and (stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.php') === false)) {
+if (K_LANGUAGE_SELECTOR && stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.php') === false) {
     echo '<div class="minibutton" dir="ltr">'.K_NEWLINE;
     echo '<span class="langselector" title="change language">'.K_NEWLINE;
     $lang_array = unserialize(K_AVAILABLE_LANGUAGES);
@@ -72,6 +73,7 @@ if (K_LANGUAGE_SELECTOR and (stristr($_SERVER['SCRIPT_NAME'], 'tce_test_execute.
             $lngstr .= '<a href="'.$langlink.'" class="langselector" title="'.$lang_name.'">'.strtoupper($lang_code).'</a>';
         }
     }
+
     echo substr($lngstr, 3);
     echo '</span>'.K_NEWLINE;
     echo '</div>'.K_NEWLINE;

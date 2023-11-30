@@ -42,29 +42,32 @@ require_once('../../shared/code/tce_functions_test_stats.php');
 require_once('../code/tce_functions_statistics.php');
 require_once('tce_functions_user_select.php');
 
-if (isset($_REQUEST['user_id']) and ($_REQUEST['user_id'] > 0)) {
-    $user_id = intval($_REQUEST['user_id']);
+if (isset($_REQUEST['user_id']) && $_REQUEST['user_id'] > 0) {
+    $user_id = (int) $_REQUEST['user_id'];
     if (!F_isAuthorizedEditorForUser($user_id)) {
         exit;
     }
 } else {
     exit;
 }
-if (isset($_REQUEST['startdate']) and ($_REQUEST['startdate'] > 0)) {
+
+if (isset($_REQUEST['startdate']) && $_REQUEST['startdate'] > 0) {
     $startdate = urldecode($_REQUEST['startdate']);
     $startdate_time = strtotime($startdate);
     $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
 } else {
     $startdate = date('Y').'-01-01 00:00:00';
 }
-if (isset($_REQUEST['enddate']) and ($_REQUEST['enddate'] > 0)) {
+
+if (isset($_REQUEST['enddate']) && $_REQUEST['enddate'] > 0) {
     $enddate = urldecode($_REQUEST['enddate']);
     $enddate_time = strtotime($enddate);
     $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
 } else {
     $enddate = date('Y').'-01-01 00:00:00';
 }
-if (isset($_REQUEST['order_field']) and !empty($_REQUEST['order_field']) and (in_array($_REQUEST['order_field'], array('testuser_creation_time', 'total_score')))) {
+
+if (isset($_REQUEST['order_field']) && !empty($_REQUEST['order_field']) && in_array($_REQUEST['order_field'], ['testuser_creation_time', 'total_score'])) {
     $order_field = $_REQUEST['order_field'];
 } else {
     $order_field = 'testuser_creation_time';
@@ -90,7 +93,7 @@ switch ($output_format) {
         header('Content-Disposition: attachment; filename='.$out_filename.'.json;');
         header('Content-Transfer-Encoding: binary');
         $xmlobj = new SimpleXMLElement($xml);
-        echo json_encode($xmlobj);
+        echo json_encode($xmlobj, JSON_THROW_ON_ERROR);
         break;
     }
     case 'XML':
@@ -126,15 +129,15 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
 {
     global $l, $db;
     require_once('../config/tce_config.php');
-    
+
     // define symbols for answers list
-    $qtype = array('S', 'M', 'T', 'O'); // question types
-    $type = array('single', 'multiple', 'text', 'ordering');
-    $boolean = array('false', 'true');
+    $qtype = ['S', 'M', 'T', 'O']; // question types
+    $type = ['single', 'multiple', 'text', 'ordering'];
+    $boolean = ['false', 'true'];
 
     $xml = ''; // XML data to be returned
 
-    $xml .= '<'.'?xml version="1.0" encoding="UTF-8" ?'.'>'.K_NEWLINE;
+    $xml .= '<?xml version="1.0" encoding="UTF-8" ?>'.K_NEWLINE;
     $xml .= '<tcexamuserresults version="'.K_TCEXAM_VERSION.'">'.K_NEWLINE;
     $xml .=  K_TAB.'<header';
     $xml .= ' lang="'.K_USER_LANG.'"';
@@ -150,18 +153,19 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
     } else {
         F_display_db_error();
     }
+
     $xml .= K_TAB.K_TAB.'<date_from>'.$startdate.'</date_from>'.K_NEWLINE;
     $xml .= K_TAB.K_TAB.'<date_to>'.$enddate.'</date_to>'.K_NEWLINE;
     $xml .= K_TAB.'</header>'.K_NEWLINE;
     $xml .=  K_TAB.'<body>'.K_NEWLINE;
 
-    $statsdata = array();
-    $statsdata['score'] = array();
-    $statsdata['right'] = array();
-    $statsdata['wrong'] = array();
-    $statsdata['unanswered'] = array();
-    $statsdata['undisplayed'] = array();
-    $statsdata['unrated'] = array();
+    $statsdata = [];
+    $statsdata['score'] = [];
+    $statsdata['right'] = [];
+    $statsdata['wrong'] = [];
+    $statsdata['unanswered'] = [];
+    $statsdata['undisplayed'] = [];
+    $statsdata['unrated'] = [];
 
     $sql = 'SELECT
 			testuser_id,
@@ -181,6 +185,7 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
         $sql .= ' AND test_user_id IN ('.F_getAuthorizedUsers($_SESSION['session_user_id']).')';
     }
+
     $sql .= ' GROUP BY testuser_id, test_id, test_name, testuser_creation_time, testuser_status ORDER BY '.F_escape_sql($db, $order_field).'';
     if ($r = F_db_query($sql, $db)) {
         $passed = 0;
@@ -188,7 +193,7 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
             $testuser_id = $m['testuser_id'];
             $usrtestdata = F_getUserTestStat($m['test_id'], $user_id);
             $halfscore = ($usrtestdata['max_score'] / 2);
-            $xml .= K_TAB.K_TAB.'<test id=\''.$m['test_id'].'\'>'.K_NEWLINE;
+            $xml .= K_TAB.K_TAB."<test id='".$m['test_id']."'>".K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<start_time>'.$m['testuser_creation_time'].'</start_time>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<end_time>'.$m['testuser_end_time'].'</end_time>'.K_NEWLINE;
             $time_diff = strtotime($m['testuser_end_time']) - strtotime($m['testuser_creation_time']); //sec
@@ -198,13 +203,14 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
             if ($usrtestdata['score_threshold'] > 0) {
                 if ($usrtestdata['score'] >= $usrtestdata['score_threshold']) {
                     $xml .= K_TAB.K_TAB.K_TAB.'<passed>true</passed>'.K_NEWLINE;
-                    $passed++;
+                    ++$passed;
                 } else {
                     $xml .= K_TAB.K_TAB.K_TAB.'<passed>false</passed>'.K_NEWLINE;
                 }
             } elseif ($usrtestdata['score'] > $halfscore) {
-                $passed++;
+                ++$passed;
             }
+
             $xml .= K_TAB.K_TAB.K_TAB.'<score>'.round($m['total_score'], 3).'</score>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<score_percent>'.round(100 * $usrtestdata['score'] / $usrtestdata['max_score']).'</score_percent>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<right>'.$usrtestdata['right'].'</right>'.K_NEWLINE;
@@ -215,11 +221,8 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
             $xml .= K_TAB.K_TAB.K_TAB.'<unanswered_percent>'.round(100 * $usrtestdata['unanswered'] / $usrtestdata['all']).'</unanswered_percent>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<undisplayed>'.$usrtestdata['undisplayed'].'</undisplayed>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<undisplayed_percent>'.round(100 * $usrtestdata['undisplayed'] / $usrtestdata['all']).'</undisplayed_percent>'.K_NEWLINE;
-            if ($m['testuser_status'] == 4) {
-                $status = $l['w_locked'];
-            } else {
-                $status = $l['w_unlocked'];
-            }
+            $status = $m['testuser_status'] == 4 ? $l['w_locked'] : $l['w_unlocked'];
+
             $xml .= K_TAB.K_TAB.K_TAB.'<status>'.$status.'</status>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<comment>'.F_text_to_xml($usrtestdata['comment']).'</comment>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.'</test>'.K_NEWLINE;
@@ -238,8 +241,8 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
 
     // calculate statistics
     $stats = F_getArrayStatistics($statsdata);
-    $excludestat = array('sum', 'variance');
-    $calcpercent = array('mean', 'median', 'mode', 'minimum', 'maximum', 'range', 'standard_deviation');
+    $excludestat = ['sum', 'variance'];
+    $calcpercent = ['mean', 'median', 'mode', 'minimum', 'maximum', 'range', 'standard_deviation'];
 
     $xml .= K_TAB.K_TAB.'<teststatistics>'.K_NEWLINE;
     $xml .= K_TAB.K_TAB.K_TAB.'<passed>'.$passed.'</passed>'.K_NEWLINE;
@@ -247,6 +250,7 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
     if ($itemcount > 0) {
         $passed_perc = ($passed / $stats['number']['score']);
     }
+
     $xml .= K_TAB.K_TAB.K_TAB.'<passed_percent>'.round(100 * $passed_perc).'</passed_percent>'.K_NEWLINE;
     foreach ($stats as $row => $columns) {
         if (!in_array($row, $excludestat)) {
@@ -265,15 +269,16 @@ function F_xml_export_user_results($user_id, $startdate, $enddate, $order_field)
                 $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<undisplayed_percent>'.round(100 * ($columns['undisplayed'] / $usrtestdata['all'])).'</undisplayed_percent>'.K_NEWLINE;
                 $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<unrated_percent>'.round(100 * ($columns['unrated'] / $usrtestdata['all'])).'</unrated_percent>'.K_NEWLINE;
             }
+
             $xml .= K_TAB.K_TAB.K_TAB.'</'.$row.'>'.K_NEWLINE;
         }
     }
+
     $xml .= K_TAB.K_TAB.'</teststatistics>'.K_NEWLINE;
 
     $xml .= K_TAB.'</body>'.K_NEWLINE;
-    $xml .= '</tcexamuserresults>'.K_NEWLINE;
-    
-    return $xml;
+
+    return $xml . ('</tcexamuserresults>'.K_NEWLINE);
 }
 
 //============================================================+

@@ -71,13 +71,15 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
         $txtalign = 'left';
         $numalign = 'right';
     }
+
     $order_field = F_escape_sql($db, $order_field);
-    $orderdir = intval($orderdir);
-    $firstrow = intval($firstrow);
-    $rowsperpage = intval($rowsperpage);
-    if (empty($order_field) or (!in_array($order_field, array('test_name', 'test_description', 'test_begin_time', 'test_end_time', 'test_duration_time', 'test_ip_range', 'test_results_to_users', 'test_report_to_users', 'test_score_right', 'test_score_wrong', 'test_score_unanswered', 'test_max_score', 'test_user_id', 'test_score_threshold', 'test_random_questions_select', 'test_random_questions_order', 'test_questions_order_mode', 'test_random_answers_select', 'test_random_answers_order', 'test_answers_order_mode', 'test_comment_enabled', 'test_menu_enabled', 'test_noanswer_enabled', 'test_mcma_radio', 'test_repeatable', 'test_mcma_partial_score', 'test_logout_on_timeout')))) {
+    $orderdir = (int) $orderdir;
+    $firstrow = (int) $firstrow;
+    $rowsperpage = (int) $rowsperpage;
+    if (empty($order_field) || !in_array($order_field, ['test_name', 'test_description', 'test_begin_time', 'test_end_time', 'test_duration_time', 'test_ip_range', 'test_results_to_users', 'test_report_to_users', 'test_score_right', 'test_score_wrong', 'test_score_unanswered', 'test_max_score', 'test_user_id', 'test_score_threshold', 'test_random_questions_select', 'test_random_questions_order', 'test_questions_order_mode', 'test_random_answers_select', 'test_random_answers_order', 'test_answers_order_mode', 'test_comment_enabled', 'test_menu_enabled', 'test_noanswer_enabled', 'test_mcma_radio', 'test_repeatable', 'test_mcma_partial_score', 'test_logout_on_timeout'])) {
         $order_field = 'test_begin_time DESC,test_name';
     }
+
     if ($orderdir == 0) {
         $nextorderdir=1;
         $full_order_field = $order_field;
@@ -85,29 +87,35 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
         $nextorderdir=0;
         $full_order_field = $order_field.' DESC';
     }
+
     if (!F_count_rows(K_TABLE_TESTS)) { // if the table is void (no items) display message
         F_print_error('MESSAGE', $l['m_databasempty']);
         return false;
     }
+
     $wherequery = '';
-    if (empty($wherequery)) {
+    if ($wherequery === '') {
         $wherequery = ' WHERE';
     } else {
         $wherequery .= ' AND';
     }
+
     $wherequery .= ' (test_id>0)';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
         $wherequery .= ' AND test_user_id IN ('.F_getAuthorizedUsers($_SESSION['session_user_id']).')';
     }
+
     if (!empty($andwhere)) {
         $wherequery .= ' AND ('.$andwhere.')';
     }
+
     $sql = 'SELECT * FROM '.K_TABLE_TESTS.$wherequery.' ORDER BY '.$full_order_field;
     if (K_DATABASE_TYPE == 'ORACLE') {
         $sql = 'SELECT * FROM ('.$sql.') WHERE rownum BETWEEN '.$firstrow.' AND '.($firstrow + $rowsperpage).'';
     } else {
         $sql .= ' LIMIT '.$rowsperpage.' OFFSET '.$firstrow.'';
     }
+
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             // -- Table structure with links:
@@ -119,6 +127,7 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
             if (strlen($searchterms) > 0) {
                 $filter .= '&amp;searchterms='.urlencode($searchterms);
             }
+
             echo F_select_table_header_element('test_begin_time', $nextorderdir, $l['w_time_begin'].' '.$l['w_datetime_format'], $l['w_time_begin'], $order_field, $filter);
             echo F_select_table_header_element('test_end_time', $nextorderdir, $l['w_time_end'].' '.$l['w_datetime_format'], $l['w_time_end'], $order_field, $filter);
             echo F_select_table_header_element('test_name', $nextorderdir, $l['h_test_name'], $l['w_name'], $order_field, $filter);
@@ -126,13 +135,14 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
             echo '</tr>'.K_NEWLINE;
             $itemcount = 0;
             do {
-                $itemcount++;
+                ++$itemcount;
                 echo '<tr>'.K_NEWLINE;
                 echo '<td>';
                 echo '<input type="checkbox" name="testid'.$itemcount.'" id="testid'.$itemcount.'" value="'.$m['test_id'].'" title="'.$l['w_select'].'"';
-                if (isset($_REQUEST['checkall']) and ($_REQUEST['checkall'] == 1)) {
+                if (isset($_REQUEST['checkall']) && $_REQUEST['checkall'] == 1) {
                     echo ' checked="checked"';
                 }
+
                 echo ' />';
                 echo '</td>'.K_NEWLINE;
                 echo '<td style="text-align:'.$txtalign.';">&nbsp;'.htmlspecialchars($m['test_begin_time'], ENT_NOQUOTES, $l['a_meta_charset']).'</td>'.K_NEWLINE;
@@ -175,12 +185,15 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
                 if (!empty($order_field)) {
                     $param_array = '&amp;order_field='.urlencode($order_field).'';
                 }
-                if (!empty($orderdir)) {
+
+                if ($orderdir !== 0) {
                     $param_array .= '&amp;orderdir='.$orderdir.'';
                 }
+
                 if (!empty($searchterms)) {
                     $param_array .= '&amp;searchterms='.urlencode($searchterms).'';
                 }
+
                 $param_array .= '&amp;submitted=1';
                 F_show_page_navigator($_SERVER['SCRIPT_NAME'], $sql, $firstrow, $rowsperpage, $param_array);
             }
@@ -196,6 +209,7 @@ function F_show_select_test($order_field, $orderdir, $firstrow, $rowsperpage, $a
     } else {
         F_display_db_error();
     }
+
     return true;
 }
 
@@ -226,13 +240,15 @@ function F_show_select_test_popup($order_field, $orderdir, $firstrow, $rowsperpa
         $txtalign = 'left';
         $numalign = 'right';
     }
+
     $order_field = F_escape_sql($db, $order_field);
-    $orderdir = intval($orderdir);
-    $firstrow = intval($firstrow);
-    $rowsperpage = intval($rowsperpage);
-    if (empty($order_field) or (!in_array($order_field, array('test_name', 'test_description', 'test_begin_time', 'test_end_time', 'test_duration_time', 'test_ip_range', 'test_results_to_users', 'test_report_to_users', 'test_score_right', 'test_score_wrong', 'test_score_unanswered', 'test_max_score', 'test_user_id', 'test_score_threshold', 'test_random_questions_select', 'test_random_questions_order', 'test_questions_order_mode', 'test_random_answers_select', 'test_random_answers_order', 'test_answers_order_mode', 'test_comment_enabled', 'test_menu_enabled', 'test_noanswer_enabled', 'test_mcma_radio', 'test_repeatable', 'test_mcma_partial_score', 'test_logout_on_timeout')))) {
+    $orderdir = (int) $orderdir;
+    $firstrow = (int) $firstrow;
+    $rowsperpage = (int) $rowsperpage;
+    if (empty($order_field) || !in_array($order_field, ['test_name', 'test_description', 'test_begin_time', 'test_end_time', 'test_duration_time', 'test_ip_range', 'test_results_to_users', 'test_report_to_users', 'test_score_right', 'test_score_wrong', 'test_score_unanswered', 'test_max_score', 'test_user_id', 'test_score_threshold', 'test_random_questions_select', 'test_random_questions_order', 'test_questions_order_mode', 'test_random_answers_select', 'test_random_answers_order', 'test_answers_order_mode', 'test_comment_enabled', 'test_menu_enabled', 'test_noanswer_enabled', 'test_mcma_radio', 'test_repeatable', 'test_mcma_partial_score', 'test_logout_on_timeout'])) {
         $order_field = 'test_begin_time DESC,test_name';
     }
+
     if ($orderdir == 0) {
         $nextorderdir=1;
         $full_order_field = $order_field;
@@ -240,29 +256,35 @@ function F_show_select_test_popup($order_field, $orderdir, $firstrow, $rowsperpa
         $nextorderdir=0;
         $full_order_field = $order_field.' DESC';
     }
+
     if (!F_count_rows(K_TABLE_TESTS)) { // if the table is void (no items) display message
         F_print_error('MESSAGE', $l['m_databasempty']);
         return false;
     }
+
     $wherequery = '';
-    if (empty($wherequery)) {
+    if ($wherequery === '') {
         $wherequery = ' WHERE';
     } else {
         $wherequery .= ' AND';
     }
+
     $wherequery .= ' (test_id>0)';
     if ($_SESSION['session_user_level'] < K_AUTH_ADMINISTRATOR) {
         $wherequery .= ' AND test_user_id IN ('.F_getAuthorizedUsers($_SESSION['session_user_id']).')';
     }
+
     if (!empty($andwhere)) {
         $wherequery .= ' AND ('.$andwhere.')';
     }
+
     $sql = 'SELECT * FROM '.K_TABLE_TESTS.$wherequery.' ORDER BY '.$full_order_field;
     if (K_DATABASE_TYPE == 'ORACLE') {
         $sql = 'SELECT * FROM ('.$sql.') WHERE rownum BETWEEN '.$firstrow.' AND '.($firstrow + $rowsperpage).'';
     } else {
         $sql .= ' LIMIT '.$rowsperpage.' OFFSET '.$firstrow.'';
     }
+
     if ($r = F_db_query($sql, $db)) {
         if ($m = F_db_fetch_array($r)) {
             // -- Table structure with links:
@@ -273,6 +295,7 @@ function F_show_select_test_popup($order_field, $orderdir, $firstrow, $rowsperpa
             if (strlen($searchterms) > 0) {
                 $filter .= '&amp;searchterms='.urlencode($searchterms);
             }
+
             echo F_select_table_header_element('test_begin_time', $nextorderdir, $l['w_time_begin'].' '.$l['w_datetime_format'], $l['w_time_begin'], $order_field, $filter);
             echo F_select_table_header_element('test_end_time', $nextorderdir, $l['w_time_end'].' '.$l['w_datetime_format'], $l['w_time_end'], $order_field, $filter);
             echo F_select_table_header_element('test_name', $nextorderdir, $l['h_test_name'], $l['w_name'], $order_field, $filter);
@@ -280,10 +303,10 @@ function F_show_select_test_popup($order_field, $orderdir, $firstrow, $rowsperpa
             echo '</tr>'.K_NEWLINE;
             $itemcount = 0;
             do {
-                $itemcount++;
+                ++$itemcount;
                 // on click the user ID will be returned on the calling form field
-                $jsaction = 'javascript:window.opener.document.getElementById(\''.$cid.'\').value='.$m['test_id'].';';
-                $jsaction .= 'window.opener.document.getElementById(\''.$cid.'\').onchange();';
+                $jsaction = "javascript:window.opener.document.getElementById('".$cid."').value=".$m['test_id'].';';
+                $jsaction .= "window.opener.document.getElementById('".$cid."').onchange();";
                 $jsaction .= 'window.close(); return false;';
                 echo '<tr>'.K_NEWLINE;
                 echo '<td style="text-align:'.$txtalign.';">&nbsp;'.htmlspecialchars($m['test_begin_time'], ENT_NOQUOTES, $l['a_meta_charset']).'</td>'.K_NEWLINE;
@@ -308,15 +331,19 @@ function F_show_select_test_popup($order_field, $orderdir, $firstrow, $rowsperpa
                 if (!empty($order_field)) {
                     $param_array = '&amp;order_field='.urlencode($order_field).'';
                 }
-                if (!empty($orderdir)) {
+
+                if ($orderdir !== 0) {
                     $param_array .= '&amp;orderdir='.$orderdir.'';
                 }
+
                 if (!empty($searchterms)) {
                     $param_array .= '&amp;searchterms='.urlencode($searchterms).'';
                 }
+
                 $param_array .= '&amp;submitted=1';
                 F_show_page_navigator($_SERVER['SCRIPT_NAME'], $sql, $firstrow, $rowsperpage, $param_array);
             }
+
             echo '</div>'.K_NEWLINE;
         } else {
             F_print_error('MESSAGE', $l['m_search_void']);
@@ -324,6 +351,7 @@ function F_show_select_test_popup($order_field, $orderdir, $firstrow, $rowsperpa
     } else {
         F_display_db_error();
     }
+
     return true;
 }
 
@@ -338,13 +366,8 @@ function F_isTestOnSSLCerts($test_id, $ssl_id)
 {
     global $l, $db;
     require_once('../config/tce_config.php');
-    $sql = 'SELECT tstssl_test_id FROM '.K_TABLE_TEST_SSLCERTS.' WHERE tstssl_test_id='.intval($test_id).' AND tstssl_ssl_id='.intval($ssl_id).' LIMIT 1';
-    if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            return true;
-        }
-    }
-    return false;
+    $sql = 'SELECT tstssl_test_id FROM '.K_TABLE_TEST_SSLCERTS.' WHERE tstssl_test_id='.(int) $test_id.' AND tstssl_ssl_id='.(int) $ssl_id.' LIMIT 1';
+    return ($r = F_db_query($sql, $db)) && ($m = F_db_fetch_array($r));
 }
 
 //============================================================+

@@ -38,7 +38,7 @@ require_once('../../shared/code/tce_authorization.php');
 require_once('../../shared/code/tce_functions_form.php');
 require_once('../code/tce_page_header.php');
 
-$user_id = intval($_SESSION['session_user_id']);
+$user_id = (int) $_SESSION['session_user_id'];
 
 // comma separated list of required fields
 $_REQUEST['ff_required'] = 'user_email,user_email_repeat';
@@ -49,16 +49,17 @@ switch ($menu_mode) {
     case 'update':{ // Update user
         if ($formstatus = F_check_form_fields()) {
             // check password
-            if (empty($user_email) or empty($user_email_repeat) or ($user_email != $user_email_repeat)) {
+            if (empty($user_email) || empty($user_email_repeat) || $user_email != $user_email_repeat) {
                 //print message and exit
                 F_print_error('WARNING', $l['m_different_emails']);
                 $formstatus = false;
                 F_stripslashes_formfields();
                 break;
             }
+
             $sql = 'SELECT user_password FROM '.K_TABLE_USERS.' WHERE user_id='.$user_id;
             if ($r = F_db_query($sql, $db)) {
-                if (!($m = F_db_fetch_array($r)) or !checkPassword($currentpassword, $m['user_password'])) {
+                if (!($m = F_db_fetch_array($r)) || !checkPassword($currentpassword, $m['user_password'])) {
                     F_print_error('WARNING', $l['m_login_wrong']);
                     $formstatus = false;
                     F_stripslashes_formfields();
@@ -68,6 +69,7 @@ switch ($menu_mode) {
                 F_display_db_error(false);
                 break;
             }
+
             $user_verifycode = getNewSessionID(); // verification code
             $sql = 'UPDATE '.K_TABLE_USERS.' SET
 				user_email=\''.F_escape_sql($db, $user_email).'\',
@@ -89,6 +91,7 @@ switch ($menu_mode) {
                 exit;
             }
         }
+
         break;
     }
 
@@ -119,7 +122,7 @@ echo '</div>'.K_NEWLINE;
 echo '<div class="pagehelp">'.$l['hp_user_change_email'].'</div>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
 
-require_once(dirname(__FILE__).'/tce_page_footer.php');
+require_once(__DIR__.'/tce_page_footer.php');
 
 //============================================================+
 // END OF FILE

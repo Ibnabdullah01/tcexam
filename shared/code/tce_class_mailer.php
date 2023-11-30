@@ -52,6 +52,10 @@ require_once('../../shared/phpmailer/src/PHPMailer.php');
  */
 class C_mailer extends PHPMailer\PHPMailer\PHPMailer
 {
+    public $ErrorInfo;
+
+    public $language;
+
     /**
      * Replace the default SetError
      * @param $msg (string) error message
@@ -85,11 +89,7 @@ class C_mailer extends PHPMailer\PHPMailer\PHPMailer
      */
     protected function lang($key)
     {
-        if (isset($this->language['m_mailerror_'.$key])) {
-            return $this->language['m_mailerror_'.$key];
-        } else {
-            return 'UNKNOW ERROR: ['.$key.']';
-        }
+        return $this->language['m_mailerror_'.$key] ?? 'UNKNOW ERROR: ['.$key.']';
     }
 
 } //end of class

@@ -46,7 +46,7 @@ extends CAS_ProxiedService_Abstract
      *
      * @var string $_username;
      */
-    private $_username;
+    private string $_username;
 
     /**
      * Constructor.
@@ -68,7 +68,7 @@ extends CAS_ProxiedService_Abstract
      * The target service url.
      * @var string $_url;
      */
-    private $_url;
+    private ?string $_url = null;
 
     /**
      * Answer a service identifier (URL) for whom we should fetch a proxy ticket.
@@ -78,9 +78,9 @@ extends CAS_ProxiedService_Abstract
      */
     public function getServiceUrl ()
     {
-        if (empty($this->_url)) {
+        if ($this->_url === null || $this->_url === '') {
             throw new CAS_ProxiedService_Exception(
-                'No URL set via '.get_class($this).'->getServiceUrl($url).'
+                'No URL set via '.static::class.'->getServiceUrl($url).'
             );
         }
 
@@ -106,6 +106,7 @@ extends CAS_ProxiedService_Abstract
                 'Cannot set the URL, stream already opened.'
             );
         }
+
         if (!is_string($url) || !strlen($url)) {
             throw new CAS_InvalidArgumentException('Invalid url.');
         }
@@ -115,10 +116,8 @@ extends CAS_ProxiedService_Abstract
 
     /**
      * The mailbox to open. See the $mailbox parameter of imap_open().
-     *
-     * @var string $_mailbox
      */
-    private $_mailbox;
+    private ?string $_mailbox = null;
 
     /**
      * Set the mailbox to open. See the $mailbox parameter of imap_open().
@@ -135,6 +134,7 @@ extends CAS_ProxiedService_Abstract
                 'Cannot set the mailbox, stream already opened.'
             );
         }
+
         if (!is_string($mailbox) || !strlen($mailbox)) {
             throw new CAS_InvalidArgumentException('Invalid mailbox.');
         }
@@ -144,10 +144,8 @@ extends CAS_ProxiedService_Abstract
 
     /**
      * A bit mask of options to pass to imap_open() as the $options parameter.
-     *
-     * @var int $_options
      */
-    private $_options = null;
+    private ?int $_options = null;
 
     /**
      * Set the options for opening the stream. See the $options parameter of
@@ -165,6 +163,7 @@ extends CAS_ProxiedService_Abstract
                 'Cannot set options, stream already opened.'
             );
         }
+
         if (!is_int($options)) {
             throw new CAS_InvalidArgumentException('Invalid options.');
         }
@@ -194,9 +193,10 @@ extends CAS_ProxiedService_Abstract
         if ($this->hasBeenOpened()) {
             throw new CAS_OutOfSequenceException('Stream already opened.');
         }
-        if (empty($this->_mailbox)) {
+
+        if ($this->_mailbox === null || $this->_mailbox === '') {
             throw new CAS_ProxiedService_Exception(
-                'You must specify a mailbox via '.get_class($this)
+                'You must specify a mailbox via '.static::class
                 .'->setMailbox($mailbox)'
             );
         }
@@ -205,7 +205,7 @@ extends CAS_ProxiedService_Abstract
 
         // Get our proxy ticket and append it to our URL.
         $this->initializeProxyTicket();
-        phpCAS::trace('opening IMAP mailbox `'.$this->_mailbox.'\'...');
+        phpCAS::trace('opening IMAP mailbox `'.$this->_mailbox."'...");
         $this->_stream = @imap_open(
             $this->_mailbox, $this->_username, $this->getProxyTicket(),
             $this->_options
@@ -236,13 +236,11 @@ extends CAS_ProxiedService_Abstract
 
     /*********************************************************
      * 3. Access the result
-    *********************************************************/
+     *********************************************************/
     /**
      * The IMAP stream
-     *
-     * @var resource $_stream
      */
-    private $_stream;
+    private \IMAP\Connection|bool|null $_stream = null;
 
     /**
      * Answer the IMAP stream
@@ -256,6 +254,7 @@ extends CAS_ProxiedService_Abstract
                 'Cannot access stream, not opened yet.'
             );
         }
+
         return $this->_stream;
     }
 
@@ -274,6 +273,7 @@ extends CAS_ProxiedService_Abstract
                 'Cannot access errors, stream not opened yet.'
             );
         }
+
         return $this->getProxyTicket();
     }
 }

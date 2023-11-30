@@ -65,11 +65,13 @@ implements CAS_ProxiedService, CAS_ProxiedService_Testable
                 'Trying to initialize with an empty proxy ticket.'
             );
         }
+
         if (!empty($this->_proxyTicket)) {
             throw new CAS_OutOfSequenceException(
                 'Already initialized, cannot change the proxy ticket.'
             );
         }
+
         $this->_proxyTicket = $proxyTicket;
     }
 
@@ -94,7 +96,7 @@ implements CAS_ProxiedService, CAS_ProxiedService_Testable
     /**
      * @var CAS_Client $_casClient;
      */
-    private $_casClient;
+    private ?\CAS_Client $_casClient = null;
 
     /**
      * Use a particular CAS_Client->initializeProxiedService() rather than the
@@ -137,8 +139,9 @@ implements CAS_ProxiedService, CAS_ProxiedService_Testable
                 'Already initialized, cannot initialize again.'
             );
         }
+
         // Allow usage of a particular CAS_Client for unit testing.
-        if (empty($this->_casClient)) {
+        if (!$this->_casClient instanceof \CAS_Client) {
             phpCAS::initializeProxiedService($this);
         } else {
             $this->_casClient->initializeProxiedService($this);

@@ -42,16 +42,26 @@ implements CAS_Request_RequestInterface
 {
 
     protected $url = null;
-    protected $cookies = array();
-    protected $headers = array();
+
+    protected $cookies = [];
+
+    protected $headers = [];
+
     protected $isPost = false;
+
     protected $postBody = null;
+
     protected $caCertPath = null;
+
     protected $validateCN = true;
-    private $_sent = false;
-    private $_responseHeaders = array();
+
+    private bool $_sent = false;
+
+    private array $_responseHeaders = [];
+
     private $_responseBody = null;
-    private $_errorMessage = '';
+
+    private string $_errorMessage = '';
 
     /*********************************************************
      * Configure the Request
@@ -187,6 +197,7 @@ implements CAS_Request_RequestInterface
                 'Request has already been sent cannot '.__METHOD__
             );
         }
+
         if (!$this->isPost) {
             throw new CAS_OutOfSequenceException(
                 'Cannot add a POST body to a GET request, use makePost() first.'
@@ -212,6 +223,7 @@ implements CAS_Request_RequestInterface
                 'Request has already been sent cannot '.__METHOD__
             );
         }
+
         $this->caCertPath = $caCertPath;
         $this->validateCN = $validate_cn;
     }
@@ -233,11 +245,13 @@ implements CAS_Request_RequestInterface
                 'Request has already been sent cannot send again.'
             );
         }
+
         if (is_null($this->url) || !$this->url) {
             throw new CAS_OutOfSequenceException(
                 'A url must be specified via setUrl() before the request can be sent.'
             );
         }
+
         $this->_sent = true;
         return $this->sendRequest();
     }
@@ -314,6 +328,7 @@ implements CAS_Request_RequestInterface
                 'Request has not been sent yet. Cannot '.__METHOD__
             );
         }
+
         return $this->_responseHeaders;
     }
 
@@ -332,7 +347,7 @@ implements CAS_Request_RequestInterface
         }
 
         if (!preg_match(
-            '/HTTP\/[0-9.]+\s+([0-9]+)\s*(.*)/',
+            '/HTTP\/[0-9.]+\s+(\d+)\s*(.*)/',
             $this->_responseHeaders[0], $matches
         )
         ) {
@@ -341,7 +356,7 @@ implements CAS_Request_RequestInterface
             );
         }
 
-        return intval($matches[1]);
+        return (int) $matches[1];
     }
 
     /**
@@ -374,6 +389,7 @@ implements CAS_Request_RequestInterface
                 'Request has not been sent yet. Cannot '.__METHOD__
             );
         }
+
         return $this->_errorMessage;
     }
 }

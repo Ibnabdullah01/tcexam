@@ -48,150 +48,165 @@ $_REQUEST['ff_required'] = 'test_name,test_description,test_ip_range,test_durati
 $_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_name'].','.$l['w_description'].','.$l['w_ip_range'].','.$l['w_test_time'].','.$l['w_score_right'], ENT_COMPAT, $l['a_meta_charset']);
 
 // set default values
-if (!isset($_REQUEST['test_results_to_users']) or (empty($_REQUEST['test_results_to_users']))) {
+if (!isset($_REQUEST['test_results_to_users']) || empty($_REQUEST['test_results_to_users'])) {
     $test_results_to_users = false;
 } else {
     $test_results_to_users = F_getBoolean($_REQUEST['test_results_to_users']);
 }
-if (!isset($_REQUEST['test_report_to_users']) or (empty($_REQUEST['test_report_to_users']))) {
+
+if (!isset($_REQUEST['test_report_to_users']) || empty($_REQUEST['test_report_to_users'])) {
     $test_report_to_users = false;
 } else {
     $test_report_to_users = F_getBoolean($_REQUEST['test_report_to_users']);
 }
-if (!isset($_REQUEST['subject_id']) or (empty($_REQUEST['subject_id']))) {
-    $subject_id = array();
-} else {
-    $subject_id = $_REQUEST['subject_id'];
-}
-if (!isset($_REQUEST['tsubset_type']) or (empty($_REQUEST['tsubset_type']))) {
+
+$subject_id = !isset($_REQUEST['subject_id']) || empty($_REQUEST['subject_id']) ? [] : $_REQUEST['subject_id'];
+
+if (!isset($_REQUEST['tsubset_type']) || empty($_REQUEST['tsubset_type'])) {
     $tsubset_type = 0;
 } else {
-    $tsubset_type = intval($_REQUEST['tsubset_type']);
+    $tsubset_type = (int) $_REQUEST['tsubset_type'];
 }
-if (!isset($_REQUEST['tsubset_difficulty'])) {
-    $tsubset_difficulty = 1;
-} else {
-    $tsubset_difficulty = intval($_REQUEST['tsubset_difficulty']);
-}
-if (!isset($_REQUEST['tsubset_quantity']) or (empty($_REQUEST['tsubset_quantity']))) {
+
+$tsubset_difficulty = isset($_REQUEST['tsubset_difficulty']) ? (int) $_REQUEST['tsubset_difficulty'] : 1;
+
+if (!isset($_REQUEST['tsubset_quantity']) || empty($_REQUEST['tsubset_quantity'])) {
     $tsubset_quantity = 1;
 } else {
-    $tsubset_quantity = intval($_REQUEST['tsubset_quantity']);
+    $tsubset_quantity = (int) $_REQUEST['tsubset_quantity'];
 }
-if (!isset($_REQUEST['tsubset_answers']) or (empty($_REQUEST['tsubset_answers']))) {
+
+if (!isset($_REQUEST['tsubset_answers']) || empty($_REQUEST['tsubset_answers'])) {
     $tsubset_answers = 2;
 } else {
-    $tsubset_answers = intval($_REQUEST['tsubset_answers']);
+    $tsubset_answers = (int) $_REQUEST['tsubset_answers'];
 }
+
 if (isset($_REQUEST['tsubset_id'])) {
-    $tsubset_id = intval($_REQUEST['tsubset_id']);
+    $tsubset_id = (int) $_REQUEST['tsubset_id'];
 }
+
 if (isset($_REQUEST['test_duration_time'])) {
-    $test_duration_time = intval($_REQUEST['test_duration_time']);
+    $test_duration_time = (int) $_REQUEST['test_duration_time'];
 }
+
 if (isset($_REQUEST['group_id'])) {
-    $group_id = intval($_REQUEST['group_id']);
+    $group_id = (int) $_REQUEST['group_id'];
 }
-if (!isset($_REQUEST['test_score_right']) or (empty($_REQUEST['test_score_right']))) {
+
+if (!isset($_REQUEST['test_score_right']) || empty($_REQUEST['test_score_right'])) {
     $test_score_right = 0;
 } else {
-    $test_score_right = floatval($_REQUEST['test_score_right']);
+    $test_score_right = (float) $_REQUEST['test_score_right'];
 }
-if (!isset($_REQUEST['test_score_wrong']) or (empty($_REQUEST['test_score_wrong']))) {
+
+if (!isset($_REQUEST['test_score_wrong']) || empty($_REQUEST['test_score_wrong'])) {
     $test_score_wrong = 0;
 } else {
-    $test_score_wrong = floatval($_REQUEST['test_score_wrong']);
+    $test_score_wrong = (float) $_REQUEST['test_score_wrong'];
 }
-if (!isset($_REQUEST['test_score_unanswered']) or (empty($_REQUEST['test_score_unanswered']))) {
+
+if (!isset($_REQUEST['test_score_unanswered']) || empty($_REQUEST['test_score_unanswered'])) {
     $test_score_unanswered = 0;
 } else {
-    $test_score_unanswered = floatval($_REQUEST['test_score_unanswered']);
+    $test_score_unanswered = (float) $_REQUEST['test_score_unanswered'];
 }
-if (!isset($_REQUEST['test_score_threshold']) or (empty($_REQUEST['test_score_threshold']))) {
+
+if (!isset($_REQUEST['test_score_threshold']) || empty($_REQUEST['test_score_threshold'])) {
     $test_score_threshold = 0;
 } else {
-    $test_score_threshold = floatval($_REQUEST['test_score_threshold']);
+    $test_score_threshold = (float) $_REQUEST['test_score_threshold'];
 }
-if (!isset($_REQUEST['test_random_questions_select']) or (empty($_REQUEST['test_random_questions_select']))) {
+
+if (!isset($_REQUEST['test_random_questions_select']) || empty($_REQUEST['test_random_questions_select'])) {
     $test_random_questions_select = false;
 } else {
     $test_random_questions_select = F_getBoolean($_REQUEST['test_random_questions_select']);
 }
-if (!isset($_REQUEST['test_random_questions_order']) or (empty($_REQUEST['test_random_questions_order']))) {
+
+if (!isset($_REQUEST['test_random_questions_order']) || empty($_REQUEST['test_random_questions_order'])) {
     $test_random_questions_order = false;
 } else {
     $test_random_questions_order = F_getBoolean($_REQUEST['test_random_questions_order']);
 }
-if (!isset($_REQUEST['test_questions_order_mode']) or (empty($_REQUEST['test_questions_order_mode']))) {
+
+if (!isset($_REQUEST['test_questions_order_mode']) || empty($_REQUEST['test_questions_order_mode'])) {
     $test_questions_order_mode = 0;
 } else {
-    $test_questions_order_mode = max(0, min(3, intval($_REQUEST['test_questions_order_mode'])));
+    $test_questions_order_mode = max(0, min(3, (int) $_REQUEST['test_questions_order_mode']));
 }
-if (!isset($_REQUEST['test_random_answers_select']) or (empty($_REQUEST['test_random_answers_select']))) {
+
+if (!isset($_REQUEST['test_random_answers_select']) || empty($_REQUEST['test_random_answers_select'])) {
     $test_random_answers_select = false;
 } else {
     $test_random_answers_select = F_getBoolean($_REQUEST['test_random_answers_select']);
 }
-if (!isset($_REQUEST['test_random_answers_order']) or (empty($_REQUEST['test_random_answers_order']))) {
+
+if (!isset($_REQUEST['test_random_answers_order']) || empty($_REQUEST['test_random_answers_order'])) {
     $test_random_answers_order = false;
 } else {
     $test_random_answers_order = F_getBoolean($_REQUEST['test_random_answers_order']);
 }
-if (!isset($_REQUEST['test_answers_order_mode']) or (empty($_REQUEST['test_answers_order_mode']))) {
+
+if (!isset($_REQUEST['test_answers_order_mode']) || empty($_REQUEST['test_answers_order_mode'])) {
     $test_answers_order_mode = 0;
 } else {
-    $test_answers_order_mode = max(0, min(2, intval($_REQUEST['test_answers_order_mode'])));
+    $test_answers_order_mode = max(0, min(2, (int) $_REQUEST['test_answers_order_mode']));
 }
-if (!isset($_REQUEST['test_comment_enabled']) or (empty($_REQUEST['test_comment_enabled']))) {
+
+if (!isset($_REQUEST['test_comment_enabled']) || empty($_REQUEST['test_comment_enabled'])) {
     $test_comment_enabled = false;
 } else {
     $test_comment_enabled = F_getBoolean($_REQUEST['test_comment_enabled']);
 }
-if (!isset($_REQUEST['test_menu_enabled']) or (empty($_REQUEST['test_menu_enabled']))) {
+
+if (!isset($_REQUEST['test_menu_enabled']) || empty($_REQUEST['test_menu_enabled'])) {
     $test_menu_enabled = false;
 } else {
     $test_menu_enabled = F_getBoolean($_REQUEST['test_menu_enabled']);
 }
-if (!isset($_REQUEST['test_noanswer_enabled']) or (empty($_REQUEST['test_noanswer_enabled']))) {
+
+if (!isset($_REQUEST['test_noanswer_enabled']) || empty($_REQUEST['test_noanswer_enabled'])) {
     $test_noanswer_enabled = false;
 } else {
     $test_noanswer_enabled = F_getBoolean($_REQUEST['test_noanswer_enabled']);
 }
-if (!isset($_REQUEST['test_mcma_radio']) or (empty($_REQUEST['test_mcma_radio']))) {
+
+if (!isset($_REQUEST['test_mcma_radio']) || empty($_REQUEST['test_mcma_radio'])) {
     $test_mcma_radio = false;
 } else {
     $test_mcma_radio = F_getBoolean($_REQUEST['test_mcma_radio']);
 }
-if (!isset($_REQUEST['test_repeatable']) or (empty($_REQUEST['test_repeatable']))) {
+
+if (!isset($_REQUEST['test_repeatable']) || empty($_REQUEST['test_repeatable'])) {
     $test_repeatable = 0;
 } else {
-    $test_repeatable = intval($_REQUEST['test_repeatable']);
+    $test_repeatable = (int) $_REQUEST['test_repeatable'];
 }
-if (!isset($_REQUEST['test_mcma_partial_score']) or (empty($_REQUEST['test_mcma_partial_score']))) {
+
+if (!isset($_REQUEST['test_mcma_partial_score']) || empty($_REQUEST['test_mcma_partial_score'])) {
     $test_mcma_partial_score = false;
 } else {
     $test_mcma_partial_score = F_getBoolean($_REQUEST['test_mcma_partial_score']);
 }
-if (!isset($_REQUEST['test_logout_on_timeout']) or (empty($_REQUEST['test_logout_on_timeout']))) {
+
+if (!isset($_REQUEST['test_logout_on_timeout']) || empty($_REQUEST['test_logout_on_timeout'])) {
     $test_logout_on_timeout = false;
 } else {
     $test_logout_on_timeout = F_getBoolean($_REQUEST['test_logout_on_timeout']);
 }
-if (!isset($_REQUEST['test_max_score'])) {
-    $test_max_score = 0;
-} else {
-    $test_max_score = floatval($_REQUEST['test_max_score']);
-}
+
+$test_max_score = isset($_REQUEST['test_max_score']) ? (float) $_REQUEST['test_max_score'] : 0;
 
 $test_max_score_new = 0; // test max score
-$qtype = array('S', 'M', 'T', 'O'); // question types
-$qordmode = array($l['w_position'], $l['w_alphabetic'], $l['w_id'], $l['w_type'], $l['w_subject']);
-$aordmode = array($l['w_position'], $l['w_alphabetic'], $l['w_id']);
+$qtype = ['S', 'M', 'T', 'O']; // question types
+$qordmode = [$l['w_position'], $l['w_alphabetic'], $l['w_id'], $l['w_type'], $l['w_subject']];
+$aordmode = [$l['w_position'], $l['w_alphabetic'], $l['w_id']];
 
 $test_fieldset_name = '';
 
-if (isset($_REQUEST['test_id']) and ($_REQUEST['test_id'] > 0)) {
-    $test_id = intval($_REQUEST['test_id']);
+if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
+    $test_id = (int) $_REQUEST['test_id'];
     // check user's authorization
     if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
@@ -209,25 +224,27 @@ if (isset($_POST['lock'])) {
 switch ($menu_mode) {
     case 'lock':{ // lock test by changing end date (subtract 1000 years)
         $sql = 'UPDATE '.K_TABLE_TESTS.' SET
-			test_end_time='.F_empty_to_null(''.(intval(substr($test_end_time, 0, 1)) - 1).substr($test_end_time, 1)).'
+			test_end_time='.F_empty_to_null(''.((int) substr($test_end_time, 0, 1) - 1).substr($test_end_time, 1)).'
 			WHERE test_id='.$test_id.'';
         if (!$r = F_db_query($sql, $db)) {
             F_display_db_error(false);
         } else {
             F_print_error('MESSAGE', $l['m_updated']);
         }
+
         break;
     }
 
     case 'unlock':{ // unlock test by restoring original end date (add 1000 years)
         $sql = 'UPDATE '.K_TABLE_TESTS.' SET
-			test_end_time='.F_empty_to_null(''.(intval(substr($test_end_time, 0, 1)) + 1).substr($test_end_time, 1)).'
+			test_end_time='.F_empty_to_null(''.((int) substr($test_end_time, 0, 1) + 1).substr($test_end_time, 1)).'
 			WHERE test_id='.$test_id.'';
         if (!$r = F_db_query($sql, $db)) {
             F_display_db_error(false);
         } else {
             F_print_error('MESSAGE', $l['m_updated']);
         }
+
         break;
     }
 
@@ -238,8 +255,9 @@ switch ($menu_mode) {
             F_stripslashes_formfields();
             break;
         }
+
         // for all selected subjects
-        for ($i = 0; $i<$subjcount; $i++) {
+        for ($i = 0; $i<$subjcount; ++$i) {
             if (!empty($_POST['selectsubject'.$i])) {
                 $sql = 'DELETE FROM '.K_TABLE_TEST_SUBJSET.' WHERE tsubset_test_id='.$test_id.' AND tsubset_id='.$_POST['selectsubject'.$i].'';
                 if (!$r = F_db_query($sql, $db)) {
@@ -249,6 +267,7 @@ switch ($menu_mode) {
                 }
             }
         }
+
         break;
     }
 
@@ -260,119 +279,130 @@ switch ($menu_mode) {
             F_stripslashes_formfields();
             break;
         }
-        if ($formstatus = F_check_form_fields()) {
-            if ((isset($subject_id)) and (!empty($subject_id)) and (isset($tsubset_quantity))) {
-                if ($tsubset_type == 3) {
-                    // free-text questions do not have alternative answers to display
-                    $tsubset_answers = 0;
-                } elseif (($tsubset_answers < 2) and ($tsubset_difficulty > 0)) {
-                    // questions must have at least 2 alternative answers
-                    $tsubset_answers = 2;
-                }
-                // create a comma separated list of subjects IDs
-                $subjids = '';
-                foreach ($subject_id as $subid) {
-                    if ($subid[0] == '#') {
-                        // module ID
-                        $modid = intval(substr($subid, 1));
-                        $sqlsm = F_select_subjects_sql('subject_module_id='.$modid.'');
-                        if ($rsm = F_db_query($sqlsm, $db)) {
-                            while ($msm = F_db_fetch_array($rsm)) {
-                                $subjids .= $msm['subject_id'].',';
-                            }
-                        } else {
-                            F_display_db_error();
+
+        if (($formstatus = F_check_form_fields()) && (isset($subject_id) && !empty($subject_id) && isset($tsubset_quantity))) {
+            if ($tsubset_type == 3) {
+                // free-text questions do not have alternative answers to display
+                $tsubset_answers = 0;
+            } elseif ($tsubset_answers < 2 && $tsubset_difficulty > 0) {
+                // questions must have at least 2 alternative answers
+                $tsubset_answers = 2;
+            }
+
+            // create a comma separated list of subjects IDs
+            $subjids = '';
+            foreach ($subject_id as $subid) {
+                if ($subid[0] == '#') {
+                    // module ID
+                    $modid = (int) substr($subid, 1);
+                    $sqlsm = F_select_subjects_sql('subject_module_id='.$modid.'');
+                    if ($rsm = F_db_query($sqlsm, $db)) {
+                        while ($msm = F_db_fetch_array($rsm)) {
+                            $subjids .= $msm['subject_id'].',';
                         }
                     } else {
-                        $subjids .= intval($subid).',';
+                        F_display_db_error();
                     }
+                } else {
+                    $subjids .= (int) $subid.',';
                 }
-                $subjids = substr($subjids, 0, -1);
-                $subject_id = explode(',', $subjids);
-                $subjids = '('.$subjids.')';
-                $sql_answer_position = '';
-                $sql_questions_position = '';
-                if (!$test_random_questions_order and ($test_questions_order_mode == 0)) {
-                    $sql_questions_position = ' AND question_position>0';
-                }
-                if (!$test_random_answers_order and ($test_answers_order_mode == 0)) {
-                    $sql_answer_position = ' AND answer_position>0';
-                }
-                // check here if the selected number of questions are available for the current set
-                // NOTE: if the same subject is used in multiple sets this control may fail.
-                $sqlq = 'SELECT COUNT(*) AS numquestions FROM '.K_TABLE_QUESTIONS.'';
-                $sqlq .= ' WHERE question_subject_id IN '.$subjids.'
+            }
+
+            $subjids = substr($subjids, 0, -1);
+            $subject_id = explode(',', $subjids);
+            $subjids = '('.$subjids.')';
+            $sql_answer_position = '';
+            $sql_questions_position = '';
+            if (!$test_random_questions_order && $test_questions_order_mode == 0) {
+                $sql_questions_position = ' AND question_position>0';
+            }
+
+            if (!$test_random_answers_order && $test_answers_order_mode == 0) {
+                $sql_answer_position = ' AND answer_position>0';
+            }
+
+            // check here if the selected number of questions are available for the current set
+            // NOTE: if the same subject is used in multiple sets this control may fail.
+            $sqlq = 'SELECT COUNT(*) AS numquestions FROM '.K_TABLE_QUESTIONS.'';
+            $sqlq .= ' WHERE question_subject_id IN '.$subjids.'
 					AND question_difficulty='.$tsubset_difficulty.'
 					AND question_enabled=\'1\'';
-                if ($tsubset_type > 0) {
-                    $sqlq .= ' AND question_type='.$tsubset_type.'';
-                }
-                if ($tsubset_type == 1) {
-                    // single question (MCSA)
-                    // check if the selected question has enough answers
-                    $sqlq .= ' AND question_id IN (
+            if ($tsubset_type > 0) {
+                $sqlq .= ' AND question_type='.$tsubset_type.'';
+            }
+
+            if ($tsubset_type == 1) {
+                // single question (MCSA)
+                // check if the selected question has enough answers
+                $sqlq .= ' AND question_id IN (
 							SELECT answer_question_id
 							FROM '.K_TABLE_ANSWERS.'
 							WHERE answer_enabled=\'1\' AND answer_isright=\'1\'';
-                    $sqlq .= $sql_answer_position;
-                    $sqlq .= ' GROUP BY answer_question_id
+                $sqlq .= $sql_answer_position;
+                $sqlq .= ' GROUP BY answer_question_id
 							HAVING (COUNT(answer_id)>0))';
-                    $sqlq .= ' AND question_id IN (
+                $sqlq .= ' AND question_id IN (
 							SELECT answer_question_id
 							FROM '.K_TABLE_ANSWERS.'
 							WHERE answer_enabled=\'1\'
 							AND answer_isright=\'0\'';
-                    $sqlq .= $sql_answer_position;
-                    $sqlq .= ' GROUP BY answer_question_id';
-                    if ($tsubset_answers > 0) {
-                        $sqlq .= ' HAVING (COUNT(answer_id)>='.($tsubset_answers-1).')';
-                    }
-                    $sqlq .= ' )';
-                } elseif ($tsubset_type == 2) {
-                    // multiple question (MCMA)
-                    // check if the selected question has enough answers
-                    $sqlq .= ' AND question_id IN (
+                $sqlq .= $sql_answer_position;
+                $sqlq .= ' GROUP BY answer_question_id';
+                if ($tsubset_answers > 0) {
+                    $sqlq .= ' HAVING (COUNT(answer_id)>='.($tsubset_answers-1).')';
+                }
+
+                $sqlq .= ' )';
+            } elseif ($tsubset_type == 2) {
+                // multiple question (MCMA)
+                // check if the selected question has enough answers
+                $sqlq .= ' AND question_id IN (
 							SELECT answer_question_id
 							FROM '.K_TABLE_ANSWERS.'
 							WHERE answer_enabled=\'1\'';
-                    $sqlq .= $sql_answer_position;
-                    $sqlq .= ' GROUP BY answer_question_id';
-                    if ($tsubset_answers > 0) {
-                        $sqlq .= ' HAVING (COUNT(answer_id)>='.$tsubset_answers.')';
-                    }
-                    $sqlq .= ' )';
-                } elseif ($tsubset_type == 4) {
-                    // ordering question
-                    // check if the selected question has enough answers
-                    $sqlq .= ' AND question_id IN (
+                $sqlq .= $sql_answer_position;
+                $sqlq .= ' GROUP BY answer_question_id';
+                if ($tsubset_answers > 0) {
+                    $sqlq .= ' HAVING (COUNT(answer_id)>='.$tsubset_answers.')';
+                }
+
+                $sqlq .= ' )';
+            } elseif ($tsubset_type == 4) {
+                // ordering question
+                // check if the selected question has enough answers
+                $sqlq .= ' AND question_id IN (
 							SELECT answer_question_id
 							FROM '.K_TABLE_ANSWERS.'
 							WHERE answer_enabled=\'1\'
 							AND answer_position>0
 							GROUP BY answer_question_id
 							HAVING (COUNT(answer_id)>1))';
+            }
+
+            $sqlq .= $sql_questions_position;
+            if (K_DATABASE_TYPE == 'ORACLE') {
+                $sqlq = 'SELECT * FROM ('.$sqlq.') WHERE rownum <= '.$tsubset_quantity.'';
+            } else {
+                $sqlq .= ' LIMIT '.$tsubset_quantity.'';
+            }
+
+            $numofrows = 0;
+            if ($rq = F_db_query($sqlq, $db)) {
+                if ($mq = F_db_fetch_array($rq)) {
+                    $numofrows = $mq['numquestions'];
                 }
-                $sqlq .= $sql_questions_position;
-                if (K_DATABASE_TYPE == 'ORACLE') {
-                    $sqlq = 'SELECT * FROM ('.$sqlq.') WHERE rownum <= '.$tsubset_quantity.'';
-                } else {
-                    $sqlq .= ' LIMIT '.$tsubset_quantity.'';
-                }
-                $numofrows = 0;
-                if ($rq = F_db_query($sqlq, $db)) {
-                    if ($mq = F_db_fetch_array($rq)) {
-                        $numofrows = $mq['numquestions'];
-                    }
-                } else {
-                    F_display_db_error();
-                }
-                if ($numofrows < $tsubset_quantity) {
-                    F_print_error('WARNING', $l['m_unavailable_questions']);
-                    break;
-                }
-                if (!empty($subject_id)) {
-                    // insert new subject
-                    $sql = 'INSERT INTO '.K_TABLE_TEST_SUBJSET.' (tsubset_test_id,
+            } else {
+                F_display_db_error();
+            }
+
+            if ($numofrows < $tsubset_quantity) {
+                F_print_error('WARNING', $l['m_unavailable_questions']);
+                break;
+            }
+
+            if ($subject_id !== []) {
+                // insert new subject
+                $sql = 'INSERT INTO '.K_TABLE_TEST_SUBJSET.' (tsubset_test_id,
 						tsubset_type,
 						tsubset_difficulty,
 						tsubset_quantity,
@@ -384,27 +414,27 @@ switch ($menu_mode) {
 						\''.$tsubset_quantity.'\',
 						\''.$tsubset_answers.'\'
 						)';
-                    if (!$r = F_db_query($sql, $db)) {
-                        F_display_db_error(false);
-                    } else {
-                        $tsubset_id = F_db_insert_id($db, K_TABLE_TEST_SUBJSET, 'tsubset_id');
-                        // add selected subject_id
-                        foreach ($subject_id as $subid) {
-                            $sql = 'INSERT INTO '.K_TABLE_SUBJECT_SET.' (
+                if (!$r = F_db_query($sql, $db)) {
+                    F_display_db_error(false);
+                } else {
+                    $tsubset_id = F_db_insert_id($db, K_TABLE_TEST_SUBJSET, 'tsubset_id');
+                    // add selected subject_id
+                    foreach ($subject_id as $subid) {
+                        $sql = 'INSERT INTO '.K_TABLE_SUBJECT_SET.' (
 								subjset_tsubset_id,
 								subjset_subject_id
 								) VALUES (
 								\''.$tsubset_id.'\',
 								\''.$subid.'\'
 								)';
-                            if (!$r = F_db_query($sql, $db)) {
-                                F_display_db_error(false);
-                            }
+                        if (!$r = F_db_query($sql, $db)) {
+                            F_display_db_error(false);
                         }
                     }
                 }
             }
         }
+
         break;
     }
 
@@ -441,17 +471,19 @@ switch ($menu_mode) {
                 F_print_error('MESSAGE', $test_name.': '.$l['m_deleted']);
             }
         }
+
         break;
     }
 
     case 'update':{ // Update
         // check if the confirmation chekbox has been selected
-        if (!isset($_REQUEST['confirmupdate']) or ($_REQUEST['confirmupdate'] != 1)) {
+        if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
             F_print_error('WARNING', $l['m_form_missing_fields'].': '.$l['w_confirm'].' &rarr; '.$l['w_update']);
             $formstatus = false;
             F_stripslashes_formfields();
             break;
         }
+
         if ($formstatus = F_check_form_fields()) {
             // check referential integrity (NOTE: mysql do not support "ON UPDATE" constraint)
             if (!F_check_unique(K_TABLE_TEST_USER, 'testuser_test_id='.$test_id.'')) {
@@ -460,19 +492,23 @@ switch ($menu_mode) {
                 F_stripslashes_formfields();
                 break;
             }
+
             // check if name is unique
-            if (!F_check_unique(K_TABLE_TESTS, 'test_name=\''.$test_name.'\'', 'test_id', $test_id)) {
+            if (!F_check_unique(K_TABLE_TESTS, "test_name='".$test_name."'", 'test_id', $test_id)) {
                 F_print_error('WARNING', $l['m_duplicate_name']);
                 $formstatus = false;
                 F_stripslashes_formfields();
                 break;
             }
+
             if (!empty($new_test_password)) {
                 $test_password = getPasswordHash($new_test_password);
             }
+
             if ($test_score_threshold > $test_max_score) {
                 $test_score_threshold = 0.6 * $test_max_score;
             }
+
             $sql = 'UPDATE '.K_TABLE_TESTS.' SET
 				test_name=\''.F_escape_sql($db, $test_name).'\',
 				test_description=\''.F_escape_sql($db, $test_description).'\',
@@ -480,26 +516,26 @@ switch ($menu_mode) {
 				test_end_time='.F_empty_to_null($test_end_time).',
 				test_duration_time=\''.$test_duration_time.'\',
 				test_ip_range=\''.F_escape_sql($db, $test_ip_range).'\',
-				test_results_to_users=\''.intval($test_results_to_users).'\',
-				test_report_to_users=\''.intval($test_report_to_users).'\',
+				test_results_to_users=\''.(int) $test_results_to_users.'\',
+				test_report_to_users=\''.(int) $test_report_to_users.'\',
 				test_score_right=\''.$test_score_right.'\',
 				test_score_wrong=\''.$test_score_wrong.'\',
 				test_score_unanswered=\''.$test_score_unanswered.'\',
 				test_max_score=\''.$test_max_score.'\',
 				test_score_threshold=\''.$test_score_threshold.'\',
-				test_random_questions_select=\''.intval($test_random_questions_select).'\',
-				test_random_questions_order=\''.intval($test_random_questions_order).'\',
+				test_random_questions_select=\''.(int) $test_random_questions_select.'\',
+				test_random_questions_order=\''.(int) $test_random_questions_order.'\',
 				test_questions_order_mode=\''.$test_questions_order_mode.'\',
-				test_random_answers_select=\''.intval($test_random_answers_select).'\',
-				test_random_answers_order=\''.intval($test_random_answers_order).'\',
+				test_random_answers_select=\''.(int) $test_random_answers_select.'\',
+				test_random_answers_order=\''.(int) $test_random_answers_order.'\',
 				test_answers_order_mode=\''.$test_answers_order_mode.'\',
-				test_comment_enabled=\''.intval($test_comment_enabled).'\',
-				test_menu_enabled=\''.intval($test_menu_enabled).'\',
-				test_noanswer_enabled=\''.intval($test_noanswer_enabled).'\',
-				test_mcma_radio=\''.intval($test_mcma_radio).'\',
-				test_repeatable=\''.intval($test_repeatable).'\',
-				test_mcma_partial_score=\''.intval($test_mcma_partial_score).'\',
-				test_logout_on_timeout=\''.intval($test_logout_on_timeout).'\',
+				test_comment_enabled=\''.(int) $test_comment_enabled.'\',
+				test_menu_enabled=\''.(int) $test_menu_enabled.'\',
+				test_noanswer_enabled=\''.(int) $test_noanswer_enabled.'\',
+				test_mcma_radio=\''.(int) $test_mcma_radio.'\',
+				test_repeatable=\''.(int) $test_repeatable.'\',
+				test_mcma_partial_score=\''.(int) $test_mcma_partial_score.'\',
+				test_logout_on_timeout=\''.(int) $test_logout_on_timeout.'\',
 				test_password='.F_empty_to_null($test_password).'
 				WHERE test_id='.$test_id.'';
             if (!$r = F_db_query($sql, $db)) {
@@ -514,6 +550,7 @@ switch ($menu_mode) {
             if (!$r = F_db_query($sql, $db)) {
                 F_display_db_error(false);
             }
+
             // update authorized groups
             if (!empty($user_groups)) {
                 foreach ($user_groups as $group_id) {
@@ -522,7 +559,7 @@ switch ($menu_mode) {
 						tstgrp_group_id
 						) VALUES (
 						\''.$test_id.'\',
-						\''.intval($group_id).'\'
+						\''.(int) $group_id.'\'
 						)';
                     if (!$r = F_db_query($sql, $db)) {
                         F_display_db_error(false);
@@ -536,6 +573,7 @@ switch ($menu_mode) {
             if (!$r = F_db_query($sql, $db)) {
                 F_display_db_error(false);
             }
+
             // update authorized SSL certificates
             if (!empty($sslcerts)) {
                 foreach ($sslcerts as $ssl_id) {
@@ -544,7 +582,7 @@ switch ($menu_mode) {
 						tstssl_ssl_id
 						) VALUES (
 						\''.$test_id.'\',
-						\''.intval($ssl_id).'\'
+						\''.(int) $ssl_id.'\'
 						)';
                     if (!$r = F_db_query($sql, $db)) {
                         F_display_db_error(false);
@@ -552,25 +590,29 @@ switch ($menu_mode) {
                 }
             }
         }
+
         break;
     }
 
     case 'add':{ // Add
         if ($formstatus = F_check_form_fields()) {
             // check if name is unique
-            if (!F_check_unique(K_TABLE_TESTS, 'test_name=\''.F_escape_sql($db, $test_name).'\'')) {
+            if (!F_check_unique(K_TABLE_TESTS, "test_name='".F_escape_sql($db, $test_name)."'")) {
                 F_print_error('WARNING', $l['m_duplicate_name']);
                 $formstatus = false;
                 F_stripslashes_formfields();
                 break;
             }
-            if (isset($test_id) and ($test_id > 0)) {
+
+            if (isset($test_id) && $test_id > 0) {
                 // save previous test_id.
                 $old_test_id = $test_id;
             }
+
             if (!empty($new_test_password)) {
                 $test_password = getPasswordHash($new_test_password);
             }
+
             $sql = 'INSERT INTO '.K_TABLE_TESTS.' (
 			test_name,
 				test_description,
@@ -607,27 +649,27 @@ switch ($menu_mode) {
 				'.F_empty_to_null($test_end_time).',
 				\''.$test_duration_time.'\',
 				\''.F_escape_sql($db, $test_ip_range).'\',
-				\''.intval($test_results_to_users).'\',
-				\''.intval($test_report_to_users).'\',
+				\''.(int) $test_results_to_users.'\',
+				\''.(int) $test_report_to_users.'\',
 				\''.$test_score_right.'\',
 				\''.$test_score_wrong.'\',
 				\''.$test_score_unanswered.'\',
 				\''.$test_max_score.'\',
-				\''.intval($_SESSION['session_user_id']).'\',
+				\''.(int) $_SESSION['session_user_id'].'\',
 				\''.$test_score_threshold.'\',
-				\''.intval($test_random_questions_select).'\',
-				\''.intval($test_random_questions_order).'\',
+				\''.(int) $test_random_questions_select.'\',
+				\''.(int) $test_random_questions_order.'\',
 				\''.$test_questions_order_mode.'\',
-				\''.intval($test_random_answers_select).'\',
-				\''.intval($test_random_answers_order).'\',
+				\''.(int) $test_random_answers_select.'\',
+				\''.(int) $test_random_answers_order.'\',
 				\''.$test_answers_order_mode.'\',
-				\''.intval($test_comment_enabled).'\',
-				\''.intval($test_menu_enabled).'\',
-				\''.intval($test_noanswer_enabled).'\',
-				\''.intval($test_mcma_radio).'\',
-				\''.intval($test_repeatable).'\',
-				\''.intval($test_mcma_partial_score).'\',
-				\''.intval($test_logout_on_timeout).'\',
+				\''.(int) $test_comment_enabled.'\',
+				\''.(int) $test_menu_enabled.'\',
+				\''.(int) $test_noanswer_enabled.'\',
+				\''.(int) $test_mcma_radio.'\',
+				\''.(int) $test_repeatable.'\',
+				\''.(int) $test_mcma_partial_score.'\',
+				\''.(int) $test_logout_on_timeout.'\',
 				'.F_empty_to_null($test_password).'
 				)';
             if (!$r = F_db_query($sql, $db)) {
@@ -635,6 +677,7 @@ switch ($menu_mode) {
             } else {
                 $test_id = F_db_insert_id($db, K_TABLE_TESTS, 'test_id');
             }
+
             // add authorized user's groups
             if (!empty($user_groups)) {
                 foreach ($user_groups as $group_id) {
@@ -643,7 +686,7 @@ switch ($menu_mode) {
 						tstgrp_group_id
 						) VALUES (
 						\''.$test_id.'\',
-						\''.intval($group_id).'\'
+						\''.(int) $group_id.'\'
 						)';
                     if (!$r = F_db_query($sql, $db)) {
                         F_display_db_error(false);
@@ -659,7 +702,7 @@ switch ($menu_mode) {
 						tstssl_ssl_id
 						) VALUES (
 						\''.$test_id.'\',
-						\''.intval($ssl_id).'\'
+						\''.(int) $ssl_id.'\'
 						)';
                     if (!$r = F_db_query($sql, $db)) {
                         F_display_db_error(false);
@@ -667,11 +710,11 @@ switch ($menu_mode) {
                 }
             }
 
-            if (isset($old_test_id) and ($old_test_id > 0)) {
+            if (isset($old_test_id) && $old_test_id > 0) {
                 // copy here previous selected questions to this new test
                 $sql = 'SELECT *
 					FROM '.K_TABLE_TEST_SUBJSET.'
-					WHERE tsubset_test_id=\''.$old_test_id.'\'';
+					WHERE tsubset_test_id=\''.$old_test_id."'";
                 if ($r = F_db_query($sql, $db)) {
                     while ($m = F_db_fetch_array($r)) {
                         // insert new subject
@@ -694,7 +737,7 @@ switch ($menu_mode) {
                             $tsubset_id = F_db_insert_id($db, K_TABLE_TEST_SUBJSET, 'tsubset_id');
                             $sqls = 'SELECT *
 								FROM '.K_TABLE_SUBJECT_SET.'
-								WHERE subjset_tsubset_id=\''.$m['tsubset_id'].'\'';
+								WHERE subjset_tsubset_id=\''.$m['tsubset_id']."'";
                             if ($rs = F_db_query($sqls, $db)) {
                                 while ($ms = F_db_fetch_array($rs)) {
                                     $sqlp = 'INSERT INTO '.K_TABLE_SUBJECT_SET.' (
@@ -718,6 +761,7 @@ switch ($menu_mode) {
                 }
             }
         }
+
         break;
     }
 
@@ -759,108 +803,107 @@ switch ($menu_mode) {
 
 // --- Initialize variables
 
-if (!isset($test_num) or (!empty($test_num))) {
+if (!isset($test_num) || !empty($test_num)) {
     $test_num = 1; // default number of PDF tests to generate
 }
 
-if ($formstatus) {
-    if ($menu_mode != 'clear') {
-        if (!isset($test_id) or empty($test_id)) {
-            $test_id = 0;
-            $test_name = '';
-            $test_description = '';
-            $test_begin_time = date(K_TIMESTAMP_FORMAT);
-            $test_end_time = date(K_TIMESTAMP_FORMAT, time() + K_SECONDS_IN_DAY);
-            $test_duration_time = 60;
-            $test_ip_range = '*.*.*.*';
-            $test_results_to_users = false;
-            $test_report_to_users = false;
-            $test_score_right = 1;
-            $test_score_wrong = 0;
-            $test_score_unanswered = 0;
-            $test_max_score = 0;
-            $test_score_threshold = 0;
-            $test_random_questions_select = true;
-            $test_random_questions_order = true;
-            $test_questions_order_mode = 0;
-            $test_random_answers_select = true;
-            $test_random_answers_order = true;
-            $test_answers_order_mode = 0;
-            $test_comment_enabled = true;
-            $test_menu_enabled = true;
-            $test_noanswer_enabled = true;
-            $test_mcma_radio = true;
-            $test_repeatable = 0;
-            $test_mcma_partial_score = true;
-            $test_logout_on_timeout = false;
-            $test_password = '';
-        } else {
-            $sql = 'SELECT * FROM '.K_TABLE_TESTS.' WHERE test_id='.$test_id.' LIMIT 1';
-            if ($r = F_db_query($sql, $db)) {
-                if ($m = F_db_fetch_array($r)) {
-                    $test_id = $m['test_id'];
-                    $test_name = $m['test_name'];
-                    $test_description = $m['test_description'];
-                    $test_begin_time = $m['test_begin_time'];
-                    $test_end_time = $m['test_end_time'];
-                    $test_duration_time = $m['test_duration_time'];
-                    $test_ip_range = $m['test_ip_range'];
-                    $test_results_to_users = F_getBoolean($m['test_results_to_users']);
-                    $test_report_to_users = F_getBoolean($m['test_report_to_users']);
-                    $test_score_right = $m['test_score_right'];
-                    $test_score_wrong = $m['test_score_wrong'];
-                    $test_score_unanswered = $m['test_score_unanswered'];
-                    $test_max_score = $m['test_max_score'];
-                    $test_score_threshold = $m['test_score_threshold'];
-                    $test_random_questions_select = F_getBoolean($m['test_random_questions_select']);
-                    $test_random_questions_order = F_getBoolean($m['test_random_questions_order']);
-                    $test_questions_order_mode = intval($m['test_questions_order_mode']);
-                    $test_random_answers_select = F_getBoolean($m['test_random_answers_select']);
-                    $test_random_answers_order = F_getBoolean($m['test_random_answers_order']);
-                    $test_answers_order_mode = intval($m['test_answers_order_mode']);
-                    $test_comment_enabled = F_getBoolean($m['test_comment_enabled']);
-                    $test_menu_enabled = F_getBoolean($m['test_menu_enabled']);
-                    $test_noanswer_enabled = F_getBoolean($m['test_noanswer_enabled']);
-                    $test_mcma_radio = F_getBoolean($m['test_mcma_radio']);
-                    $test_repeatable = $m['test_repeatable'];
-                    $test_mcma_partial_score = F_getBoolean($m['test_mcma_partial_score']);
-                    $test_logout_on_timeout = F_getBoolean($m['test_logout_on_timeout']);
-                    $test_password = $m['test_password'];
-                } else {
-                    $test_name = '';
-                    $test_description = '';
-                    $test_begin_time = date(K_TIMESTAMP_FORMAT);
-                    $test_end_time = date(K_TIMESTAMP_FORMAT, time() + K_SECONDS_IN_DAY);
-                    $test_duration_time = 60;
-                    $test_ip_range = '*.*.*.*';
-                    $test_results_to_users = false;
-                    $test_report_to_users = false;
-                    $test_score_right = 1;
-                    $test_score_wrong = 0;
-                    $test_score_unanswered = 0;
-                    $test_max_score = 0;
-                    $test_score_threshold = 0;
-                    $test_random_questions_select = true;
-                    $test_random_questions_order = true;
-                    $test_questions_order_mode = 0;
-                    $test_random_answers_select = true;
-                    $test_random_answers_order = true;
-                    $test_answers_order_mode = 0;
-                    $test_comment_enabled = true;
-                    $test_menu_enabled = true;
-                    $test_noanswer_enabled = true;
-                    $test_mcma_radio = true;
-                    $test_repeatable = 0;
-                    $test_mcma_partial_score = true;
-                    $test_logout_on_timeout = false;
-                    $test_password = '';
-                }
+if ($formstatus && $menu_mode != 'clear') {
+    if (!isset($test_id) || $test_id === 0) {
+        $test_id = 0;
+        $test_name = '';
+        $test_description = '';
+        $test_begin_time = date(K_TIMESTAMP_FORMAT);
+        $test_end_time = date(K_TIMESTAMP_FORMAT, time() + K_SECONDS_IN_DAY);
+        $test_duration_time = 60;
+        $test_ip_range = '*.*.*.*';
+        $test_results_to_users = false;
+        $test_report_to_users = false;
+        $test_score_right = 1;
+        $test_score_wrong = 0;
+        $test_score_unanswered = 0;
+        $test_max_score = 0;
+        $test_score_threshold = 0;
+        $test_random_questions_select = true;
+        $test_random_questions_order = true;
+        $test_questions_order_mode = 0;
+        $test_random_answers_select = true;
+        $test_random_answers_order = true;
+        $test_answers_order_mode = 0;
+        $test_comment_enabled = true;
+        $test_menu_enabled = true;
+        $test_noanswer_enabled = true;
+        $test_mcma_radio = true;
+        $test_repeatable = 0;
+        $test_mcma_partial_score = true;
+        $test_logout_on_timeout = false;
+        $test_password = '';
+    } else {
+        $sql = 'SELECT * FROM '.K_TABLE_TESTS.' WHERE test_id='.$test_id.' LIMIT 1';
+        if ($r = F_db_query($sql, $db)) {
+            if ($m = F_db_fetch_array($r)) {
+                $test_id = $m['test_id'];
+                $test_name = $m['test_name'];
+                $test_description = $m['test_description'];
+                $test_begin_time = $m['test_begin_time'];
+                $test_end_time = $m['test_end_time'];
+                $test_duration_time = $m['test_duration_time'];
+                $test_ip_range = $m['test_ip_range'];
+                $test_results_to_users = F_getBoolean($m['test_results_to_users']);
+                $test_report_to_users = F_getBoolean($m['test_report_to_users']);
+                $test_score_right = $m['test_score_right'];
+                $test_score_wrong = $m['test_score_wrong'];
+                $test_score_unanswered = $m['test_score_unanswered'];
+                $test_max_score = $m['test_max_score'];
+                $test_score_threshold = $m['test_score_threshold'];
+                $test_random_questions_select = F_getBoolean($m['test_random_questions_select']);
+                $test_random_questions_order = F_getBoolean($m['test_random_questions_order']);
+                $test_questions_order_mode = (int) $m['test_questions_order_mode'];
+                $test_random_answers_select = F_getBoolean($m['test_random_answers_select']);
+                $test_random_answers_order = F_getBoolean($m['test_random_answers_order']);
+                $test_answers_order_mode = (int) $m['test_answers_order_mode'];
+                $test_comment_enabled = F_getBoolean($m['test_comment_enabled']);
+                $test_menu_enabled = F_getBoolean($m['test_menu_enabled']);
+                $test_noanswer_enabled = F_getBoolean($m['test_noanswer_enabled']);
+                $test_mcma_radio = F_getBoolean($m['test_mcma_radio']);
+                $test_repeatable = $m['test_repeatable'];
+                $test_mcma_partial_score = F_getBoolean($m['test_mcma_partial_score']);
+                $test_logout_on_timeout = F_getBoolean($m['test_logout_on_timeout']);
+                $test_password = $m['test_password'];
             } else {
-                F_display_db_error();
+                $test_name = '';
+                $test_description = '';
+                $test_begin_time = date(K_TIMESTAMP_FORMAT);
+                $test_end_time = date(K_TIMESTAMP_FORMAT, time() + K_SECONDS_IN_DAY);
+                $test_duration_time = 60;
+                $test_ip_range = '*.*.*.*';
+                $test_results_to_users = false;
+                $test_report_to_users = false;
+                $test_score_right = 1;
+                $test_score_wrong = 0;
+                $test_score_unanswered = 0;
+                $test_max_score = 0;
+                $test_score_threshold = 0;
+                $test_random_questions_select = true;
+                $test_random_questions_order = true;
+                $test_questions_order_mode = 0;
+                $test_random_answers_select = true;
+                $test_random_answers_order = true;
+                $test_answers_order_mode = 0;
+                $test_comment_enabled = true;
+                $test_menu_enabled = true;
+                $test_noanswer_enabled = true;
+                $test_mcma_radio = true;
+                $test_repeatable = 0;
+                $test_mcma_partial_score = true;
+                $test_logout_on_timeout = false;
+                $test_password = '';
             }
+        } else {
+            F_display_db_error();
         }
     }
 }
+
 $millennium = substr(date('Y'), 0, 1);
 
 echo '<div class="container">'.K_NEWLINE;
@@ -878,6 +921,7 @@ echo '<option value="0" style="background-color:#009900;color:white;"';
 if ($test_id == 0) {
     echo ' selected="selected"';
 }
+
 echo '>+</option>'.K_NEWLINE;
 $sql = F_select_tests_sql();
 if ($r = F_db_query($sql, $db)) {
@@ -888,21 +932,24 @@ if ($r = F_db_query($sql, $db)) {
             echo ' selected="selected"';
             $test_fieldset_name = ''.substr($m['test_begin_time'], 0, 10).' '.htmlspecialchars($m['test_name'], ENT_NOQUOTES, $l['a_meta_charset']).'';
         }
+
         echo '>'.$countitem.'. ';
         if (substr($m['test_end_time'], 0, 1) < $millennium) {
             echo '* ';
         }
+
         echo substr($m['test_begin_time'], 0, 10).' '.htmlspecialchars($m['test_name'], ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
-        $countitem++;
+        ++$countitem;
     }
 } else {
     echo '</select></span></div>'.K_NEWLINE;
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 
 // link for user selection popup
-$jsaction = 'selectWindow=window.open(\'tce_select_tests_popup.php?cid=test_id\', \'selectWindow\', \'dependent, height=600, width=800, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no\');return false;';
+$jsaction = "selectWindow=window.open('tce_select_tests_popup.php?cid=test_id', 'selectWindow', 'dependent, height=600, width=800, menubar=no, resizable=yes, scrollbars=yes, status=no, toolbar=no');return false;";
 echo '<a href="#" onclick="'.$jsaction.'" class="xmlbutton" title="'.$l['w_select'].'">...</a>';
 
 echo '</span>'.K_NEWLINE;
@@ -932,15 +979,17 @@ $sql = 'SELECT * FROM '.K_TABLE_GROUPS.' ORDER BY group_name';
 if ($r = F_db_query($sql, $db)) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="'.$m['group_id'].'"';
-        if (isset($test_id) and ($test_id > 0) and (F_isTestOnGroup($test_id, $m['group_id']))) {
+        if (isset($test_id) && $test_id > 0 && F_isTestOnGroup($test_id, $m['group_id'])) {
             echo ' selected="selected"';
         }
+
         echo '>'.htmlspecialchars($m['group_name'], ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
     }
 } else {
     echo '</select></span></div>'.K_NEWLINE;
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
@@ -955,15 +1004,17 @@ $sql = 'SELECT * FROM '.K_TABLE_SSLCERTS.' ORDER BY ssl_name';
 if ($r = F_db_query($sql, $db)) {
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="'.$m['ssl_id'].'"';
-        if (isset($test_id) and ($test_id > 0) and (F_isTestOnSSLCerts($test_id, $m['ssl_id']))) {
+        if (isset($test_id) && $test_id > 0 && F_isTestOnSSLCerts($test_id, $m['ssl_id'])) {
             echo ' selected="selected"';
         }
+
         echo '>'.htmlspecialchars($m['ssl_name'].' ('.substr($m['ssl_end_date'], 0, 10).')', ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
     }
 } else {
     echo '</select></span></div>'.K_NEWLINE;
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
@@ -982,6 +1033,7 @@ echo '<input type="checkbox" name="test_random_questions_select" id="test_random
 if ($test_random_questions_select) {
     echo ' checked="checked"';
 }
+
 echo ' onclick="JF_check_random_boxes()"';
 echo ' title="'.$l['h_random_questions'].'" />';
 echo ' <label for="test_random_questions_select">'.$l['w_select'].'</label>'.K_NEWLINE;
@@ -990,6 +1042,7 @@ echo ' <input type="checkbox" name="test_random_questions_order" id="test_random
 if ($test_random_questions_order) {
     echo ' checked="checked"';
 }
+
 echo ' onclick="JF_check_random_boxes()"';
 echo ' title="'.$l['w_order'].'" />';
 echo ' <label for="test_random_questions_order">'.$l['w_order'].'</label>'.K_NEWLINE;
@@ -1002,8 +1055,10 @@ foreach ($qordmode as $ok => $ov) {
     if ($test_questions_order_mode == $ok) {
         echo ' selected="selected"';
     }
+
         echo '>'.htmlspecialchars($ov, ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 
@@ -1020,6 +1075,7 @@ echo '<input type="checkbox" name="test_random_answers_select" id="test_random_a
 if ($test_random_answers_select) {
     echo ' checked="checked"';
 }
+
 echo ' onclick="JF_check_random_boxes()"';
 echo ' title="'.$l['h_random_answers'].'" />';
 echo ' <label for="test_random_answers_select">'.$l['w_select'].'</label>'.K_NEWLINE;
@@ -1028,6 +1084,7 @@ echo ' <input type="checkbox" name="test_random_answers_order" id="test_random_a
 if ($test_random_answers_order) {
     echo ' checked="checked"';
 }
+
 echo ' onclick="JF_check_random_boxes()"';
 echo ' title="'.$l['w_order'].'" />';
 echo ' <label for="test_random_answers_order">'.$l['w_order'].'</label>'.K_NEWLINE;
@@ -1040,8 +1097,10 @@ foreach ($aordmode as $ok => $ov) {
     if ($test_answers_order_mode == $ok) {
         echo ' selected="selected"';
     }
+
         echo '>'.htmlspecialchars($ov, ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 
@@ -1056,13 +1115,11 @@ echo getFormRowCheckBox('test_comment_enabled', $l['w_enable_comment'], '', '', 
 echo getFormRowCheckBox('test_results_to_users', $l['w_results_to_users'], '', '', 1, $test_results_to_users, false);
 echo getFormRowCheckBox('test_report_to_users', $l['w_report_to_users'], '', '', 1, $test_report_to_users, false);
 
-$repeat_options = array(
-    0 => $l['w_no'],
-    1 => $l['w_repeatable'],
-);
-for ($i=2; $i<=127; $i++) {
+$repeat_options = [0 => $l['w_no'], 1 => $l['w_repeatable']];
+for ($i=2; $i<=127; ++$i) {
     $repeat_options[$i] = $i;
 }
+
 echo getFormRowSelectBox('test_repeatable', $l['w_repeatable'], '', '', $test_repeatable, $repeat_options, '');
 
 echo getFormRowCheckBox('test_logout_on_timeout', $l['w_logout_on_timeout'], '', '', 1, $test_logout_on_timeout, false);
@@ -1076,14 +1133,15 @@ echo '<input type="hidden" name="test_password" id="test_password" value="'.$tes
 // show buttons by case
 
 
-if (isset($test_id) and ($test_id > 0)) {
+if (isset($test_id) && $test_id > 0) {
     echo '<span style="background-color:#999999;">';
     echo '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="confirm &rarr; update" />';
     F_submit_button('update', $l['w_update'], $l['h_update']);
     echo '</span>';
 }
+
 F_submit_button('add', $l['w_add'], $l['h_add']);
-if (isset($test_id) and ($test_id > 0)) {
+if (isset($test_id) && $test_id > 0) {
     F_submit_button('delete', $l['w_delete'], $l['h_delete']);
     if (substr($test_end_time, 0, 1) < $millennium) {
         F_submit_button('unlock', $l['w_unlock'], $l['w_unlock']);
@@ -1091,6 +1149,7 @@ if (isset($test_id) and ($test_id > 0)) {
         F_submit_button('lock', $l['w_lock'], $l['w_lock']);
     }
 }
+
 F_submit_button('clear', $l['w_clear'], $l['h_clear']);
 
 echo '<br /><br />'.K_NEWLINE;
@@ -1099,7 +1158,7 @@ echo '</div>'.K_NEWLINE;
 echo '</fieldset>'.K_NEWLINE;
 
 // display a list of selected subject_id (topics)
-if (isset($test_id) and ($test_id > 0)) {
+if (isset($test_id) && $test_id > 0) {
     echo '<div class="row"><br /></div>'.K_NEWLINE;
 
     echo '<fieldset>'.K_NEWLINE;
@@ -1117,7 +1176,7 @@ if (isset($test_id) and ($test_id > 0)) {
     echo '<span class="formw">'.K_NEWLINE;
     echo '<select name="subject_id[]" id="subject_id" size="10" multiple="multiple" title="'.$l['h_subjects'].'">'.K_NEWLINE;
     // select subject_id
-    $sql = F_select_module_subjects_sql('module_enabled=\'1\' AND subject_enabled=\'1\'');
+    $sql = F_select_module_subjects_sql("module_enabled='1' AND subject_enabled='1'");
     if ($r = F_db_query($sql, $db)) {
         $prev_module_id = 0;
         while ($m = F_db_fetch_array($r)) {
@@ -1125,10 +1184,12 @@ if (isset($test_id) and ($test_id > 0)) {
                 $prev_module_id = $m['module_id'];
                 echo '<option value="#'.$m['module_id'].'" style="background-color:#DDEEFF;font-weight:bold">* '.htmlspecialchars($m['module_name'], ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
             }
+
             echo '<option value="'.$m['subject_id'].'"';
             if (in_array($m['subject_id'], $subject_id)) {
                 echo ' selected="selected"';
             }
+
             echo '>&nbsp;&nbsp;&nbsp;'.htmlspecialchars($m['subject_name'], ENT_NOQUOTES, $l['a_meta_charset']).' [';
             // count available questions for each type
             $qstat = '';
@@ -1157,6 +1218,7 @@ if (isset($test_id) and ($test_id > 0)) {
                             if ($ma['numanswers'] < $amin) {
                                 $amin = $ma['numanswers'];
                             }
+
                             if ($ma['numanswers'] > $amax) {
                                 $amax = $ma['numanswers'];
                             }
@@ -1164,9 +1226,11 @@ if (isset($test_id) and ($test_id > 0)) {
                     } else {
                         F_display_db_error();
                     }
-                    if ($amin == 999999) {
+
+                    if ($amin === 999999) {
                         $amin = 0;
                     }
+
                     // display minimum alternative answers
                     $qstat .= ':'.$amin;
                     if ($amax > $amin) {
@@ -1176,6 +1240,7 @@ if (isset($test_id) and ($test_id > 0)) {
             } else {
                 F_display_db_error();
             }
+
             echo $qstat.' ]</option>'.K_NEWLINE;
         }
     } else {
@@ -1199,26 +1264,31 @@ if (isset($test_id) and ($test_id > 0)) {
     if ($tsubset_type == 0) {
         echo ' selected="selected"';
     }
+
     echo '>*** '.$l['w_all'].' ***</option>'.K_NEWLINE;
     echo '<option value="1"';
     if ($tsubset_type == 1) {
         echo ' selected="selected"';
     }
+
     echo '>'.$l['w_single_answer'].'</option>'.K_NEWLINE;
     echo '<option value="2"';
     if ($tsubset_type == 2) {
         echo ' selected="selected"';
     }
+
     echo '>'.$l['w_multiple_answers'].'</option>'.K_NEWLINE;
     echo '<option value="3"';
     if ($tsubset_type == 3) {
         echo ' selected="selected"';
     }
+
     echo '>'.$l['w_free_answer'].'</option>'.K_NEWLINE;
     echo '<option value="4"';
     if ($tsubset_type == 4) {
         echo ' selected="selected"';
     }
+
     echo '>'.$l['w_ordering_answer'].'</option>'.K_NEWLINE;
     echo '</select>'.K_NEWLINE;
     echo '</span>'.K_NEWLINE;
@@ -1235,8 +1305,10 @@ if (isset($test_id) and ($test_id > 0)) {
         if ($i == $tsubset_difficulty) {
             echo ' selected="selected"';
         }
+
         echo '>'.$i.'</option>'.K_NEWLINE;
     }
+
     echo '</select>'.K_NEWLINE;
     echo '</span>'.K_NEWLINE;
     echo '</div>'.K_NEWLINE;
@@ -1274,11 +1346,12 @@ if (isset($test_id) and ($test_id > 0)) {
             } else {
                 F_display_db_error();
             }
+
             // remove last comma + space
             $subjlist .= substr($subjects_list, 0, -2);
             $subjlist .= '<br />'.K_NEWLINE;
             $subjlist .= '<input type="checkbox" name="selectsubject'.$subjcount.'" id="selectsubject'.$subjcount.'" value="'.$m['tsubset_id'].'" title="'.$l['w_select'].'" />';
-            $subjcount++;
+            ++$subjcount;
             $subjlist .= '<acronym class="offbox" title="'.$l['h_num_questions'].'">'.$m['tsubset_quantity'].'</acronym> ';
             $subjlist .= '<acronym class="offbox" title="'.$l['h_question_type'].'">';
             if ($m['tsubset_type'] > 0) {
@@ -1287,6 +1360,7 @@ if (isset($test_id) and ($test_id > 0)) {
                 // all question types
                 $subjlist .= '*';
             }
+
             $subjlist .= '</acronym> ';
             $subjlist .= '<acronym class="offbox" title="'.$l['h_question_difficulty'].'">'.$m['tsubset_difficulty'].'</acronym> ';
             $subjlist .= '<acronym class="offbox" title="'.$l['h_num_answers'].'">'.$m['tsubset_answers'].'</acronym> ';
@@ -1294,7 +1368,7 @@ if (isset($test_id) and ($test_id > 0)) {
 
             // update test_max_score
             $test_max_score_new += $test_score_right * $m['tsubset_difficulty'] * $m['tsubset_quantity'];
-            if (isset($test_max_score) and ($test_max_score_new != $test_max_score)) {
+            if (isset($test_max_score) && $test_max_score_new !== $test_max_score) {
                 $test_max_score = $test_max_score_new;
                 // update max score on test table
                 $sqlup = 'UPDATE '.K_TABLE_TESTS.' SET test_max_score='.$test_max_score.' WHERE test_id='.$test_id.'';
@@ -1303,6 +1377,7 @@ if (isset($test_id) and ($test_id > 0)) {
                 }
             }
         }
+
         if ($subjcount > 0) {
             echo '<ul>'.K_NEWLINE.$subjlist.'</ul>'.K_NEWLINE;
             echo '<input type="hidden" name="subjcount" id="subjcount" value="'.$subjcount.'" />';
@@ -1326,7 +1401,7 @@ if (isset($test_id) and ($test_id > 0)) {
 
     echo '<div class="row"><br /></div>'.K_NEWLINE;
 
-    if (isset($test_max_score_new) and ($test_max_score_new > 0)) {
+    if (isset($test_max_score_new) && $test_max_score_new > 0) {
         echo '<div class="row">'.K_NEWLINE;
         echo '<span class="label">'.K_NEWLINE;
         echo '<label for="test_num">'.$l['w_pdf_offline_test'].'</label>'.K_NEWLINE;
@@ -1338,6 +1413,7 @@ if (isset($test_id) and ($test_id > 0)) {
         echo '</div>'.K_NEWLINE;
     }
 }
+
 echo F_getCSRFTokenField().K_NEWLINE;
 echo '</form>'.K_NEWLINE;
 
@@ -1350,11 +1426,11 @@ echo '</div>'.K_NEWLINE;
 echo '<script type="text/javascript">'.K_NEWLINE;
 echo '//<![CDATA['.K_NEWLINE;
 echo 'function JF_check_random_boxes() {'.K_NEWLINE;
-echo ' if (document.getElementById(\'test_random_questions_select\').checked==true){document.getElementById(\'test_random_questions_order\').checked=true;}'.K_NEWLINE;
-echo ' if ((document.getElementById(\'test_random_questions_order\').checked==false)&&(document.getElementById(\'test_random_questions_select\').checked==true)){document.getElementById(\'test_random_questions_order\').checked=true;}'.K_NEWLINE;
+echo " if (document.getElementById('test_random_questions_select').checked==true){document.getElementById('test_random_questions_order').checked=true;}".K_NEWLINE;
+echo " if ((document.getElementById('test_random_questions_order').checked==false)&&(document.getElementById('test_random_questions_select').checked==true)){document.getElementById('test_random_questions_order').checked=true;}".K_NEWLINE;
 echo ' if (document.getElementById(\'test_random_questions_order\').checked==false){document.getElementById(\'select_questions_order_mode\').style.visibility="visible";}else{document.getElementById(\'select_questions_order_mode\').style.visibility="hidden";}'.K_NEWLINE;
-echo ' if (document.getElementById(\'test_random_answers_select\').checked==true){document.getElementById(\'test_random_answers_order\').checked=true;}'.K_NEWLINE;
-echo ' if ((document.getElementById(\'test_random_answers_order\').checked==false)&&(document.getElementById(\'test_random_answers_select\').checked==true)){document.getElementById(\'test_random_answers_order\').checked=true;}'.K_NEWLINE;
+echo " if (document.getElementById('test_random_answers_select').checked==true){document.getElementById('test_random_answers_order').checked=true;}".K_NEWLINE;
+echo " if ((document.getElementById('test_random_answers_order').checked==false)&&(document.getElementById('test_random_answers_select').checked==true)){document.getElementById('test_random_answers_order').checked=true;}".K_NEWLINE;
 echo ' if (document.getElementById(\'test_random_answers_order\').checked==false){document.getElementById(\'select_answers_order_mode\').style.visibility="visible";}else{document.getElementById(\'select_answers_order_mode\').style.visibility="hidden";}'.K_NEWLINE;
 echo '}'.K_NEWLINE;
 echo 'JF_check_random_boxes();'.K_NEWLINE;

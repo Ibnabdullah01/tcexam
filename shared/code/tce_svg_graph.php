@@ -38,18 +38,12 @@ if (isset($_REQUEST['p'])) {
 } else {
     exit;
 }
+
 // graph width
-if (isset($_REQUEST['w'])) {
-    $w = intval($_REQUEST['w']);
-} else {
-    $w = '';
-}
+$w = isset($_REQUEST['w']) ? (int) $_REQUEST['w'] : '';
+
 // graph height
-if (isset($_REQUEST['h'])) {
-    $h = intval($_REQUEST['h']);
-} else {
-    $h = '';
-}
+$h = isset($_REQUEST['h']) ? (int) $_REQUEST['h'] : '';
 
 F_getSVGGraph($p, $w, $h);
 

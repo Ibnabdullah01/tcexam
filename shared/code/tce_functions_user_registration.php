@@ -42,13 +42,14 @@ function F_send_user_reg_email($user_id, $user_email, $user_verifycode)
     require_once('../../shared/config/tce_user_registration.php');
     require_once('../../shared/code/tce_functions_html2txt.php');
 
-    $user_id = intval($user_id);
+    $user_id = (int) $user_id;
 
     // Instantiate C_mailer class
     $mail = new C_mailer;
 
     //Load default values
     $mail->setLanguageData($l);
+
     $mail->Priority = $emailcfg['Priority'];
     $mail->ContentType = $emailcfg['ContentType'];
     $mail->Encoding = $emailcfg['Encoding'];
@@ -99,6 +100,7 @@ function F_send_user_reg_email($user_id, $user_email, $user_verifycode)
         // add administrator to BCC field
         $mail->addBCC(K_USRREG_ADMIN_EMAIL);
     }
+
     if (!$mail->send()) { //send email to user
         F_print_error('ERROR', 'EMAIL ERROR');
     }

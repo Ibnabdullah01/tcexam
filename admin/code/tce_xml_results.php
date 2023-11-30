@@ -35,24 +35,19 @@ $pagelevel = K_AUTH_ADMIN_RESULTS;
 require_once('../../shared/code/tce_authorization.php');
 require_once('../../shared/code/tce_functions_test_stats.php');
 
-if (isset($_REQUEST['test_id']) and ($_REQUEST['test_id'] > 0)) {
-    $test_id = intval($_REQUEST['test_id']);
+if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
+    $test_id = (int) $_REQUEST['test_id'];
     if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         exit;
     }
 } else {
     $test_id = 0;
 }
-if (isset($_REQUEST['group_id']) and ($_REQUEST['group_id'] > 0)) {
-    $group_id = intval($_REQUEST['group_id']);
-} else {
-    $group_id = 0;
-}
-if (isset($_REQUEST['user_id'])) {
-    $user_id = intval($_REQUEST['user_id']);
-} else {
-    $user_id = 0;
-}
+
+$group_id = isset($_REQUEST['group_id']) && $_REQUEST['group_id'] > 0 ? (int) $_REQUEST['group_id'] : 0;
+
+$user_id = isset($_REQUEST['user_id']) ? (int) $_REQUEST['user_id'] : 0;
+
 if (isset($_REQUEST['startdate'])) {
     $startdate = $_REQUEST['startdate'];
     $startdate_time = strtotime($startdate);
@@ -60,6 +55,7 @@ if (isset($_REQUEST['startdate'])) {
 } else {
     $startdate = 0;
 }
+
 if (isset($_REQUEST['enddate'])) {
     $enddate = $_REQUEST['enddate'];
     $enddate_time = strtotime($enddate);
@@ -67,11 +63,8 @@ if (isset($_REQUEST['enddate'])) {
 } else {
     $enddate = 0;
 }
-if (isset($_REQUEST['display_mode'])) {
-    $display_mode = max(0, min(5, intval($_REQUEST['display_mode'])));
-} else {
-    $display_mode = 0;
-}
+
+$display_mode = isset($_REQUEST['display_mode']) ? max(0, min(5, (int) $_REQUEST['display_mode'])) : 0;
 
 $output_format = isset($_REQUEST['format']) ? strtoupper($_REQUEST['format']) : 'XML';
 $out_filename = 'tcexam_results_'.date('YmdHis').'_test_'.$test_id;
@@ -93,7 +86,7 @@ switch ($output_format) {
         header('Content-Disposition: attachment; filename='.$out_filename.'.json;');
         header('Content-Transfer-Encoding: binary');
         $xmlobj = new SimpleXMLElement($xml);
-        echo json_encode($xmlobj);
+        echo json_encode($xmlobj, JSON_THROW_ON_ERROR);
         break;
     }
     case 'XML':
@@ -131,10 +124,10 @@ function F_xml_export_results($test_id, $group_id = 0, $user_id = 0, $startdate 
 {
     global $l, $db;
     require_once('../config/tce_config.php');
-    
+
     $xml = ''; // XML data to be returned
 
-    $xml .= '<'.'?xml version="1.0" encoding="UTF-8" ?'.'>'.K_NEWLINE;
+    $xml .= '<?xml version="1.0" encoding="UTF-8" ?>'.K_NEWLINE;
     $xml .= '<tcexamresults version="'.K_TCEXAM_VERSION.'">'.K_NEWLINE;
     $xml .=  K_TAB.'<header';
     $xml .= ' lang="'.K_USER_LANG.'"';
@@ -151,9 +144,8 @@ function F_xml_export_results($test_id, $group_id = 0, $user_id = 0, $startdate 
     $xml .= getDataXML($data);
 
     $xml .= K_TAB.'</body>'.K_NEWLINE;
-    $xml .= '</tcexamresults>'.K_NEWLINE;
-    
-    return $xml;
+
+    return $xml . ('</tcexamresults>'.K_NEWLINE);
 }
 
 //============================================================+

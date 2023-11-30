@@ -43,8 +43,8 @@ require_once('../code/tce_page_header.php');
 
 echo '<div class="popupcontainer">'.K_NEWLINE;
 
-if (isset($_REQUEST['test_id']) and ($_REQUEST['test_id'] > 0)) {
-    $test_id = intval($_REQUEST['test_id']);
+if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
+    $test_id = (int) $_REQUEST['test_id'];
     // check user's authorization
     if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied']);
@@ -55,21 +55,13 @@ if (isset($_REQUEST['test_id']) and ($_REQUEST['test_id'] > 0)) {
 } else {
     $test_id = 0;
 }
-if (isset($_REQUEST['user_id'])) {
-    $user_id = intval($_REQUEST['user_id']);
-} else {
-    $user_id = 0;
-}
-if (isset($_REQUEST['testuser_id']) and ($_REQUEST['testuser_id'] > 0)) {
-    $testuser_id = intval($_REQUEST['testuser_id']);
-} else {
-    $testuser_id = 0;
-}
-if (isset($_REQUEST['group_id']) and !empty($_REQUEST['group_id'])) {
-    $group_id = intval($_REQUEST['group_id']);
-} else {
-    $group_id = 0;
-}
+
+$user_id = isset($_REQUEST['user_id']) ? (int) $_REQUEST['user_id'] : 0;
+
+$testuser_id = isset($_REQUEST['testuser_id']) && $_REQUEST['testuser_id'] > 0 ? (int) $_REQUEST['testuser_id'] : 0;
+
+$group_id = isset($_REQUEST['group_id']) && !empty($_REQUEST['group_id']) ? (int) $_REQUEST['group_id'] : 0;
+
 // filtering options
 if (isset($_REQUEST['startdate'])) {
     $startdate = $_REQUEST['startdate'];
@@ -78,6 +70,7 @@ if (isset($_REQUEST['startdate'])) {
 } else {
     $startdate = '';
 }
+
 if (isset($_REQUEST['enddate'])) {
     $enddate = $_REQUEST['enddate'];
     $enddate_time = strtotime($enddate);
@@ -85,20 +78,13 @@ if (isset($_REQUEST['enddate'])) {
 } else {
     $enddate = '';
 }
-if (isset($_REQUEST['mode']) and ($_REQUEST['mode'] > 0)) {
-    $mode = intval($_REQUEST['mode']);
-} else {
-    $mode = 0;
-}
 
-if (isset($_REQUEST['display_mode'])) {
-    $display_mode = max(0, min(5, intval($_REQUEST['display_mode'])));
-} else {
-    $display_mode = 0;
-}
+$mode = isset($_REQUEST['mode']) && $_REQUEST['mode'] > 0 ? (int) $_REQUEST['mode'] : 0;
+$display_mode = isset($_REQUEST['display_mode']) ? max(0, min(5, (int) $_REQUEST['display_mode'])) : 0;
+
 if (isset($_REQUEST['show_graph'])) {
-    $show_graph = intval($_REQUEST['show_graph']);
-    if ($show_graph and ($display_mode == 0)) {
+    $show_graph = (int) $_REQUEST['show_graph'];
+    if ($show_graph && $display_mode == 0) {
         $display_mode = 1;
     }
 } else {

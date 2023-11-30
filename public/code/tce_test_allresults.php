@@ -49,28 +49,32 @@ require_once('../../shared/code/tce_functions_statistics.php');
 $_REQUEST['ff_required'] = '';
 $_REQUEST['ff_required_labels'] = '';
 
-$user_id = intval($_SESSION['session_user_id']);
+$user_id = (int) $_SESSION['session_user_id'];
 $filter = 'user_id='.$user_id;
-if (isset($_REQUEST['test_id']) and ($_REQUEST['test_id'] > 0)) {
-    $test_id = intval($_REQUEST['test_id']);
+if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
+    $test_id = (int) $_REQUEST['test_id'];
     // check user's authorization
     if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
     }
+
     $filter .= '&amp;test_id='.$test_id.'';
     $test_group_ids = F_getTestGroups($test_id);
 } else {
     $test_id = 0;
 }
+
 if (isset($_REQUEST['selectcategory'])) {
     $changecategory = 1;
 }
-if (isset($_REQUEST['group_id']) and !empty($_REQUEST['group_id'])) {
-    $group_id = intval($_REQUEST['group_id']);
+
+if (isset($_REQUEST['group_id']) && !empty($_REQUEST['group_id'])) {
+    $group_id = (int) $_REQUEST['group_id'];
     $filter .= '&amp;group_id='.$group_id.'';
 } else {
     $group_id = 0;
 }
+
 // filtering options
 if (isset($_REQUEST['startdate'])) {
     $startdate = $_REQUEST['startdate'];
@@ -79,6 +83,7 @@ if (isset($_REQUEST['startdate'])) {
 } else {
     $startdate = date('Y').'-01-01 00:00:00';
 }
+
 $filter .= '&amp;startdate='.urlencode($startdate);
 if (isset($_REQUEST['enddate'])) {
     $enddate = $_REQUEST['enddate'];
@@ -87,21 +92,23 @@ if (isset($_REQUEST['enddate'])) {
 } else {
     $enddate = date('Y').'-12-31 23:59:59';
 }
+
 $filter .= '&amp;enddate='.urlencode($enddate).'';
 
-$detail_modes = array($l['w_disabled'], $l['w_minimum'], $l['w_module'], $l['w_subject'], $l['w_question'], $l['w_answer']);
+$detail_modes = [$l['w_disabled'], $l['w_minimum'], $l['w_module'], $l['w_subject'], $l['w_question'], $l['w_answer']];
 if (isset($_REQUEST['display_mode'])) {
-    $display_mode = max(0, min(5, intval($_REQUEST['display_mode'])));
+    $display_mode = max(0, min(5, (int) $_REQUEST['display_mode']));
     $filter .= '&amp;display_mode='.$display_mode;
 } else {
     $display_mode = 0;
 }
+
 $filter .= '&amp;display_mode='.$display_mode;
 
 if (isset($_REQUEST['show_graph'])) {
-    $show_graph = intval($_REQUEST['show_graph']);
+    $show_graph = (int) $_REQUEST['show_graph'];
     $filter .= '&amp;show_graph='.$show_graph;
-    if ($show_graph and ($display_mode == 0)) {
+    if ($show_graph && $display_mode == 0) {
         $display_mode = 1;
     }
 } else {
@@ -109,13 +116,14 @@ if (isset($_REQUEST['show_graph'])) {
 }
 
 
-if (isset($_REQUEST['order_field']) and !empty($_REQUEST['order_field']) and (in_array($_REQUEST['order_field'], array('testuser_creation_time', 'testuser_end_time', 'user_name', 'user_lastname', 'user_firstname', 'total_score', 'testuser_test_id')))) {
+if (isset($_REQUEST['order_field']) && !empty($_REQUEST['order_field']) && in_array($_REQUEST['order_field'], ['testuser_creation_time', 'testuser_end_time', 'user_name', 'user_lastname', 'user_firstname', 'total_score', 'testuser_test_id'])) {
     $order_field = $_REQUEST['order_field'];
 } else {
     $order_field = 'total_score, user_lastname, user_firstname';
 }
+
 $filter .= '&amp;order_field='.urlencode($order_field).'';
-if (!isset($_REQUEST['orderdir']) or empty($_REQUEST['orderdir'])) {
+if (!isset($_REQUEST['orderdir']) || empty($_REQUEST['orderdir'])) {
     $orderdir = 0;
     $nextorderdir = 1;
     $full_order_field = $order_field;
@@ -124,6 +132,7 @@ if (!isset($_REQUEST['orderdir']) or empty($_REQUEST['orderdir'])) {
     $nextorderdir = 0;
     $full_order_field = $order_field.' DESC';
 }
+
 $filter .= '&amp;orderdir='.$orderdir.'';
 
 echo '<div class="container">'.K_NEWLINE;
@@ -144,17 +153,20 @@ if ($r = F_db_query($sql, $db)) {
     if ($test_id == 0) {
         echo ' selected="selected"';
     }
+
     echo '>&nbsp;-&nbsp;</option>'.K_NEWLINE;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="'.$m['test_id'].'"';
         if ($m['test_id'] == $test_id) {
             echo ' selected="selected"';
         }
+
         echo '>'.substr($m['test_begin_time'], 0, 10).' '.htmlspecialchars($m['test_name'], ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
     }
 } else {
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 
 echo '</span>'.K_NEWLINE;
@@ -175,24 +187,28 @@ $sql = 'SELECT * FROM '.K_TABLE_GROUPS.', '.K_TABLE_USERGROUP.' WHERE usrgrp_gro
 if ($test_id > 0) {
     $sql .= ' AND group_id IN ('.$test_group_ids.')';
 }
+
 $sql .= ' ORDER BY group_name';
 if ($r = F_db_query($sql, $db)) {
     echo '<option value="0"';
     if ($group_id == 0) {
         echo ' selected="selected"';
     }
+
     echo '>&nbsp;-&nbsp;</option>'.K_NEWLINE;
     while ($m = F_db_fetch_array($r)) {
         echo '<option value="'.$m['group_id'].'"';
         if ($m['group_id'] == $group_id) {
             echo ' selected="selected"';
         }
+
         echo '>'.htmlspecialchars($m['group_name'], ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
     }
 } else {
     echo '</select></span></div>'.K_NEWLINE;
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
@@ -210,8 +226,10 @@ foreach ($detail_modes as $key => $dmode) {
     if ($key == $display_mode) {
         echo ' selected="selected"';
     }
+
     echo '>'.htmlspecialchars($dmode, ENT_NOQUOTES, $l['a_meta_charset']).'</option>'.K_NEWLINE;
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
@@ -243,7 +261,7 @@ echo '<br />'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
 
 // display svg graph
-if ($show_graph and isset($data['svgpoints']) and (preg_match_all('/[x]/', $data['svgpoints'], $match) > 1)) {
+if ($show_graph && isset($data['svgpoints']) && preg_match_all('/[x]/', $data['svgpoints'], $match) > 1) {
     $w = 800;
     $h = 300;
     echo '<div class="row">'.K_NEWLINE;
@@ -273,6 +291,7 @@ if ($itemcount > 0) {
     echo '<input type="hidden" name="itemcount" id="itemcount" value="'.$itemcount.'>" />'.K_NEWLINE;
     echo '</div>'.K_NEWLINE;
 }
+
 echo F_getCSRFTokenField().K_NEWLINE;
 echo '</form>'.K_NEWLINE;
 

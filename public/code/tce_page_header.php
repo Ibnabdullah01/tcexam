@@ -52,7 +52,7 @@ echo 'ul.menu ul li {width:200px;text-align:left;margin:0;}'.K_NEWLINE;
 echo 'ul.menu ul ul {display:none;position:absolute;top:0px;left:190px;}'.K_NEWLINE;
 echo '</style>'.K_NEWLINE;
 echo '<![endif]-->'.K_NEWLINE;
-require_once(dirname(__FILE__).'/tce_page_menu.php');
+require_once(__DIR__.'/tce_page_menu.php');
 echo '</div>'.K_NEWLINE;
 
 echo '<div class="body">'.K_NEWLINE;

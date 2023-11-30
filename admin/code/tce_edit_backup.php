@@ -54,11 +54,11 @@ if (isset($_POST['backup'])) {
 
 function F_isValidbackupFile($file)
 {
-    return ((strlen($file) === 35) and (substr($file, -3) === '.gz') and (preg_match('|\.\./|i', $file) === 0) and (preg_match('/[^a-zA-Z0-9\_\-\.]+/i', $file) === 0));
+    return (strlen($file) === 35 && str_ends_with($file, '.gz') && preg_match('|\.\./|i', $file) === 0 && preg_match('/[^a-zA-Z0-9\_\-\.]+/i', $file) === 0);
 }
 
 // check backup filename
-if (!empty($backup_file) and !F_isValidbackupFile($backup_file)) {
+if (!empty($backup_file) && !F_isValidbackupFile($backup_file)) {
 	F_print_error('ERROR', 'SECURITY ERROR', true);
 }
 
@@ -66,7 +66,7 @@ if (!empty($backup_file) and !F_isValidbackupFile($backup_file)) {
 switch ($menu_mode) { // process submitted data
 
     case 'restore':{
-        if (isset($backup_file) and !empty($backup_file)) {
+        if (isset($backup_file) && !empty($backup_file)) {
             F_print_error('WARNING', $l['m_restore_confirm'].': '.$backup_file);
             echo '<div class="confirmbox">'.K_NEWLINE;
             echo '<form action="'.$_SERVER['SCRIPT_NAME'].'" method="post" enctype="multipart/form-data" id="form_delete">'.K_NEWLINE;
@@ -79,60 +79,56 @@ switch ($menu_mode) { // process submitted data
             echo '</form>'.K_NEWLINE;
             echo '</div>'.K_NEWLINE;
         }
+
         break;
     }
 
     case 'forcerestore':{
         F_stripslashes_formfields(); // Delete specified record
-        if ($forcerestore == $l['w_restore']) { //check if delete button has been pushed (redundant check)
-            if (isset($backup_file) and !empty($backup_file)) {
-                // create a backup of the current database data
-                switch (K_DATABASE_TYPE) {
-                    case 'POSTGRESQL': {
-                        $filename = K_PATH_BACKUP.date('YmdHis').'_tcexam_backup.tar';
-                        $command = 'export PGUSER="'.addslashes(K_DATABASE_USER_NAME).'"; export PGPASSWORD="'.addslashes(K_DATABASE_USER_PASSWORD).'"; pg_dump -h'.K_DATABASE_HOST.' -p'.K_DATABASE_PORT.'  -U'.K_DATABASE_USER_NAME.' -Ft '.K_DATABASE_NAME.' | gzip > '.$filename.'.gz';
-                        break;
-                    }
-                    case 'MYSQL':
-                    default: {
-                        $filename = K_PATH_BACKUP.date('YmdHis').'_tcexam_backup.sql';
-                        $command = 'mysqldump --opt -h'.K_DATABASE_HOST.' -P'.K_DATABASE_PORT.' -u'.K_DATABASE_USER_NAME.' -p'.K_DATABASE_USER_PASSWORD.' '.K_DATABASE_NAME.' | gzip > '.$filename.'.gz';
-                        break;
-                    }
+        //check if delete button has been pushed (redundant check)
+        if ($forcerestore == $l['w_restore'] && (isset($backup_file) && !empty($backup_file))) {
+            // create a backup of the current database data
+            switch (K_DATABASE_TYPE) {
+                case 'POSTGRESQL': {
+                    $filename = K_PATH_BACKUP.date('YmdHis').'_tcexam_backup.tar';
+                    $command = 'export PGUSER="'.addslashes(K_DATABASE_USER_NAME).'"; export PGPASSWORD="'.addslashes(K_DATABASE_USER_PASSWORD).'"; pg_dump -h'.K_DATABASE_HOST.' -p'.K_DATABASE_PORT.'  -U'.K_DATABASE_USER_NAME.' -Ft '.K_DATABASE_NAME.' | gzip > '.$filename.'.gz';
+                    break;
                 }
-                exec($command);
-                // subtring file name for security reason
-                $backup_file = substr($backup_file, 0, 35);
-                // uncompressed filename (remove .gz extension)
-                $sql_backup_file = substr($backup_file, 0, -3);
-                $sql_backup_file_esc = escapeshellarg($sql_backup_file);
-                // get current dir
-                $current_dir = getcwd();
-                // change dir
-                chdir(K_PATH_BACKUP);
-                // uncompress backup archive
-                $command = 'gunzip -c '.escapeshellarg($backup_file).' > '.$sql_backup_file_esc.'';
-                exec($command);
-                // restore SQL file
-                switch (K_DATABASE_TYPE) {
-                    case 'POSTGRESQL': {
-                        $command = 'export PGUSER="'.addslashes(K_DATABASE_USER_NAME).'"; export PGPASSWORD="'.addslashes(K_DATABASE_USER_PASSWORD).'"; pg_restore -c -h'.K_DATABASE_HOST.' -p'.K_DATABASE_PORT.' -U'.K_DATABASE_USER_NAME.' -d'.K_DATABASE_NAME.' -Ft '.$sql_backup_file_esc.'';
-                        break;
-                    }
-                    case 'MYSQL':
-                    default: {
-                        $command = 'mysql -h'.K_DATABASE_HOST.' -P'.K_DATABASE_PORT.' -u'.K_DATABASE_USER_NAME.' -p'.K_DATABASE_USER_PASSWORD.' '.K_DATABASE_NAME.' < '.$sql_backup_file_esc.'';
-                        break;
-                    }
+                case 'MYSQL':
+                default: {
+                    $filename = K_PATH_BACKUP.date('YmdHis').'_tcexam_backup.sql';
+                    $command = 'mysqldump --opt -h'.K_DATABASE_HOST.' -P'.K_DATABASE_PORT.' -u'.K_DATABASE_USER_NAME.' -p'.K_DATABASE_USER_PASSWORD.' '.K_DATABASE_NAME.' | gzip > '.$filename.'.gz';
+                    break;
                 }
-                exec($command);
-                // delete uncompressed backup
-                unlink($sql_backup_file);
-                // restore current dir
-                chdir($current_dir);
-                F_print_error('MESSAGE', $l['m_restore_completed'].': '.$backup_file);
             }
+
+            exec($command);
+            // subtring file name for security reason
+            $backup_file = substr($backup_file, 0, 35);
+            // uncompressed filename (remove .gz extension)
+            $sql_backup_file = substr($backup_file, 0, -3);
+            $sql_backup_file_esc = escapeshellarg($sql_backup_file);
+            // get current dir
+            $current_dir = getcwd();
+            // change dir
+            chdir(K_PATH_BACKUP);
+            // uncompress backup archive
+            $command = 'gunzip -c '.escapeshellarg($backup_file).' > '.$sql_backup_file_esc.'';
+            exec($command);
+            // restore SQL file
+            $command = match (K_DATABASE_TYPE) {
+                'POSTGRESQL' => 'export PGUSER="'.addslashes(K_DATABASE_USER_NAME).'"; export PGPASSWORD="'.addslashes(K_DATABASE_USER_PASSWORD).'"; pg_restore -c -h'.K_DATABASE_HOST.' -p'.K_DATABASE_PORT.' -U'.K_DATABASE_USER_NAME.' -d'.K_DATABASE_NAME.' -Ft '.$sql_backup_file_esc.'',
+                default => 'mysql -h'.K_DATABASE_HOST.' -P'.K_DATABASE_PORT.' -u'.K_DATABASE_USER_NAME.' -p'.K_DATABASE_USER_PASSWORD.' '.K_DATABASE_NAME.' < '.$sql_backup_file_esc.'',
+            };
+
+            exec($command);
+            // delete uncompressed backup
+            unlink($sql_backup_file);
+            // restore current dir
+            chdir($current_dir);
+            F_print_error('MESSAGE', $l['m_restore_completed'].': '.$backup_file);
         }
+
         break;
     }
 
@@ -150,13 +146,14 @@ switch ($menu_mode) { // process submitted data
                 break;
             }
         }
+
         exec($command);
         F_print_error('MESSAGE', $l['m_backup_completed']);
         break;
     }
 
     case 'download':{
-        if (K_DOWNLOAD_BACKUPS and isset($backup_file) and !empty($backup_file)) {
+        if (K_DOWNLOAD_BACKUPS && isset($backup_file) && !empty($backup_file)) {
             $file_to_download = K_PATH_BACKUP.$backup_file;
             // send headers
             header('Content-Description: File Transfer');
@@ -176,6 +173,7 @@ switch ($menu_mode) { // process submitted data
             echo file_get_contents($file_to_download);
             exit;
         }
+
         break;
     }
 
@@ -202,12 +200,13 @@ echo '<select name="backup_file" id="backup_file" size="0">'.K_NEWLINE;
 $handle = opendir(K_PATH_BACKUP);
 echo '<option value="">&nbsp;</option>'.K_NEWLINE;
 // get backup files
-$files_list = array();
+$files_list = [];
 while (false !== ($file = readdir($handle))) {
-    if (F_isValidbackupFile($file) and is_file(K_PATH_BACKUP.$file)) {
+    if (F_isValidbackupFile($file) && is_file(K_PATH_BACKUP.$file)) {
         $files_list[] = $file;
     }
 }
+
 closedir($handle);
 // sort alphabetically
 sort($files_list);

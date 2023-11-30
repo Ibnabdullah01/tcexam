@@ -41,7 +41,7 @@ if (!K_USRREG_ENABLED) {
 
 $email = preg_replace('/[^a-zA-Z0-9_\.\-\@]/', '', $_REQUEST['a']);
 $verifycode = preg_replace('/[^A-Fa-f0-9\@]/', '', $_REQUEST['b']);
-$userid = intval($_REQUEST['c']);
+$userid = (int) $_REQUEST['c'];
 
 $pagelevel = 0;
 require_once('../../shared/code/tce_authorization.php');
@@ -61,12 +61,13 @@ if ($r = F_db_query($sql, $db)) {
         // update user level
         if ($verifycode[0] == '@') {
             // password reset
-            $new_password = substr(md5(uniqid(mt_rand(), true)), 0, 8);
-            $sqlu = 'UPDATE '.K_TABLE_USERS.' SET user_password=\''.F_escape_sql($db, getPasswordHash($new_password)).'\', user_verifycode=NULL WHERE user_id='.$userid.'';
+            $new_password = substr(md5(uniqid(random_int(0, mt_getrandmax()), true)), 0, 8);
+            $sqlu = 'UPDATE '.K_TABLE_USERS." SET user_password='".F_escape_sql($db, getPasswordHash($new_password))."', user_verifycode=NULL WHERE user_id=".$userid.'';
         } else {
             // user registration
-            $sqlu = 'UPDATE '.K_TABLE_USERS.' SET user_level=\'1\', user_verifycode=NULL WHERE user_id='.$userid.'';
+            $sqlu = 'UPDATE '.K_TABLE_USERS." SET user_level='1', user_verifycode=NULL WHERE user_id=".$userid.'';
         }
+
         if (!$ru = F_db_query($sqlu, $db)) {
             F_display_db_error(false);
         } else {
@@ -75,6 +76,7 @@ if ($r = F_db_query($sql, $db)) {
             } else {
                 F_print_error('MESSAGE', $l['m_user_registration_ok']);
             }
+
             echo K_NEWLINE;
             echo '<div class="container">'.K_NEWLINE;
             if (K_OTP_LOGIN) {
@@ -87,6 +89,7 @@ if ($r = F_db_query($sql, $db)) {
                 echo $qrcode->getBarcodeHTML(6, 6, 'black');
                 echo '</div>'.K_NEWLINE;
             }
+
             echo '<strong><a href="index.php" title="'.$l['h_index'].'">'.$l['h_index'].' &gt;</a></strong>'.K_NEWLINE;
             echo '</div>'.K_NEWLINE;
             require_once('../code/tce_page_footer.php');

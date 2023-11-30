@@ -50,36 +50,29 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
     require_once('../../shared/code/tce_class_mailer.php');
     require_once('tce_functions_user_select.php');
 
-    $mode = intval($mode);
+    $mode = (int) $mode;
     if ($test_id > 0) {
-        $test_id = intval($test_id);
+        $test_id = (int) $test_id;
         if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
             return;
         }
     } else {
         $test_id = 0;
     }
-    if ($user_id > 0) {
-        $user_id = intval($user_id);
-    } else {
-        $user_id = 0;
-    }
-    if ($testuser_id > 0) {
-        $testuser_id = intval($testuser_id);
-    } else {
-        $testuser_id = 0;
-    }
-    if ($group_id > 0) {
-        $group_id = intval($group_id);
-    } else {
-        $group_id = 0;
-    }
+
+    $user_id = $user_id > 0 ? (int) $user_id : 0;
+
+    $testuser_id = $testuser_id > 0 ? (int) $testuser_id : 0;
+
+    $group_id = $group_id > 0 ? (int) $group_id : 0;
+
     if (!empty($startdate)) {
         $startdate_time = strtotime($startdate);
         $startdate = date(K_TIMESTAMP_FORMAT, $startdate_time);
     } else {
         $startdate = '';
     }
+
     if (!empty($enddate)) {
         $enddate_time = strtotime($enddate);
         $enddate = date(K_TIMESTAMP_FORMAT, $enddate_time);
@@ -92,6 +85,7 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
 
     //Load default values
     $mail->setLanguageData($l);
+
     $mail->Priority = $emailcfg['Priority'];
     $mail->ContentType = $emailcfg['ContentType'];
     $mail->Encoding = $emailcfg['Encoding'];
@@ -114,15 +108,17 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
     if ($emailcfg['Reply']) {
         $mail->addReplyTo($emailcfg['Reply'], $emailcfg['ReplyName']);
     }
+
     $mail->CharSet = $l['a_meta_charset'];
     if (!$mail->CharSet) {
         $mail->CharSet = $emailcfg['CharSet'];
     }
+
     $mail->Subject = $l['t_result_user'];
     $mail->isHTML(true); // Set message type to HTML.
 
     $email_num = 0; // count emails;
-    
+
     // get all data
     $data = F_getAllUsersTestStat($test_id, $group_id, $user_id, $startdate, $enddate, 'total_score', false, $display_mode);
 
@@ -142,6 +138,7 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
                 } else {
                     $passmsg = ' - '.$l['w_not_passed'];
                 }
+
                 $mail->AltBody .= K_NEWLINE;
             }
 
@@ -190,7 +187,7 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
             // add a "To" address
             $mail->addAddress($tu['user_email'], $tu['user_name']);
 
-            $email_num++;
+            ++$email_num;
             $progresslog = ''.$email_num.'. '.$tu['user_email'].' ['.$tu['user_name'].']'; //output user data
 
             if (!$mail->send()) { //send email to user
@@ -202,6 +199,7 @@ function F_send_report_emails($test_id, $user_id = 0, $testuser_id = 0, $group_i
         } else {
             $progresslog = '['.$l['t_error'].'] '.$tu['user_name'].': '.$l['m_unknown_email'].''; //output user data
         }
+
         echo $progresslog.'<br />'.K_NEWLINE; //output processed emails
         flush(); // force browser output
     }

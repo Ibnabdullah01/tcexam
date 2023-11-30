@@ -43,7 +43,7 @@
 class CAS_ProxyChain_AllowedList
 {
 
-    private $_chains = array();
+    private array $_chains = [];
 
     /**
      * Check whether proxies are allowed by configuration
@@ -52,7 +52,7 @@ class CAS_ProxyChain_AllowedList
      */
     public function isProxyingAllowed()
     {
-        return (count($this->_chains) > 0);
+        return ($this->_chains !== []);
     }
 
     /**
@@ -77,19 +77,21 @@ class CAS_ProxyChain_AllowedList
     public function isProxyListAllowed(array $proxies)
     {
         phpCAS::traceBegin();
-        if (empty($proxies)) {
+        if ($proxies === []) {
             phpCAS::trace("No proxies were found in the response");
             phpCAS::traceEnd(true);
             return true;
-        } elseif (!$this->isProxyingAllowed()) {
+        }
+
+        if (!$this->isProxyingAllowed()) {
             phpCAS::trace("Proxies are not allowed");
             phpCAS::traceEnd(false);
             return false;
-        } else {
-            $res = $this->contains($proxies);
-            phpCAS::traceEnd($res);
-            return $res;
         }
+
+        $res = $this->contains($proxies);
+        phpCAS::traceEnd($res);
+        return $res;
     }
 
     /**
@@ -111,6 +113,7 @@ class CAS_ProxyChain_AllowedList
                 return true;
             }
         }
+
         phpCAS::trace("No proxy chain matches.");
         phpCAS::traceEnd(false);
         return false;

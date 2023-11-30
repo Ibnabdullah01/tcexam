@@ -42,16 +42,17 @@ require_once('../../shared/code/tce_functions_tcecode.php');
 require_once('../../shared/code/tce_functions_test.php');
 require_once('../../shared/code/tce_functions_test_stats.php');
 
-$user_id = intval($_SESSION['session_user_id']);
+$user_id = (int) $_SESSION['session_user_id'];
 
-if (isset($_REQUEST['testuser_id']) and ($_REQUEST['testuser_id'] > 0)) {
-    $testuser_id = intval($_REQUEST['testuser_id']);
+if (isset($_REQUEST['testuser_id']) && $_REQUEST['testuser_id'] > 0) {
+    $testuser_id = (int) $_REQUEST['testuser_id'];
 } else {
     header('Location: index.php'); //redirect browser to public main page
     exit;
 }
-if (isset($_REQUEST['test_id']) and ($_REQUEST['test_id'] > 0)) {
-    $test_id = intval($_REQUEST['test_id']);
+
+if (isset($_REQUEST['test_id']) && $_REQUEST['test_id'] > 0) {
+    $test_id = (int) $_REQUEST['test_id'];
 } else {
     header('Location: index.php'); //redirect browser to public main page
     exit;
@@ -67,6 +68,7 @@ if ($rt = F_db_query($sqlt, $db)) {
 } else {
     F_display_db_error();
 }
+
 if ($user_id != $checkid) {
     header('Location: index.php'); //redirect browser to public main page
     exit;
@@ -83,6 +85,7 @@ if (!F_getBoolean($teststat['testinfo']['test_results_to_users'])) {
     header('Location: index.php'); //redirect browser to public main page
     exit;
 }
+
 //lock user's test
 F_lockUserTest($test_id, $_SESSION['session_user_id']);
 
@@ -100,27 +103,30 @@ echo getFormDescriptionLine($l['w_test'].':', $l['w_test'], $test_all);
 echo getFormDescriptionLine($l['w_time_begin'].':', $l['h_time_begin'], $teststat['testinfo']['user_test_start_time']);
 echo getFormDescriptionLine($l['w_time_end'].':', $l['h_time_end'], $teststat['testinfo']['user_test_end_time']);
 
-if (!isset($teststat['testinfo']['user_test_end_time']) or ($teststat['testinfo']['user_test_end_time'] <= 0) or (strtotime($teststat['testinfo']['user_test_end_time']) < strtotime($teststat['testinfo']['user_test_start_time']))) {
+if (!isset($teststat['testinfo']['user_test_end_time']) || $teststat['testinfo']['user_test_end_time'] <= 0 || strtotime($teststat['testinfo']['user_test_end_time']) < strtotime($teststat['testinfo']['user_test_start_time'])) {
     $time_diff = $teststat['testinfo']['test_duration_time'] * 60;
 } else {
     $time_diff = strtotime($teststat['testinfo']['user_test_end_time']) - strtotime($teststat['testinfo']['user_test_start_time']); //sec
 }
+
 $time_diff = gmdate('H:i:s', $time_diff);
 echo getFormDescriptionLine($l['w_test_time'].':', $l['w_test_time'], $time_diff);
 
 $passmsg = '';
 if ($teststat['testinfo']['test_score_threshold'] > 0) {
-    if (isset($teststat['testinfo']['user_score']) and ($teststat['testinfo']['user_score'] >= $teststat['testinfo']['test_score_threshold'])) {
+    if (isset($teststat['testinfo']['user_score']) && $teststat['testinfo']['user_score'] >= $teststat['testinfo']['test_score_threshold']) {
         $passmsg = ' - '.$l['w_passed'];
     } else {
         $passmsg = ' - '.$l['w_not_passed'];
     }
 }
+
 if ($teststat['testinfo']['test_max_score'] > 0) {
     $score_all = $teststat['testinfo']['user_score'].' / '.$teststat['testinfo']['test_max_score'].' ('.round(100 * $teststat['testinfo']['user_score'] / $teststat['testinfo']['test_max_score']).'%)';
 } else {
     $score_all = $teststat['testinfo']['user_score'];
 }
+
 echo getFormDescriptionLine($l['w_score'].':', $l['h_score_total'], $score_all.$passmsg);
 
 $score_right_all = $teststat['qstats']['right'].' / '.$teststat['qstats']['recurrence'].' ('.$teststat['qstats']['right_perc'].'%)';

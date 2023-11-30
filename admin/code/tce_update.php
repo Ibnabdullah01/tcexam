@@ -65,7 +65,7 @@ while ($continue) {
         break;
     }
 
-    if (substr($update, 0, 7) == 'MESSAGE') {
+    if (str_starts_with($update, 'MESSAGE')) {
         echo '<h2>'.substr($update, 8).'</h2>';
         $continue = false;
         break;
@@ -76,6 +76,7 @@ while ($continue) {
     if ($f) {
         fwrite($f, $update, strlen($update));
     }
+
     fclose($f);
 
     // *** start installation procedure ***
@@ -106,7 +107,7 @@ while ($continue) {
 }
 
 echo '</div>'.K_NEWLINE;
-require_once(dirname(__FILE__).'/tce_page_footer.php');
+require_once(__DIR__.'/tce_page_footer.php');
 
 //============================================================+
 // END OF FILE

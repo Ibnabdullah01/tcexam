@@ -43,10 +43,11 @@
  */
 function F_db_connect($host = 'localhost', $port = '5432', $username = 'postgres', $password = '', $database = 'template1')
 {
-    $connection_string = 'host=\''.$host.'\' port=\''.$port.'\' dbname=\''.$database.'\' user=\''.$username.'\' password=\''.$password.'\'';
+    $connection_string = "host='".$host."' port='".$port."' dbname='".$database."' user='".$username."' password='".$password."'";
     if (!$db = @pg_connect($connection_string)) {
         return false;
     }
+
     return $db;
 }
 
@@ -135,11 +136,10 @@ function F_db_num_rows($result)
  */
 function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
-    if ($r = @pg_query($link_identifier, 'SELECT CURRVAL(\''.$tablename.'_'.$fieldname.'_seq\')')) {
-        if ($m = pg_fetch_row($r, 0)) {
-            return $m[0];
-        }
+    if (($r = @pg_query($link_identifier, "SELECT CURRVAL('".$tablename.'_'.$fieldname."_seq')")) && ($m = pg_fetch_row($r, 0))) {
+        return $m[0];
     }
+
     return 0;
 }
 
@@ -168,6 +168,7 @@ function F_escape_sql($link_identifier, $str, $stripslashes = true)
     if ($stripslashes) {
         $str = stripslashes($str);
     }
+
     return pg_escape_string($link_identifier, $str);
 }
 

@@ -56,7 +56,7 @@ switch ($output_format) {
         header('Content-Disposition: attachment; filename='.$out_filename.'.json;');
         header('Content-Transfer-Encoding: binary');
         $xmlobj = new SimpleXMLElement($xml);
-        echo json_encode($xmlobj);
+        echo json_encode($xmlobj, JSON_THROW_ON_ERROR);
         break;
     }
     case 'XML':
@@ -90,11 +90,11 @@ function F_xml_export_users()
     global $l, $db;
     require_once('../config/tce_config.php');
 
-    $boolean = array('false','true');
+    $boolean = ['false', 'true'];
 
     $xml = ''; // XML data to be returned
 
-    $xml .= '<'.'?xml version="1.0" encoding="UTF-8" ?'.'>'.K_NEWLINE;
+    $xml .= '<?xml version="1.0" encoding="UTF-8" ?>'.K_NEWLINE;
     $xml .= '<tcexamusers version="'.K_TCEXAM_VERSION.'">'.K_NEWLINE;
     $xml .=  K_TAB.'<header';
     $xml .= ' lang="'.K_USER_LANG.'"';
@@ -111,9 +111,10 @@ function F_xml_export_users()
         $sqla .= ' AND user_id IN (SELECT tb.usrgrp_user_id
 			FROM '.K_TABLE_USERGROUP.' AS ta, '.K_TABLE_USERGROUP.' AS tb
 			WHERE ta.usrgrp_group_id=tb.usrgrp_group_id
-				AND ta.usrgrp_user_id='.intval($_SESSION['session_user_id']).'
+				AND ta.usrgrp_user_id='.(int) $_SESSION['session_user_id'].'
 				AND tb.usrgrp_user_id=user_id)';
     }
+
     $sqla .= ' ORDER BY user_lastname,user_firstname,user_name';
     if ($ra = F_db_query($sqla, $db)) {
         while ($ma = F_db_fetch_array($ra)) {
@@ -199,8 +200,7 @@ function F_xml_export_users()
     }
 
     $xml .= K_TAB.'</body>'.K_NEWLINE;
-    $xml .= '</tcexamusers>'.K_NEWLINE;
-    return $xml;
+    return $xml . ('</tcexamusers>'.K_NEWLINE);
 }
 
 //============================================================+

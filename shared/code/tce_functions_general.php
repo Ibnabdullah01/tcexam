@@ -46,6 +46,7 @@ function F_count_rows($dbtable, $where = '')
     } else {
         F_display_db_error();
     }
+
     return($numofrows);
 }
 
@@ -60,8 +61,9 @@ function F_empty_to_null($str)
     global $db;
     require_once('../../shared/code/tce_db_dal.php');
     if (strlen($str) > 0) {
-        return '\''.F_escape_sql($db, $str).'\'';
+        return "'".F_escape_sql($db, $str)."'";
     }
+
     return 'NULL';
 }
 
@@ -78,6 +80,7 @@ function F_zero_to_null($num)
     if ($num == 0) {
         return 'NULL';
     }
+
     return F_escape_sql($db, $num);
 }
 
@@ -92,13 +95,12 @@ function F_getBoolean($str)
     if (is_bool($str)) {
         return $str;
     }
-    if (is_string($str) and ((strncasecmp($str, 't', 1) == 0) or (strncasecmp($str, '1', 1) == 0))) {
+
+    if (is_string($str) && (strncasecmp($str, 't', 1) == 0 || strncasecmp($str, '1', 1) == 0)) {
         return true;
     }
-    if (is_int($str) and ($str == 1)) {
-        return true;
-    }
-    return false;
+
+    return is_int($str) && $str == 1;
 }
 
 /**
@@ -115,9 +117,10 @@ function F_check_unique($table, $where, $fieldname = false, $fieldid = false)
     global $l, $db;
     $sqlc = 'SELECT * FROM '.$table.' WHERE '.$where.' LIMIT 1';
     if ($rc = F_db_query($sqlc, $db)) {
-        if (($fieldname === false) and ($fieldid === false) and (F_count_rows($table, 'WHERE '.$where) > 0)) {
+        if ($fieldname === false && $fieldid === false && F_count_rows($table, 'WHERE '.$where) > 0) {
             return false;
         }
+
         if ($mc = F_db_fetch_array($rc)) {
             if ($mc[$fieldname] == $fieldid) {
                 return true; // the values are unchanged
@@ -129,6 +132,7 @@ function F_check_unique($table, $where, $fieldname = false, $fieldid = false)
     } else {
         F_display_db_error();
     }
+
     // another table row contains the same values
     return false;
 }
@@ -144,6 +148,7 @@ function unhtmlentities($text_to_convert, $preserve_tagsign = false)
     if ($preserve_tagsign) {
         $text_to_convert = preg_replace('/\&([gl])t;/', '&amp;\\1t;', $text_to_convert);
     }
+
     return @html_entity_decode($text_to_convert, ENT_NOQUOTES | ENT_XHTML, 'UTF-8');
 }
 
@@ -162,10 +167,11 @@ function unhtmlentities($text_to_convert, $preserve_tagsign = false)
  */
 function F_compact_string($string, $dquotes = false)
 {
-    $repTable = array("\t" => ' ', "\n" => ' ', "\r" => ' ', "\0" => ' ', "\x0B" => ' ');
+    $repTable = ["\t" => ' ', "\n" => ' ', "\r" => ' ', "\0" => ' ', "\x0B" => ' '];
     if ($dquotes) {
         $repTable['"'] = '&quot;';
     }
+
     return strtr($string, $repTable);
 }
 
@@ -176,7 +182,7 @@ function F_compact_string($string, $dquotes = false)
  */
 function F_replace_angulars($str)
 {
-    $replaceTable = array('<' => '&lt;', '>' => '&gt;');
+    $replaceTable = ['<' => '&lt;', '>' => '&gt;'];
     return strtr($str, $replaceTable);
 }
 
@@ -202,9 +208,10 @@ function F_substr_utf8($str, $start, $length)
             $str_end = $i;
             break;
         }
+
         $char = ord($str[$i]); // get one string character at time
         if ($char <= 0x7F) {
-            $i += 1;
+            ++$i;
         } elseif (($char >> 0x05) == 0x06) { // 2 bytes character (0x06 = 110 BIN)
             $i += 2;
         } elseif (($char >> 0x04) == 0x0E) { // 3 bytes character (0x0E = 1110 BIN)
@@ -212,12 +219,13 @@ function F_substr_utf8($str, $start, $length)
         } elseif (($char >> 0x03) == 0x1E) { // 4 bytes character (0x1E = 11110 BIN)
             $i += 4;
         } else {
-            $i += 1;
+            ++$i;
         }
+
         ++$j;
     }
-    $str = substr($str, $str_start, $str_end);
-    return $str;
+
+    return substr($str, $str_start, $str_end);
 }
 
 /**
@@ -230,7 +238,8 @@ function F_text_to_xml($str)
     if (empty($str)) {
         return '';
     }
-    $replaceTable = array("\0" => '', '&' => '&amp;', '<' => '&lt;', '>' => '&gt;');
+
+    $replaceTable = ["\0" => '', '&' => '&amp;', '<' => '&lt;', '>' => '&gt;'];
     return strtr($str, $replaceTable);
 }
 
@@ -244,7 +253,8 @@ function F_xml_to_text($str)
     if (empty($str)) {
         return '';
     }
-    $replaceTable = array('&amp;' => '&', '&lt;' => '<', '&gt;' => '>');
+
+    $replaceTable = ['&amp;' => '&', '&lt;' => '<', '&gt;' => '>'];
     return strtr($str, $replaceTable);
 }
 
@@ -258,7 +268,8 @@ function F_text_to_tsv($str)
     if (empty($str)) {
         return '';
     }
-    $replaceTable = array("\0" => '', "\t" => '\t', "\n" => '\n', "\r" => '\r');
+
+    $replaceTable = ["\0" => '', "\t" => '\t', "\n" => '\n', "\r" => '\r'];
     return strtr($str, $replaceTable);
 }
 
@@ -272,7 +283,8 @@ function F_tsv_to_text($str)
     if (empty($str)) {
         return '';
     }
-    $replaceTable = array('\t' => "\t", '\n' => "\n", '\r' => "\r");
+
+    $replaceTable = ['\t' => "\t", '\n' => "\n", '\r' => "\r"];
     return strtr($str, $replaceTable);
 }
 
@@ -286,11 +298,10 @@ function showRequiredField($mode = 1)
     global $l;
     $str = '';
     if ($mode == 2) {
-        $str = ' <acronym class="requiredonbox" title="'.$l['w_required'].'">+</acronym>';
-    } else {
-        $str = ' <acronym class="requiredoffbox" title="'.$l['w_not_required'].'">-</acronym>';
+        return ' <acronym class="requiredonbox" title="'.$l['w_required'].'">+</acronym>';
     }
-    return $str;
+
+    return ' <acronym class="requiredoffbox" title="'.$l['w_not_required'].'">-</acronym>';
 }
 
 /**
@@ -303,10 +314,10 @@ function utrim($txt)
     if (empty($txt)) {
         return '';
     }
+
     $txt = preg_replace('/\xA0/u', ' ', $txt);
     $txt = preg_replace('/^([\s]+)/u', '', $txt);
-    $txt = preg_replace('/([\s]+)$/u', '', $txt);
-    return $txt;
+    return preg_replace('/([\s]+)$/u', '', $txt);
 }
 
 /**
@@ -317,59 +328,69 @@ function utrim($txt)
  */
 function getNormalizedIP($ip)
 {
-    if (($ip == '0000:0000:0000:0000:0000:0000:0000:0001') or ($ip == '::1')) {
+    if ($ip == '0000:0000:0000:0000:0000:0000:0000:0001' || $ip == '::1') {
         // fix localhost problem
         $ip = '127.0.0.1';
     }
-    $ip = strtolower(($ip === null) ? '' : $ip);
+
+    $ip = strtolower($ip ?? '');
     // remove unsupported parts
     if (($pos = strrpos($ip, '%')) !== false) {
         $ip = substr($ip, 0, $pos);
     }
+
     if (($pos = strrpos($ip, '/')) !== false) {
         $ip = substr($ip, 0, $pos);
     }
+
     $ip = preg_replace("/[^0-9a-f:\.]+/si", '', $ip);
     // check address type
-    $is_ipv6 = (strpos($ip, ':') !== false);
-    $is_ipv4 = (strpos($ip, '.') !== false);
-    if ((!$is_ipv4) and (!$is_ipv6)) {
+    $is_ipv6 = (str_contains($ip, ':'));
+    $is_ipv4 = (str_contains($ip, '.'));
+    if (!$is_ipv4 && !$is_ipv6) {
         return false;
     }
-    if ($is_ipv6 and $is_ipv4) {
+
+    if ($is_ipv6 && $is_ipv4) {
         // strip IPv4 compatibility notation from IPv6 address
         $ip = substr($ip, strrpos($ip, ':') + 1);
         $is_ipv6 = false;
     }
+
     if ($is_ipv4) {
         // convert IPv4 to IPv6
         $ip_parts = array_pad(explode('.', $ip), 4, 0);
         if (count($ip_parts) > 4) {
             return false;
         }
+
         for ($i = 0; $i < 4; ++$i) {
             if ($ip_parts[$i] > 255) {
                 return false;
             }
         }
+
         $part7 = base_convert(($ip_parts[0] * 256) + $ip_parts[1], 10, 16);
         $part8 = base_convert(($ip_parts[2] * 256) + $ip_parts[3], 10, 16);
         $ip = '::ffff:'.$part7.':'.$part8;
     }
+
     // expand IPv6 notation
-    if (strpos($ip, '::') !== false) {
+    if (str_contains($ip, '::')) {
         $ip = str_replace('::', str_repeat(':0000', (8 - substr_count($ip, ':'))).':', $ip);
     }
-    if (strpos($ip, ':') === 0) {
+
+    if (str_starts_with($ip, ':')) {
         $ip = '0000'.$ip;
     }
+
     // normalize parts to 4 bytes
     $ip_parts = explode(':', $ip);
     foreach ($ip_parts as $key => $num) {
         $ip_parts[$key] = sprintf('%04s', $num);
     }
-    $ip = implode(':', $ip_parts);
-    return $ip;
+
+    return implode(':', $ip_parts);
 }
 
 /**
@@ -418,6 +439,7 @@ function F_formatPercentage($num, $ratio = true)
     if ($ratio) {
         $num = (100 * $num);
     }
+
     return '('.str_replace(' ', '&nbsp;', sprintf('% 3d', round($num))).'%)';
 }
 
@@ -432,6 +454,7 @@ function F_formatPdfPercentage($num, $ratio = true)
     if ($ratio) {
         $num = (100 * $num);
     }
+
     return '('.sprintf('% 3d', round($num)).'%)';
 }
 
@@ -447,6 +470,7 @@ function F_formatXMLPercentage($num, $ratio = true)
     if ($ratio) {
         $num = (100 * $num);
     }
+
     return sprintf('%3d', round($num));
 }
 
@@ -487,17 +511,20 @@ function getDataXML($data, $level = 1)
     foreach ($data as $key => $value) {
         $key = strtolower($key);
         $key = preg_replace('/[^a-z0-9]+/', '_', $key);
-        if (is_numeric($key[0]) or ($key[0] == '_')) {
+        if (is_numeric($key[0]) || $key[0] == '_') {
             $key = 'item'.$key;
         }
+
         $xml .= $tb.'<'.$key.'>';
         if (is_array($value)) {
             $xml .= "\n".getDataXML($value, ($level + 1));
         } else {
             $xml .= F_text_to_xml($value);
         }
+
         $xml .= '</'.$key.'>'."\n";
     }
+
     return $xml;
 }
 
@@ -517,6 +544,7 @@ function getDataTSVHeader($data, $prefix = '')
             $tsv .= "\t".$prefix.$key;
         }
     }
+
     return $tsv;
 }
 
@@ -535,6 +563,7 @@ function getDataTSV($data)
             $tsv .= "\t".F_text_to_tsv($value);
         }
     }
+
     return $tsv;
 }
 
@@ -547,24 +576,16 @@ function F_html_to_TSV($str)
 {
     $dollar_replacement = ":.dlr.:"; //string replacement for dollar symbol
     //tags conversion table
-    $tags2textTable = array (
-        "'<br[^>]*?>'i" => ' ',
-        "'<table[^>]*?>'i" => "\n",
-        "'</table>'i" => "\n",
-        "'<tr[^>]*?>'i" => "\n",
-        "'<th[^>]*?>'i" => "\t",
-        "'<td[^>]*?>'i" => "\t",
-        "'<h[0-9][^>]*?>'i" => "\n\n",
-        "'</h[0-9]>'i" => "\n"
-    );
+    $tags2textTable = ["'<br[^>]*?>'i" => ' ', "'<table[^>]*?>'i" => "\n", "'</table>'i" => "\n", "'<tr[^>]*?>'i" => "\n", "'<th[^>]*?>'i" => "\t", "'<td[^>]*?>'i" => "\t", "'<h[0-9][^>]*?>'i" => "\n\n", "'</h[0-9]>'i" => "\n"];
     $str = str_replace('&nbsp;', ' ', $str);
     $str = str_replace('&rarr;', '-', $str);
     $str = str_replace('&darr;', '', $str);
     $str = str_replace("\t", ' ', $str);
-    $str = preg_replace_callback('/colspan="([0-9]*)"/x', function($match) {
+    $str = preg_replace_callback('/colspan="([0-9]*)"/x', static function ($match) {
         if ($match[1] > 1) {
             return str_repeat('></td><td', ($match[1] - 1));
         }
+
         return '';
     }, $str);
     $str = str_replace("\r\n", "\n", $str);
@@ -580,8 +601,7 @@ function F_html_to_TSV($str)
     $str = str_replace($dollar_replacement, "\$", $str); //restore special character
     $str = rtrim($str);
     $str = ltrim($str, " \r\n\0\x0B");
-    $str = stripslashes($str);
-    return $str;
+    return stripslashes($str);
 }
 
 /**
@@ -606,8 +626,8 @@ function F_select_table_header_element($order_field, $orderdir, $title, $name, $
             $ord = ' <acronym title="'.$l['w_descent'].'">&lt;</acronym>';
         }
     }
-    $str = '<th><a href="'.$_SERVER['SCRIPT_NAME'].'?'.$filter.'&amp;firstrow=0&amp;order_field='.$order_field.'&amp;orderdir='.$orderdir.'" title="'.$title.'">'.$name.'</a>'.$ord.'</th>'."\n";
-    return $str;
+
+    return '<th><a href="'.$_SERVER['SCRIPT_NAME'].'?'.$filter.'&amp;firstrow=0&amp;order_field='.$order_field.'&amp;orderdir='.$orderdir.'" title="'.$title.'">'.$name.'</a>'.$ord.'</th>'."\n";
 }
 
 /**
@@ -626,6 +646,7 @@ function getContrastColor($color)
         // white
         return 'ffffff';
     }
+
     // black
     return '000000';
 }
@@ -637,10 +658,7 @@ function getContrastColor($color)
  */
 function F_isURL($str)
 {
-    if ((preg_match('/^(ftp|http|https|mail|sftp|ssh|telnet|vnc)[:][\/][\/]/', $str) > 0) and (parse_url($str) !== false)) {
-        return true;
-    }
-    return false;
+    return preg_match('/^(ftp|http|https|mail|sftp|ssh|telnet|vnc)[:][\/][\/]/', $str) > 0 && parse_url($str) !== false;
 }
 
 /**
@@ -657,9 +675,10 @@ function F_utf8_normalizer($str, $mode = 'NONE')
         case 'CUSTOM': {
             if (function_exists('user_utf8_custom_normalizer')) {
                 return call_user_func('user_utf8_custom_normalizer', $str);
-            } else {
-                return $str;
             }
+
+            return $str;
+
             break;
         }
         case 'C': {
@@ -703,9 +722,9 @@ function bcdechex($dec)
     $remain = bcdiv(bcsub($dec, $last), 16);
     if ($remain == 0) {
         return strtoupper(dechex($last));
-    } else {
-        return bcdechex($remain).strtoupper(dechex($last));
     }
+
+    return bcdechex($remain).strtoupper(dechex($last));
 }
 
 //============================================================+

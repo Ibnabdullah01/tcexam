@@ -40,11 +40,11 @@ require_once('../code/tce_functions_tcecode_editor.php');
 require_once('../../shared/code/tce_functions_auth_sql.php');
 
 // upload multimedia files
-$uploadedfile = array();
+$uploadedfile = [];
 for ($id = 0; $id < 2; ++$id) {
-    if (isset($_POST['sendfile'.$id]) and ($_FILES['userfile'.$id]['name'])) {
+    if (isset($_POST['sendfile'.$id]) && $_FILES['userfile'.$id]['name']) {
         require_once('../code/tce_functions_upload.php');
-        $uploadedfile['\''.$id.'\''] = F_upload_file('userfile'.$id, K_PATH_CACHE);
+        $uploadedfile["'".$id."'"] = F_upload_file('userfile'.$id, K_PATH_CACHE);
     }
 }
 
@@ -53,48 +53,36 @@ $_REQUEST['ff_required'] = 'subject_name';
 $_REQUEST['ff_required_labels'] = htmlspecialchars($l['w_name'], ENT_COMPAT, $l['a_meta_charset']);
 
 // set default values
-if (!isset($_REQUEST['subject_enabled']) or (empty($_REQUEST['subject_enabled']))) {
+if (!isset($_REQUEST['subject_enabled']) || empty($_REQUEST['subject_enabled'])) {
     $subject_enabled = false;
 } else {
     $subject_enabled = F_getBoolean($_REQUEST['subject_enabled']);
 }
-if (isset($_REQUEST['subject_id'])) {
-    $subject_id = intval($_REQUEST['subject_id']);
-} else {
-    $subject_id = 0;
-}
-if (isset($_REQUEST['subject_module_id'])) {
-    $subject_module_id = intval($_REQUEST['subject_module_id']);
-} else {
-    $subject_module_id = 0;
-}
-if (isset($_REQUEST['changecategory']) and ($_REQUEST['changecategory'] > 0)) {
+
+$subject_id = isset($_REQUEST['subject_id']) ? (int) $_REQUEST['subject_id'] : 0;
+
+$subject_module_id = isset($_REQUEST['subject_module_id']) ? (int) $_REQUEST['subject_module_id'] : 0;
+
+if (isset($_REQUEST['changecategory']) && $_REQUEST['changecategory'] > 0) {
     $changecategory = 1;
 } elseif (isset($_REQUEST['selectcategory'])) {
     $changecategory = 1;
 } else {
     $changecategory = 0;
 }
-if (isset($_REQUEST['subject_name'])) {
-    $subject_name = utrim($_REQUEST['subject_name']);
-} else {
-    $subject_name = '';
-}
-if (isset($_REQUEST['subject_description'])) {
-    $subject_description = utrim($_REQUEST['subject_description']);
-} else {
-    $subject_description = '';
-}
+
+$subject_name = isset($_REQUEST['subject_name']) ? utrim($_REQUEST['subject_name']) : '';
+
+$subject_description = isset($_REQUEST['subject_description']) ? utrim($_REQUEST['subject_description']) : '';
 
 if ($subject_id > 0) {
     if ($changecategory == 0) {
         $sql = 'SELECT subject_module_id FROM '.K_TABLE_SUBJECTS.' WHERE subject_id='.$subject_id.' LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
-                $subject_module_id = intval($m['subject_module_id']);
+                $subject_module_id = (int) $m['subject_module_id'];
                 // check user's authorization for parent module
-                if ((!F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $subject_module_id, 'module_user_id'))
-                    and (!F_isAuthorizedUser(K_TABLE_SUBJECTS, 'subject_id', $subject_id, 'subject_user_id'))) {
+                if (!F_isAuthorizedUser(K_TABLE_MODULES, 'module_id', $subject_module_id, 'module_user_id') && !F_isAuthorizedUser(K_TABLE_SUBJECTS, 'subject_id', $subject_id, 'subject_user_id')) {
                     F_print_error('ERROR', $l['m_authorization_denied'], true);
                 }
             }
@@ -118,6 +106,7 @@ switch ($menu_mode) {
             if (!$r = F_db_query($sql, $db)) {
                 F_display_db_error();
             }
+
             F_print_error('WARNING', $l['m_disabled_vs_deleted']);
         } else {
             // ask confirmation
@@ -139,6 +128,7 @@ switch ($menu_mode) {
             </div>
         <?php
         }
+
         break;
     }
 
@@ -153,23 +143,25 @@ switch ($menu_mode) {
                 F_print_error('MESSAGE', $subject_name.': '.$l['m_deleted']);
             }
         }
+
         break;
     }
 
     case 'update':{ // Update
         // check if the confirmation chekbox has been selected
-        if (!isset($_REQUEST['confirmupdate']) or ($_REQUEST['confirmupdate'] != 1)) {
+        if (!isset($_REQUEST['confirmupdate']) || $_REQUEST['confirmupdate'] != 1) {
             F_print_error('WARNING', $l['m_form_missing_fields'].': '.$l['w_confirm'].' &rarr; '.$l['w_update']);
             F_stripslashes_formfields();
             break;
         }
+
         if ($formstatus = F_check_form_fields()) {
             // check referential integrity (NOTE: mysql do not support "ON UPDATE" constraint)
-            if (!F_check_unique(K_TABLE_SUBJECT_SET, 'subjset_subject_id='.intval($subject_id).'')) {
+            if (!F_check_unique(K_TABLE_SUBJECT_SET, 'subjset_subject_id='.(int) $subject_id.'')) {
                 F_print_error('WARNING', $l['m_update_restrict']);
                 // enable or disable record
                 $sql = 'UPDATE '.K_TABLE_SUBJECTS.' SET
-					subject_enabled=\''.intval($subject_enabled).'\'
+					subject_enabled=\''.(int) $subject_enabled.'\'
 					WHERE subject_id='.$subject_id.'';
                 if (!$r = F_db_query($sql, $db)) {
                     F_display_db_error(false);
@@ -180,23 +172,27 @@ switch ($menu_mode) {
                     } else {
                         $strmsg .= $l['w_disabled'];
                     }
+
                     F_print_error('MESSAGE', $strmsg);
                 }
+
                 $formstatus = false;
                 F_stripslashes_formfields();
                 break;
             }
+
             // check if name is unique for selected module
-            if (!F_check_unique(K_TABLE_SUBJECTS, 'subject_name=\''.F_escape_sql($db, $subject_name).'\' AND subject_module_id='.$subject_module_id.'', 'subject_id', $subject_id)) {
+            if (!F_check_unique(K_TABLE_SUBJECTS, "subject_name='".F_escape_sql($db, $subject_name)."' AND subject_module_id=".$subject_module_id.'', 'subject_id', $subject_id)) {
                 F_print_error('WARNING', $l['m_duplicate_name']);
                 $formstatus = false;
                 F_stripslashes_formfields();
                 break;
             }
+
             $sql = 'UPDATE '.K_TABLE_SUBJECTS.' SET
 				subject_name=\''.F_escape_sql($db, $subject_name).'\',
 				subject_description='.F_empty_to_null($subject_description).',
-				subject_enabled=\''.intval($subject_enabled).'\',
+				subject_enabled=\''.(int) $subject_enabled.'\',
 				subject_module_id='.$subject_module_id.'
 				WHERE subject_id='.$subject_id.'';
             if (!$r = F_db_query($sql, $db)) {
@@ -205,18 +201,20 @@ switch ($menu_mode) {
                 F_print_error('MESSAGE', $l['m_updated']);
             }
         }
+
         break;
     }
 
     case 'add':{ // Add
         if ($formstatus = F_check_form_fields()) {
             // check if name is unique
-            if (!F_check_unique(K_TABLE_SUBJECTS, 'subject_name=\''.F_escape_sql($db, $subject_name).'\' AND subject_module_id='.$subject_module_id.'')) {
+            if (!F_check_unique(K_TABLE_SUBJECTS, "subject_name='".F_escape_sql($db, $subject_name)."' AND subject_module_id=".$subject_module_id.'')) {
                 F_print_error('WARNING', $l['m_duplicate_name']);
                 $formstatus = false;
                 F_stripslashes_formfields();
                 break;
             }
+
             $sql = 'INSERT INTO '.K_TABLE_SUBJECTS.' (
 				subject_name,
 				subject_description,
@@ -226,8 +224,8 @@ switch ($menu_mode) {
 				) VALUES (
 				\''.F_escape_sql($db, $subject_name).'\',
 				'.F_empty_to_null($subject_description).',
-				\''.intval($subject_enabled).'\',
-				\''.intval($_SESSION['session_user_id']).'\',
+				\''.(int) $subject_enabled.'\',
+				\''.(int) $_SESSION['session_user_id'].'\',
 				'.$subject_module_id.'
 				)';
             if (!$r = F_db_query($sql, $db)) {
@@ -236,6 +234,7 @@ switch ($menu_mode) {
                 $subject_id = F_db_insert_id($db, K_TABLE_SUBJECTS, 'subject_id');
             }
         }
+
         break;
     }
 
@@ -255,41 +254,35 @@ switch ($menu_mode) {
 if ($subject_module_id <= 0) {
     $sql = F_select_modules_sql().' LIMIT 1';
     if ($r = F_db_query($sql, $db)) {
-        if ($m = F_db_fetch_array($r)) {
-            $subject_module_id = $m['module_id'];
-        } else {
-            $subject_module_id = 0;
-        }
+        $subject_module_id = ($m = F_db_fetch_array($r)) ? $m['module_id'] : 0;
     } else {
         F_display_db_error();
     }
 }
 
 // --- Initialize variables
-if ($formstatus) {
-    if ($menu_mode != 'clear') {
-        if (($changecategory > 0) or empty($subject_id)) {
-            $subject_id = 0;
-            $subject_name = '';
-            $subject_description = '';
-            $subject_enabled = true;
-        } else {
-            $sql = F_select_subjects_sql('subject_id='.$subject_id.' AND subject_module_id='.$subject_module_id).' LIMIT 1';
-            if ($r = F_db_query($sql, $db)) {
-                if ($m = F_db_fetch_array($r)) {
-                    $subject_id = $m['subject_id'];
-                    $subject_name = $m['subject_name'];
-                    $subject_description = $m['subject_description'];
-                    $subject_enabled = F_getBoolean($m['subject_enabled']);
-                    $subject_module_id = $m['subject_module_id'];
-                } else {
-                    $subject_name = '';
-                    $subject_description = '';
-                    $subject_enabled = true;
-                }
+if ($formstatus && $menu_mode != 'clear') {
+    if ($changecategory > 0 || $subject_id === 0) {
+        $subject_id = 0;
+        $subject_name = '';
+        $subject_description = '';
+        $subject_enabled = true;
+    } else {
+        $sql = F_select_subjects_sql('subject_id='.$subject_id.' AND subject_module_id='.$subject_module_id).' LIMIT 1';
+        if ($r = F_db_query($sql, $db)) {
+            if ($m = F_db_fetch_array($r)) {
+                $subject_id = $m['subject_id'];
+                $subject_name = $m['subject_name'];
+                $subject_description = $m['subject_description'];
+                $subject_enabled = F_getBoolean($m['subject_enabled']);
+                $subject_module_id = $m['subject_module_id'];
             } else {
-                F_display_db_error();
+                $subject_name = '';
+                $subject_description = '';
+                $subject_enabled = true;
             }
+        } else {
+            F_display_db_error();
         }
     }
 }
@@ -329,15 +322,18 @@ if ($r = F_db_query($sql, $db)) {
         if ($m['module_id'] == $subject_module_id) {
             echo ' selected="selected"';
         }
+
         echo '>'.$countitem.". ";
         if (F_getBoolean($m['module_enabled'])) {
             echo '+';
         } else {
             echo '-';
         }
+
         echo ' '.htmlspecialchars($m['module_name'], ENT_NOQUOTES, $l['a_meta_charset']).'&nbsp;</option>'.K_NEWLINE;
-        $countitem++;
+        ++$countitem;
     }
+
     if ($countitem == 1) {
         echo '<option value="0">&nbsp;</option>'.K_NEWLINE;
     }
@@ -345,6 +341,7 @@ if ($r = F_db_query($sql, $db)) {
     echo '</select></span></div>'.K_NEWLINE;
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
@@ -361,6 +358,7 @@ echo '<option value="0" style="background-color:#009900;color:white;"';
 if ($subject_id == 0) {
     echo ' selected="selected"';
 }
+
 echo '>+</option>'.K_NEWLINE;
 $sql = F_select_subjects_sql('subject_module_id='.$subject_module_id);
 if ($r = F_db_query($sql, $db)) {
@@ -370,15 +368,18 @@ if ($r = F_db_query($sql, $db)) {
         if ($m['subject_id'] == $subject_id) {
             echo ' selected="selected"';
         }
+
         echo '>'.$countitem.'. ';
         if (F_getBoolean($m['subject_enabled'])) {
             echo '+';
         } else {
             echo '-';
         }
+
         echo ' '.htmlspecialchars($m['subject_name'], ENT_NOQUOTES, $l['a_meta_charset']).'&nbsp;</option>'.K_NEWLINE;
-        $countitem++;
+        ++$countitem;
     }
+
     if ($countitem == 1) {
         echo '<option value="0">&nbsp;</option>'.K_NEWLINE;
     }
@@ -386,6 +387,7 @@ if ($r = F_db_query($sql, $db)) {
     echo '</select></span></div>'.K_NEWLINE;
     F_display_db_error();
 }
+
 echo '</select>'.K_NEWLINE;
 echo '</span>'.K_NEWLINE;
 echo '</div>'.K_NEWLINE;
@@ -408,6 +410,7 @@ echo '<textarea cols="50" rows="5" name="subject_description" id="subject_descri
 if (K_ENABLE_VIRTUAL_KEYBOARD) {
     echo ' class="keyboardInput"';
 }
+
 echo '>'.htmlspecialchars($subject_description, ENT_NOQUOTES, $l['a_meta_charset']).'</textarea>'.K_NEWLINE;
 echo '<br />'.K_NEWLINE;
 echo tcecodeEditorTagButtons('form_subjecteditor', 'subject_description');
@@ -419,7 +422,7 @@ echo getFormRowCheckBox('subject_enabled', $l['w_enabled'], $l['h_enabled'], '',
 echo '<div class="row">'.K_NEWLINE;
 
 // show buttons by case
-if (isset($subject_id) and ($subject_id > 0)) {
+if (isset($subject_id) && $subject_id > 0) {
     echo '<span style="background-color:#999999;">';
     echo '<input type="checkbox" name="confirmupdate" id="confirmupdate" value="1" title="confirm &rarr; update" />';
     F_submit_button('update', $l['w_update'], $l['h_update']);
@@ -429,6 +432,7 @@ if (isset($subject_id) and ($subject_id > 0)) {
 } else {
     F_submit_button('add', $l['w_add'], $l['h_add']);
 }
+
 F_submit_button('clear', $l['w_clear'], $l['h_clear']);
 
 echo '</div>'.K_NEWLINE;
@@ -444,7 +448,7 @@ if ($subject_module_id > 0) {
 echo '</span>'.K_NEWLINE;
 echo '<span class="right">'.K_NEWLINE;
 
-if (isset($subject_id) and ($subject_id > 0)) {
+if (isset($subject_id) && $subject_id > 0) {
     echo '<a href="tce_edit_question.php?subject_module_id='.$subject_module_id.'&amp;question_subject_id='.$subject_id.'" title="'.$l['t_questions_editor'].'" class="xmlbutton">'.$l['t_questions_editor'].' &gt;</a>';
 }
 

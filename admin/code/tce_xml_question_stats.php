@@ -40,8 +40,8 @@ require_once('../../shared/code/tce_functions_test_stats.php');
 require_once('../code/tce_functions_statistics.php');
 require_once('../code/tce_functions_auth_sql.php');
 
-if (isset($_REQUEST['testid']) and ($_REQUEST['testid'] > 0)) {
-    $test_id = intval($_REQUEST['testid']);
+if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
+    $test_id = (int) $_REQUEST['testid'];
     // check user's authorization
     if (!F_isAuthorizedUser(K_TABLE_TESTS, 'test_id', $test_id, 'test_user_id')) {
         F_print_error('ERROR', $l['m_authorization_denied'], true);
@@ -67,7 +67,7 @@ if (isset($_REQUEST['testid']) and ($_REQUEST['testid'] > 0)) {
             header('Content-Disposition: attachment; filename='.$out_filename.'.json;');
             header('Content-Transfer-Encoding: binary');
             $xmlobj = new SimpleXMLElement($xml);
-            echo json_encode($xmlobj);
+            echo json_encode($xmlobj, JSON_THROW_ON_ERROR);
             break;
         }
         case 'XML':
@@ -107,12 +107,12 @@ function F_xml_export_question_stats($test_id)
     require_once('../../shared/code/tce_authorization.php');
     require_once('../code/tce_functions_auth_sql.php');
 
-    $boolean = array('false', 'true');
-    $type = array('single', 'multiple', 'text', 'ordering');
+    $boolean = ['false', 'true'];
+    $type = ['single', 'multiple', 'text', 'ordering'];
 
     $xml = ''; // XML data to be returned
 
-    $xml .= '<'.'?xml version="1.0" encoding="UTF-8" ?'.'>'.K_NEWLINE;
+    $xml .= '<?xml version="1.0" encoding="UTF-8" ?>'.K_NEWLINE;
     $xml .= '<tcexamquestionstats version="'.K_TCEXAM_VERSION.'">'.K_NEWLINE;
     $xml .=  K_TAB.'<header';
     $xml .= ' lang="'.K_USER_LANG.'"';
@@ -157,6 +157,7 @@ function F_xml_export_question_stats($test_id)
             } else {
                 F_display_db_error();
             }
+
             $xml .= K_TAB.K_TAB.K_TAB.'<description>'.F_text_to_xml($question_description).'</description>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<recurrence>'.$mr['recurrence'].'</recurrence>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<recurrence_percent>'.F_formatXMLPercentage($mr['recurrence'] / $num_questions).'</recurrence_percent>'.K_NEWLINE;
@@ -166,6 +167,7 @@ function F_xml_export_question_stats($test_id)
                 // PostgreSQL returns formatted time, while MySQL returns the number of seconds
                 $mr['average_time'] = strtotime($mr['average_time']);
             }
+
             $xml .= K_TAB.K_TAB.K_TAB.'<time>'.date('i:s', $mr['average_time']).'</time>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<correct>'.$qsttestdata['right'].'</correct>'.K_NEWLINE;
             $xml .= K_TAB.K_TAB.K_TAB.'<correct_percent>'.F_formatXMLPercentage($qsttestdata['right'] / $qsttestdata['num']).'</correct_percent>'.K_NEWLINE;
@@ -192,8 +194,8 @@ function F_xml_export_question_stats($test_id)
 
                     $num_all_answers = F_count_rows(K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_ANSWERS.', '.K_TABLE_LOG_ANSWER.' WHERE logansw_answer_id=answer_id AND logansw_testlog_id=testlog_id AND testlog_testuser_id=testuser_id AND testuser_test_id='.$test_id.' AND testlog_question_id='.$mr['question_id'].'');
                     $num_answers = F_count_rows(K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_ANSWERS.', '.K_TABLE_LOG_ANSWER.' WHERE answer_id='.$ma['answer_id'].' AND logansw_answer_id=answer_id AND logansw_testlog_id=testlog_id AND testlog_testuser_id=testuser_id AND testuser_test_id='.$test_id.' AND testlog_question_id='.$mr['question_id'].'');
-                    $right_answers = F_count_rows(K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_ANSWERS.', '.K_TABLE_LOG_ANSWER.' WHERE answer_id='.$ma['answer_id'].' AND logansw_answer_id=answer_id AND logansw_testlog_id=testlog_id AND testlog_testuser_id=testuser_id AND testuser_test_id='.$test_id.' AND testlog_question_id='.$mr['question_id'].' AND ((answer_isright=\'0\' AND logansw_selected=0) OR (answer_isright=\'1\' AND logansw_selected=1) OR (answer_position IS NOT NULL AND logansw_position IS NOT NULL AND answer_position=logansw_position))');
-                    $wrong_answers = F_count_rows(K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_ANSWERS.', '.K_TABLE_LOG_ANSWER.' WHERE answer_id='.$ma['answer_id'].' AND logansw_answer_id=answer_id AND logansw_testlog_id=testlog_id AND testlog_testuser_id=testuser_id AND testuser_test_id='.$test_id.' AND testlog_question_id='.$mr['question_id'].' AND ((answer_isright=\'0\' AND logansw_selected=1) OR (answer_isright=\'1\' AND logansw_selected=0) OR (answer_position IS NOT NULL AND answer_position!=logansw_position))');
+                    $right_answers = F_count_rows(K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_ANSWERS.', '.K_TABLE_LOG_ANSWER.' WHERE answer_id='.$ma['answer_id'].' AND logansw_answer_id=answer_id AND logansw_testlog_id=testlog_id AND testlog_testuser_id=testuser_id AND testuser_test_id='.$test_id.' AND testlog_question_id='.$mr['question_id']." AND ((answer_isright='0' AND logansw_selected=0) OR (answer_isright='1' AND logansw_selected=1) OR (answer_position IS NOT NULL AND logansw_position IS NOT NULL AND answer_position=logansw_position))");
+                    $wrong_answers = F_count_rows(K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_ANSWERS.', '.K_TABLE_LOG_ANSWER.' WHERE answer_id='.$ma['answer_id'].' AND logansw_answer_id=answer_id AND logansw_testlog_id=testlog_id AND testlog_testuser_id=testuser_id AND testuser_test_id='.$test_id.' AND testlog_question_id='.$mr['question_id']." AND ((answer_isright='0' AND logansw_selected=1) OR (answer_isright='1' AND logansw_selected=0) OR (answer_position IS NOT NULL AND answer_position!=logansw_position))");
                     $unanswered = F_count_rows(K_TABLE_TEST_USER.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_ANSWERS.', '.K_TABLE_LOG_ANSWER.' WHERE answer_id='.$ma['answer_id'].' AND logansw_answer_id=answer_id AND logansw_testlog_id=testlog_id AND testlog_testuser_id=testuser_id AND testuser_test_id='.$test_id.' AND testlog_question_id='.$mr['question_id'].' AND logansw_selected=-1');
 
                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<recurrence>'.$num_answers.'</recurrence>'.K_NEWLINE;
@@ -201,30 +203,35 @@ function F_xml_export_question_stats($test_id)
                     if ($num_all_answers > 0) {
                         $perc = ($num_answers / $num_all_answers);
                     }
+
                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<recurrence_percent>'.F_formatXMLPercentage($perc).'</recurrence_percent>'.K_NEWLINE;
                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<correct>'.$right_answers.'</correct>'.K_NEWLINE;
                     $perc = 0;
                     if ($num_answers > 0) {
                         $perc = ($right_answers / $num_answers);
                     }
+
                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<correct_percent>'.F_formatXMLPercentage($perc).'</correct_percent>'.K_NEWLINE;
                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<wrong>'.$wrong_answers.'</wrong>'.K_NEWLINE;
                     $perc = 0;
                     if ($num_answers > 0) {
                         $perc = round($wrong_answers / $num_answers);
                     }
+
                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<wrong_percent>'.F_formatXMLPercentage($perc).'</wrong_percent>'.K_NEWLINE;
                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<unanswered>'.$unanswered.'</unanswered>'.K_NEWLINE;
                     $perc = 0;
                     if ($num_answers > 0) {
                         $perc = round($unanswered / $num_answers);
                     }
+
                     $xml .= K_TAB.K_TAB.K_TAB.K_TAB.'<unanswered_percent>'.F_formatXMLPercentage($perc).'</unanswered_percent>'.K_NEWLINE;
                     $xml .= K_TAB.K_TAB.K_TAB.'</answer>'.K_NEWLINE;
                 }
             } else {
                 F_display_db_error();
             }
+
             $xml .= K_TAB.K_TAB.'</question>'.K_NEWLINE;
         }
     } else {
@@ -232,9 +239,8 @@ function F_xml_export_question_stats($test_id)
     }
 
     $xml .= K_TAB.'</body>'.K_NEWLINE;
-    $xml .= '</tcexamquestionstats>'.K_NEWLINE;
 
-    return $xml;
+    return $xml . ('</tcexamquestionstats>'.K_NEWLINE);
 }
 
 //============================================================+

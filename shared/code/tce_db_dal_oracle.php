@@ -47,11 +47,13 @@ function F_db_connect($host = 'localhost', $port = '1521', $username = 'root', $
     if (!empty($database)) {
         $dbstring .= '/'.$database;
     }
+
     if (!$db = @oci_connect($username, $password, $dbstring, 'UTF8')) {
         return false;
     }
+
     // change date format
-    @F_db_query('ALTER SESSION SET NLS_DATE_FORMAT=\'YYYY-MM-DD HH24:MI:SS\'', $db);
+    @F_db_query("ALTER SESSION SET NLS_DATE_FORMAT='YYYY-MM-DD HH24:MI:SS'", $db);
     return $db;
 }
 
@@ -87,17 +89,21 @@ function F_db_query($query, $link_identifier)
     if ($query == 'START TRANSACTION') {
         return true;
     }
+
     // convert MySQL RAND() function to Oracle dbms_random.random
     $query = preg_replace('/ORDER BY RAND\(\)/si', 'ORDER BY dbms_random.random', $query);
     // remove last limit clause
     $query = preg_replace("/LIMIT 1([\s]*)$/si", '', $query);
+
     $stid = @oci_parse($link_identifier, $query);
     if (!$stid) {
         return false;
     }
+
     if (@oci_execute($stid)) {
         return $stid;
     }
+
     return false;
 }
 
@@ -114,6 +120,7 @@ function F_db_fetch_array($result)
         $arr = array_change_key_case($arr, CASE_LOWER);
         $arr = array_map('stripslashes', $arr);
     }
+
     return $arr;
 }
 
@@ -125,11 +132,12 @@ function F_db_fetch_array($result)
  */
 function F_db_fetch_assoc($result)
 {
-    $arr = oci_fetch_assoc($result, OCI_BOTH + OCI_RETURN_NULLS + OCI_RETURN_LOBS);
+    $arr = oci_fetch_assoc($result);
     if ($arr !== false) {
         $arr = array_change_key_case($arr, CASE_LOWER);
         $arr = array_map('stripslashes', $arr);
     }
+
     return $arr;
 }
 
@@ -151,12 +159,9 @@ function F_db_affected_rows($link_identifier, $result)
  */
 function F_db_num_rows($result)
 {
-    $output = array();
+    $output = [];
     @oci_fetch_all($result, $output);
-    if (isset($output['TOTAL'][0])) {
-        return $output['TOTAL'][0];
-    }
-    return oci_num_rows($result);
+    return $output['TOTAL'][0] ?? oci_num_rows($result);
 }
 
 /**
@@ -169,11 +174,10 @@ function F_db_num_rows($result)
 function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 {
     $query = 'SELECT '.$tablename.'_seq.currval FROM dual';
-    if ($r = @F_db_query($query, $link_identifier)) {
-        if ($m = oci_fetch_array($r, OCI_NUM)) {
-            return $m[0];
-        }
+    if (($r = @F_db_query($query, $link_identifier)) && ($m = oci_fetch_array($r, OCI_NUM))) {
+        return $m[0];
     }
+
     return 0;
 }
 
@@ -202,6 +206,7 @@ function F_escape_sql($link_identifier, $str, $stripslashes = true)
     if ($stripslashes) {
         $str = stripslashes($str);
     }
+
     return pg_escape_string($str);
 }
 

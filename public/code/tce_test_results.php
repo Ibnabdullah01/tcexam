@@ -42,10 +42,10 @@ require_once('../../shared/code/tce_functions_tcecode.php');
 require_once('../../shared/code/tce_functions_test.php');
 require_once('../../shared/code/tce_functions_test_stats.php');
 
-$user_id = intval($_SESSION['session_user_id']);
+$user_id = (int) $_SESSION['session_user_id'];
 
-if (isset($_REQUEST['testid']) and ($_REQUEST['testid'] > 0)) {
-    $test_id = intval($_REQUEST['testid']);
+if (isset($_REQUEST['testid']) && $_REQUEST['testid'] > 0) {
+    $test_id = (int) $_REQUEST['testid'];
 } else {
     header('Location: index.php'); //redirect browser to public main page
     exit;
@@ -58,6 +58,7 @@ $testdata = F_getTestData($test_id);
 if (!F_getBoolean($testdata['test_results_to_users'])) {
     exit;
 }
+
 $test_basic_score = $testdata['test_score_right'];
 //lock user's test
 F_lockUserTest($test_id, $_SESSION['session_user_id']);
@@ -80,11 +81,12 @@ echo getFormDescriptionLine($l['w_test'].':', $l['w_test'], $test_all);
 echo getFormDescriptionLine($l['w_time_begin'].':', $l['h_time_begin'], $usrtestdata['test_start_time']);
 echo getFormDescriptionLine($l['w_time_end'].':', $l['h_time_end'], $usrtestdata['test_end_time']);
 
-if (!isset($usrtestdata['test_end_time']) or ($usrtestdata['test_end_time'] <= 0)) {
+if (!isset($usrtestdata['test_end_time']) || $usrtestdata['test_end_time'] <= 0) {
     $time_diff = $testdata['test_duration_time'] * 60;
 } else {
     $time_diff = strtotime($usrtestdata['test_end_time']) - strtotime($usrtestdata['test_start_time']); //sec
 }
+
 $time_diff = gmdate('H:i:s', $time_diff);
 echo getFormDescriptionLine($l['w_test_time'].':', $l['w_test_time'], $time_diff);
 
@@ -96,6 +98,7 @@ if ($usrtestdata['score_threshold'] > 0) {
         $passmsg = ' - '.$l['w_not_passed'];
     }
 }
+
 $score_all = $usrtestdata['score'].' / '.$usrtestdata['max_score'].' ('.round(100 * $usrtestdata['score'] / $usrtestdata['max_score']).'%)'.$passmsg;
 echo getFormDescriptionLine($l['w_score'].':', $l['h_score_total'], $score_all);
 
@@ -107,9 +110,9 @@ echo getFormDescriptionLine($l['w_comment'].':', $l['h_testcomment'], F_decode_t
 if (F_getBoolean($testdata['test_report_to_users'])) {
     echo '<div class="rowl">'.K_NEWLINE;
 
-    $topicresults = array(); // per-topic results
+    $topicresults = []; // per-topic results
     $testuser_id = $usrtestdata['testuser_id'];
-    if (isset($testuser_id) and (!empty($testuser_id))) {
+    if (isset($testuser_id) && !empty($testuser_id)) {
         // display user questions
         $sql = 'SELECT *
 			FROM '.K_TABLE_QUESTIONS.', '.K_TABLE_TESTS_LOGS.', '.K_TABLE_SUBJECTS.', '.K_TABLE_MODULES.'
@@ -123,7 +126,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
             while ($m = F_db_fetch_array($r)) {
                 // create per-topic results array
                 if (!array_key_exists($m['module_id'], $topicresults)) {
-                    $topicresults[$m['module_id']] = array();
+                    $topicresults[$m['module_id']] = [];
                     $topicresults[$m['module_id']]['name'] = $m['module_name'];
                     $topicresults[$m['module_id']]['num'] = 0;
                     $topicresults[$m['module_id']]['right'] = 0;
@@ -133,10 +136,11 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                     $topicresults[$m['module_id']]['unrated'] = 0;
                     $topicresults[$m['module_id']]['score'] = 0;
                     $topicresults[$m['module_id']]['maxscore'] = 0;
-                    $topicresults[$m['module_id']]['subjects'] = array();
+                    $topicresults[$m['module_id']]['subjects'] = [];
                 }
+
                 if (!array_key_exists($m['subject_id'], $topicresults[$m['module_id']]['subjects'])) {
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']] = array();
+                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']] = [];
                     $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['name'] = $m['subject_name'];
                     $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['num'] = 0;
                     $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['right'] = 0;
@@ -147,34 +151,39 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                     $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['score'] = 0;
                     $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['maxscore'] = 0;
                 }
+
                 $question_max_score = ($m['question_difficulty'] * $test_basic_score);
                 // total number of questions
-                $topicresults[$m['module_id']]['num'] += 1;
-                $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['num'] += 1;
+                ++$topicresults[$m['module_id']]['num'];
+                ++$topicresults[$m['module_id']]['subjects'][$m['subject_id']]['num'];
                 // number of right answers
                 if ($m['testlog_score'] > ($question_max_score / 2)) {
-                    $topicresults[$m['module_id']]['right'] += 1;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['right'] += 1;
+                    ++$topicresults[$m['module_id']]['right'];
+                    ++$topicresults[$m['module_id']]['subjects'][$m['subject_id']]['right'];
                 } else {
                     // number of wrong answers
-                    $topicresults[$m['module_id']]['wrong'] += 1;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['wrong'] += 1;
+                    ++$topicresults[$m['module_id']]['wrong'];
+                    ++$topicresults[$m['module_id']]['subjects'][$m['subject_id']]['wrong'];
                 }
+
                 // total number of unanswered questions
                 if (strlen($m['testlog_change_time']) <= 0) {
-                    $topicresults[$m['module_id']]['unanswered'] += 1;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['unanswered'] += 1;
+                    ++$topicresults[$m['module_id']]['unanswered'];
+                    ++$topicresults[$m['module_id']]['subjects'][$m['subject_id']]['unanswered'];
                 }
+
                 // total number of undisplayed questions
                 if (strlen($m['testlog_display_time']) <= 0) {
-                    $topicresults[$m['module_id']]['undisplayed'] += 1;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['undisplayed'] += 1;
+                    ++$topicresults[$m['module_id']]['undisplayed'];
+                    ++$topicresults[$m['module_id']]['subjects'][$m['subject_id']]['undisplayed'];
                 }
+
                 // number of free-text unrated questions
                 if (strlen($m['testlog_score']) <= 0) {
-                    $topicresults[$m['module_id']]['unrated'] += 1;
-                    $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['unrated'] += 1;
+                    ++$topicresults[$m['module_id']]['unrated'];
+                    ++$topicresults[$m['module_id']]['subjects'][$m['subject_id']]['unrated'];
                 }
+
                 // score
                 $topicresults[$m['module_id']]['score'] += $m['testlog_score'];
                 $topicresults[$m['module_id']]['subjects'][$m['subject_id']]['score'] += $m['testlog_score'];
@@ -187,33 +196,38 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                 echo '<strong>['.$m['testlog_score'].']'.K_NEWLINE;
                 echo ' (';
                 echo 'IP:'.getIpAsString($m['testlog_user_ip']).K_NEWLINE;
-                if (isset($m['testlog_display_time']) and (strlen($m['testlog_display_time']) > 0)) {
+                if (isset($m['testlog_display_time']) && strlen($m['testlog_display_time']) > 0) {
                     echo ' | '.substr($m['testlog_display_time'], 11, 8).K_NEWLINE;
                 } else {
                     echo ' | --:--:--'.K_NEWLINE;
                 }
-                if (isset($m['testlog_change_time']) and (strlen($m['testlog_change_time']) > 0)) {
+
+                if (isset($m['testlog_change_time']) && strlen($m['testlog_change_time']) > 0) {
                     echo ' | '.substr($m['testlog_change_time'], 11, 8).K_NEWLINE;
                 } else {
                     echo ' | --:--:--'.K_NEWLINE;
                 }
-                if (isset($m['testlog_display_time']) and isset($m['testlog_change_time'])) {
+
+                if (isset($m['testlog_display_time']) && isset($m['testlog_change_time'])) {
                     echo ' | '.date('i:s', (strtotime($m['testlog_change_time']) - strtotime($m['testlog_display_time']))).'';
                 } else {
                     echo ' | --:--'.K_NEWLINE;
                 }
-                if (isset($m['testlog_reaction_time']) and ($m['testlog_reaction_time'] > 0)) {
+
+                if (isset($m['testlog_reaction_time']) && $m['testlog_reaction_time'] > 0) {
                     echo ' | '.($m['testlog_reaction_time']/1000).'';
                 } else {
                     echo ' | ------'.K_NEWLINE;
                 }
+
                 echo ')</strong>'.K_NEWLINE;
                 echo '<br />'.K_NEWLINE;
                 // display question description
                 echo F_decode_tcecode($m['question_description']).K_NEWLINE;
-                if (K_ENABLE_QUESTION_EXPLANATION and !empty($m['question_explanation'])) {
+                if (K_ENABLE_QUESTION_EXPLANATION && !empty($m['question_explanation'])) {
                     echo '<br /><span class="explanation">'.$l['w_explanation'].':</span><br />'.F_decode_tcecode($m['question_explanation']).''.K_NEWLINE;
                 }
+
                 if ($m['question_type'] == 3) {
                     // TEXT
                     echo '<ul class="answer"><li>'.K_NEWLINE;
@@ -250,17 +264,16 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                             } elseif ($m['question_type'] == 1) {
                                 // MCSA
                                 echo '<acronym title="-" class="offbox">&nbsp;</acronym>';
-                            } else {
-                                if ($ma['logansw_selected'] == 0) {
-                                    if (F_getBoolean($ma['answer_isright'])) {
-                                        echo '<acronym title="'.$l['h_answer_wrong'].'" class="nobox">&nbsp;</acronym>';
-                                    } else {
-                                        echo '<acronym title="'.$l['h_answer_right'].'" class="okbox">&nbsp;</acronym>';
-                                    }
+                            } elseif ($ma['logansw_selected'] == 0) {
+                                if (F_getBoolean($ma['answer_isright'])) {
+                                    echo '<acronym title="'.$l['h_answer_wrong'].'" class="nobox">&nbsp;</acronym>';
                                 } else {
-                                    echo '<acronym title="'.$l['m_unanswered'].'" class="offbox">&nbsp;</acronym>';
+                                    echo '<acronym title="'.$l['h_answer_right'].'" class="okbox">&nbsp;</acronym>';
                                 }
+                            } else {
+                                echo '<acronym title="'.$l['m_unanswered'].'" class="offbox">&nbsp;</acronym>';
                             }
+
                             echo '&nbsp;';
                             if ($m['question_type'] == 4) {
                                 echo '<acronym title="'.$l['w_position'].'" class="onbox">'.$ma['answer_position'].'</acronym>';
@@ -269,32 +282,38 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
                             } else {
                                 echo '<acronym title="'.$l['w_answers_wrong'].'" class="offbox">&nbsp;</acronym>';
                             }
+
                             echo ' ';
                             echo F_decode_tcecode($ma['answer_description']);
-                            if (K_ENABLE_ANSWER_EXPLANATION and !empty($ma['answer_explanation'])) {
+                            if (K_ENABLE_ANSWER_EXPLANATION && !empty($ma['answer_explanation'])) {
                                 echo '<br /><span class="explanation">'.$l['w_explanation'].':</span><br />'.F_decode_tcecode($ma['answer_explanation']).''.K_NEWLINE;
                             }
+
                             echo '</li>'.K_NEWLINE;
                         }
                     } else {
                         F_display_db_error();
                     }
+
                     echo '</ol>'.K_NEWLINE;
                 } // end multiple answers
                 // display teacher/supervisor comment to the question
-                if (isset($m['testlog_comment']) and (!empty($m['testlog_comment']))) {
+                if (isset($m['testlog_comment']) && !empty($m['testlog_comment'])) {
                     echo '<ul class="answer"><li class="comment">'.K_NEWLINE;
                     echo F_decode_tcecode($m['testlog_comment']);
                     echo '&nbsp;</li></ul>'.K_NEWLINE;
                 }
+
                 echo '<br /><br />'.K_NEWLINE;
                 echo '</li>'.K_NEWLINE;
             }
+
             echo '</ol>'.K_NEWLINE;
         } else {
             F_display_db_error();
         }
     }
+
     echo '</div>'.K_NEWLINE;
 
 
@@ -312,6 +331,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
         } else {
             echo 'nobox';
         }
+
         echo '">'.$res_module['score'].' / '.$res_module['maxscore'].' ('.$score_percent.'%)</acronym>';
         $score_percent = round(100 * $res_module['right'] / $res_module['num']);
         echo ' <acronym title="'.$l['w_answers_right'].'" class="';
@@ -320,6 +340,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
         } else {
             echo 'nobox';
         }
+
         echo '">'.$res_module['right'].' / '.$res_module['num'].' ('.$score_percent.'%)</acronym>';
         echo ' <strong>'.$res_module['name'].'</strong>';
         echo '<ul>';
@@ -332,6 +353,7 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
             } else {
                 echo 'nobox';
             }
+
             echo '">'.$res_subject['score'].' / '.$res_subject['maxscore'].' ('.$score_percent.'%)</acronym>';
             $score_percent = round(100 * $res_subject['right'] / $res_subject['num']);
             echo ' <acronym title="'.$l['w_answers_right'].'" class="';
@@ -340,13 +362,16 @@ if (F_getBoolean($testdata['test_report_to_users'])) {
             } else {
                 echo 'nobox';
             }
+
             echo '">'.$res_subject['right'].' / '.$res_subject['num'].' ('.$score_percent.'%)</acronym>';
             echo ' '.$res_subject['name'];
             echo '</li>'.K_NEWLINE;
         }
+
         echo '</ul>';
         echo '</li>'.K_NEWLINE;
     }
+
     echo '</ul>';
     echo '<hr />'.K_NEWLINE;
     echo '</div>'.K_NEWLINE;

@@ -109,6 +109,6 @@ class CAS_Languages_English implements CAS_Languages_LanguageInterface
     */
     public function getServiceUnavailable()
     {
-        return 'The service `<b>%s</b>\' is not available (<b>%s</b>).';
+        return "The service `<b>%s</b>' is not available (<b>%s</b>).";
     }
 }

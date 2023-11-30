@@ -36,64 +36,62 @@
 class XMLQuestionImporter
 {
 
-    /**
-     * XML file.
-     * @private
-     */
-    private $xmlfile = 0;
+    public $parser;
 
     /**
      * Current level: 'module', 'subject', 'question', 'answer'.
      * @private
      */
-    private $level = '';
+    private string $level = '';
 
     /**
      * Array to store current level data.
      * @private
      */
-    private $level_data = array();
+    private array $level_data = [];
 
     /**
      * Current data element.
      * @private
      */
-    private $current_element = '';
+    private string $current_element = '';
 
     /**
      * Current data value.
      * @private
      */
-    private $current_data = '';
+    private string $current_data = '';
 
     /**
      * Boolean values.
      * @private
      */
-    private $boolval = array('false' => '0', 'true' => '1');
+    private array $boolval = ['false' => '0', 'true' => '1'];
 
     /**
      * Type of questions.
      * @private
      */
-    private $qtype = array('single' => '1', 'multiple' => '2', 'text' => '3', 'ordering' => '4');
+    private array $qtype = ['single' => '1', 'multiple' => '2', 'text' => '3', 'ordering' => '4'];
 
     /**
      * Store hash values of question descriptions.
      * This is used to avoid the 255 chars limitation for string indexes on MySQL
      * @private
      */
-    private $questionhash = array();
+    private array $questionhash = [];
 
     /**
      * Class constructor.
      * @param $xmlfile (string) xml (XML) file name
      * @return true or die for parsing error
      */
-    public function __construct($xmlfile)
+    public function __construct(/**
+     * XML file.
+     * @private
+     */
+    private $xmlfile)
     {
-        // set xml file
-        $this->xmlfile = $xmlfile;
         // creates a new XML parser to be used by the other XML functions
         $this->parser = xml_parser_create();
         // the following function allows to use parser inside object
@@ -105,13 +103,14 @@ class XMLQuestionImporter
         // sets the character data handler function for the XML parser
         xml_set_character_data_handler($this->parser, 'segContentHandler');
         // start parsing an XML document
-        if (!xml_parse($this->parser, file_get_contents($xmlfile))) {
+        if (xml_parse($this->parser, file_get_contents($xmlfile)) === 0) {
             die(sprintf(
                 'ERROR xmlResourceBundle :: XML error: %s at line %d',
                 xml_error_string(xml_get_error_code($this->parser)),
                 xml_get_current_line_number($this->parser)
             ));
         }
+
         // free this XML parser
         xml_parser_free($this->parser);
         return true;
@@ -142,7 +141,7 @@ class XMLQuestionImporter
             case 'question':
             case 'answer': {
                 $this->level = $name;
-                $this->level_data[$name] = array();
+                $this->level_data[$name] = [];
                 $this->current_data = '';
                 switch ($name) {
                     case 'module': {
@@ -187,6 +186,7 @@ class XMLQuestionImporter
                         break;
                     }
                 }
+
                 break;
             }
             default: {
@@ -231,16 +231,18 @@ class XMLQuestionImporter
             }
             default: {
                 $elname = $this->level.'_'.$name;
-                if ($this->current_element == $elname) {
+                if ($this->current_element === $elname) {
                     // convert XML special chars
                     $this->level_data[$this->level][$this->current_element] = F_xml_to_text(utrim($this->current_data));
-                    if (($this->current_element == 'question_description') or ($this->current_element == 'answer_description')) {
+                    if ($this->current_element == 'question_description' || $this->current_element == 'answer_description') {
                         // normalize UTF-8 string based on settings
                         $this->level_data[$this->level][$this->current_element] = F_utf8_normalizer($this->level_data[$this->level][$this->current_element], K_UTF8_NORMALIZATION_MODE);
                     }
+
                     // escape for SQL
                     $this->level_data[$this->level][$this->current_element] = F_escape_sql($db, $this->level_data[$this->level][$this->current_element], false);
                 }
+
                 break;
             }
         }
@@ -269,9 +271,10 @@ class XMLQuestionImporter
         global $l, $db;
         require_once('../config/tce_config.php');
         require_once('../../shared/code/tce_functions_auth_sql.php');
-        if (isset($this->level_data['module']['module_id']) and ($this->level_data['module']['module_id'] > 0)) {
+        if (isset($this->level_data['module']['module_id']) && $this->level_data['module']['module_id'] > 0) {
             return;
         }
+
         // check if this module already exist
         $sql = 'SELECT module_id
 			FROM '.K_TABLE_MODULES.'
@@ -320,9 +323,11 @@ class XMLQuestionImporter
         if ($this->level_data['module']['module_id'] === false) {
             return;
         }
-        if (isset($this->level_data['subject']['subject_id']) and ($this->level_data['subject']['subject_id'] > 0)) {
+
+        if (isset($this->level_data['subject']['subject_id']) && $this->level_data['subject']['subject_id'] > 0) {
             return;
         }
+
         // check if this subject already exist
         $sql = 'SELECT subject_id
 			FROM '.K_TABLE_SUBJECTS.'
@@ -373,23 +378,27 @@ class XMLQuestionImporter
         if ($this->level_data['module']['module_id'] === false) {
             return;
         }
+
         if ($this->level_data['subject']['subject_id'] === false) {
             return;
         }
-        if (isset($this->level_data['question']['question_id']) and ($this->level_data['question']['question_id'] > 0)) {
+
+        if (isset($this->level_data['question']['question_id']) && $this->level_data['question']['question_id'] > 0) {
             return;
         }
+
         // check if this question already exist
         $sql = 'SELECT question_id
 			FROM '.K_TABLE_QUESTIONS.'
 			WHERE ';
         if (K_DATABASE_TYPE == 'ORACLE') {
-            $sql .= 'dbms_lob.instr(question_description,\''.$this->level_data['question']['question_description'].'\',1,1)>0';
-        } elseif ((K_DATABASE_TYPE == 'MYSQL') and K_MYSQL_QA_BIN_UNIQUITY) {
-            $sql .= 'question_description=\''.$this->level_data['question']['question_description'].'\' COLLATE utf8_bin';
+            $sql .= "dbms_lob.instr(question_description,'".$this->level_data['question']['question_description']."',1,1)>0";
+        } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+            $sql .= "question_description='".$this->level_data['question']['question_description']."' COLLATE utf8_bin";
         } else {
-            $sql .= 'question_description=\''.$this->level_data['question']['question_description'].'\'';
+            $sql .= "question_description='".$this->level_data['question']['question_description']."'";
         }
+
         $sql .= ' AND question_subject_id='.$this->level_data['subject']['subject_id'].' LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
@@ -400,26 +409,30 @@ class XMLQuestionImporter
         } else {
             F_display_db_error();
         }
-        if (K_DATABASE_TYPE == 'MYSQL') {
+
+        if (K_DATABASE_TYPE === 'MYSQL') {
             // this section is to avoid the problems on MySQL string comparison
             $maxkey = 240;
             $strkeylimit = min($maxkey, strlen($this->level_data['question']['question_description']));
             $stop = $maxkey / 3;
-            while (in_array(md5(strtolower(substr($this->level_data['subject']['subject_id'].$this->level_data['question']['question_description'], 0, $strkeylimit))), $this->questionhash) and ($stop > 0)) {
+            while (in_array(md5(strtolower(substr($this->level_data['subject']['subject_id'].$this->level_data['question']['question_description'], 0, $strkeylimit))), $this->questionhash) && $stop > 0) {
                 // a similar question was already imported from this XML, so we change it a little bit to avoid duplicate keys
                 $this->level_data['question']['question_description'] = '_'.$this->level_data['question']['question_description'];
                 $strkeylimit = min($maxkey, ($strkeylimit + 1));
-                $stop--; // variable used to avoid infinite loop
+                --$stop; // variable used to avoid infinite loop
             }
+
             if ($stop == 0) {
                 F_print_error('ERROR', 'Unable to get unique question ID');
                 return;
             }
         }
+
         $sql = 'START TRANSACTION';
         if (!$r = F_db_query($sql, $db)) {
             F_display_db_error();
         }
+
         // insert question
         $sql = 'INSERT INTO '.K_TABLE_QUESTIONS.' (
 			question_subject_id,
@@ -440,7 +453,7 @@ class XMLQuestionImporter
 			\''.$this->qtype[$this->level_data['question']['question_type']].'\',
 			\''.$this->level_data['question']['question_difficulty'].'\',
 			\''.$this->boolval[$this->level_data['question']['question_enabled']].'\',
-			'.F_zero_to_null(intval($this->level_data['question']['question_position'])).',
+			'.F_zero_to_null((int) $this->level_data['question']['question_position']).',
 			\''.$this->level_data['question']['question_timer'].'\',
 			\''.$this->boolval[$this->level_data['question']['question_fullscreen']].'\',
 			\''.$this->boolval[$this->level_data['question']['question_inline_answers']].'\',
@@ -451,10 +464,11 @@ class XMLQuestionImporter
         } else {
             // get new question ID
             $this->level_data['question']['question_id'] = F_db_insert_id($db, K_TABLE_QUESTIONS, 'question_id');
-            if (K_DATABASE_TYPE == 'MYSQL') {
+            if (K_DATABASE_TYPE === 'MYSQL') {
                 $this->questionhash[] = md5(strtolower(substr($this->level_data['subject']['subject_id'].$this->level_data['question']['question_description'], 0, $strkeylimit)));
             }
         }
+
         $sql = 'COMMIT';
         if (!$r = F_db_query($sql, $db)) {
             F_display_db_error();
@@ -472,23 +486,27 @@ class XMLQuestionImporter
         if ($this->level_data['module']['module_id'] === false) {
             return;
         }
+
         if ($this->level_data['subject']['subject_id'] === false) {
             return;
         }
-        if (isset($this->level_data['answer']['answer_id']) and ($this->level_data['answer']['answer_id'] > 0)) {
+
+        if (isset($this->level_data['answer']['answer_id']) && $this->level_data['answer']['answer_id'] > 0) {
             return;
         }
+
         // check if this answer already exist
         $sql = 'SELECT answer_id
 			FROM '.K_TABLE_ANSWERS.'
 			WHERE ';
         if (K_DATABASE_TYPE == 'ORACLE') {
-            $sql .= 'dbms_lob.instr(answer_description, \''.$this->level_data['answer']['answer_description'].'\',1,1)>0';
-        } elseif ((K_DATABASE_TYPE == 'MYSQL') and K_MYSQL_QA_BIN_UNIQUITY) {
-            $sql .= 'answer_description=\''.$this->level_data['answer']['answer_description'].'\' COLLATE utf8_bin';
+            $sql .= "dbms_lob.instr(answer_description, '".$this->level_data['answer']['answer_description']."',1,1)>0";
+        } elseif (K_DATABASE_TYPE === 'MYSQL' && K_MYSQL_QA_BIN_UNIQUITY) {
+            $sql .= "answer_description='".$this->level_data['answer']['answer_description']."' COLLATE utf8_bin";
         } else {
-            $sql .= 'answer_description=\''.$this->level_data['answer']['answer_description'].'\'';
+            $sql .= "answer_description='".$this->level_data['answer']['answer_description']."'";
         }
+
         $sql .= ' AND answer_question_id='.$this->level_data['question']['question_id'].' LIMIT 1';
         if ($r = F_db_query($sql, $db)) {
             if ($m = F_db_fetch_array($r)) {
@@ -499,6 +517,7 @@ class XMLQuestionImporter
                 if (!$r = F_db_query($sql, $db)) {
                     F_display_db_error();
                 }
+
                 $sql = 'INSERT INTO '.K_TABLE_ANSWERS.' (
 					answer_question_id,
 					answer_description,
@@ -513,7 +532,7 @@ class XMLQuestionImporter
 					'.F_empty_to_null($this->level_data['answer']['answer_explanation']).',
 					\''.$this->boolval[$this->level_data['answer']['answer_isright']].'\',
 					\''.$this->boolval[$this->level_data['answer']['answer_enabled']].'\',
-					'.F_zero_to_null(intval($this->level_data['answer']['answer_position'])).',
+					'.F_zero_to_null((int) $this->level_data['answer']['answer_position']).',
 					'.F_empty_to_null($this->level_data['answer']['answer_keyboard_key']).'
 					)';
                 if (!$r = F_db_query($sql, $db)) {
@@ -523,6 +542,7 @@ class XMLQuestionImporter
                     // get new answer ID
                     $this->level_data['answer']['answer_id'] = F_db_insert_id($db, K_TABLE_ANSWERS, 'answer_id');
                 }
+
                 $sql = 'COMMIT';
                 if (!$r = F_db_query($sql, $db)) {
                     F_display_db_error();

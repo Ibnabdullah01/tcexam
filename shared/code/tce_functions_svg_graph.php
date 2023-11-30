@@ -50,21 +50,23 @@ function F_getSVGGraphCode($p, $w = '', $h = '')
     // graph width
     $width = ($label_space + ($numpoints * 2));
     if (!empty($w)) {
-        $width = max($width, intval($w));
+        $width = max($width, (int) $w);
     }
+
     // graph height
     $height = 200 + $label_space;
     if (!empty($h)) {
-        $height = max($height, intval($h));
+        $height = max($height, (int) $h);
     }
+
     // graph colors
-    $color = array('ff0000', '0000ff');
+    $color = ['ff0000', '0000ff'];
 
     // font size for labels
     $fontsize = sprintf('%.3F', ($label_space / 3));
 
     // create SVG graph
-    $svg = '<'.'?'.'xml version="1.0" standalone="no"'.'?'.'>'."\n";
+    $svg = '<?xml version="1.0" standalone="no"?>'."\n";
     $svg .= '<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">'."\n";
     $svg .= '<svg width="'.$width.'" height="'.$height.'" version="1.1" xmlns="http://www.w3.org/2000/svg">'."\n";
 
@@ -77,10 +79,11 @@ function F_getSVGGraphCode($p, $w = '', $h = '')
     for ($i = 0; $i <= 10; ++$i) {
         $y = (($i + 1) * $vstep);
         // text
-        $svg .= "\t".'<text x="'.$textpos.'" y="'.$y.'" stroke-width="0">'.(100 - ($i * 10)).'%</text>'."\n";
+        $svg .= '	<text x="'.$textpos.'" y="'.$y.'" stroke-width="0">'.(100 - ($i * 10)).'%</text>'."\n";
         // line
-        $svg .= "\t".'<line x1="'.$label_space.'" y1="'.$y.'" x2="'.$hw.'" y2="'.$y.'" />'."\n";
+        $svg .= '	<line x1="'.$label_space.'" y1="'.$y.'" x2="'.$hw.'" y2="'.$y.'" />'."\n";
     }
+
     $svg .= '</g>'."\n";
 
     // draw vertical grids and points
@@ -88,7 +91,7 @@ function F_getSVGGraphCode($p, $w = '', $h = '')
     $vh = ($height - $label_space);
     $textpos = $vh + ($label_space * 0.5);
     $svg .= '<g stroke="#cccccc" fill="#666666" stroke-width="1" text-anchor="end" font-family="Arial,Verdana" font-size="'.$fontsize.'">'."\n";
-    $graph = array('', '');
+    $graph = ['', ''];
     $step = 1;
     if ($numpoints > 30) {
         $step = 5;
@@ -100,20 +103,22 @@ function F_getSVGGraphCode($p, $w = '', $h = '')
         $point = explode('v', $points[$i]);
         $x = (($i * $hstep) + $label_space);
         // line
-        $svg .= "\t".'<line x1="'.$x.'" y1="'.$vstep.'" x2="'.$x.'" y2="'.$vh.'" />'."\n";
+        $svg .= '	<line x1="'.$x.'" y1="'.$vstep.'" x2="'.$x.'" y2="'.$vh.'" />'."\n";
         $xi = ($i + 1);
-        if (($xi == 1) or (($xi % $step) == 0)) {
+        if ($xi == 1 || ($xi % $step) == 0) {
             // text
-            $svg .= "\t".'<text x="'.$x.'" y="'.$textpos.'" stroke-width="0">'.($xi).'</text>'."\n";
+            $svg .= '	<text x="'.$x.'" y="'.$textpos.'" stroke-width="0">'.($xi).'</text>'."\n";
         }
+
         for ($k = 0; $k <= 1; ++$k) {
             // graph path
-            $y = sprintf('%.3F', (11 * $vstep) - (intval($point[$k]) * $pstep));
+            $y = sprintf('%.3F', (11 * $vstep) - ((int) $point[$k] * $pstep));
             $graph[$k] .= ' '.$x.','.$y;
             // point
-            $svg .= "\t".'<circle cx="'.$x.'" cy="'.$y.'" r="4" stroke-width="0" fill="#'.$color[$k].'" />'."\n";
+            $svg .= '	<circle cx="'.$x.'" cy="'.$y.'" r="4" stroke-width="0" fill="#'.$color[$k].'" />'."\n";
         }
     }
+
     $svg .= '</g>'."\n";
 
     // draw graph

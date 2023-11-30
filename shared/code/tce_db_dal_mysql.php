@@ -45,12 +45,14 @@ function F_db_connect($host = 'localhost', $port = '3306', $username = 'root', $
     if (!$db = @mysql_connect($host.':'.$port, $username, $password)) {
         return false;
     }
-    if ((strlen($database) > 0) and (!@mysql_select_db($database, $db))) {
+
+    if (strlen($database) > 0 && !@mysql_select_db($database, $db)) {
         return false;
     }
+
     // set the correct charset encoding
-    mysql_query($db, 'SET NAMES \'utf8\' COLLATE \'utf8_unicode_ci\'');
-    mysql_query($db, 'SET CHARACTER SET \'utf8\'');
+    mysql_query($db, "SET NAMES 'utf8' COLLATE 'utf8_unicode_ci'");
+    mysql_query($db, "SET CHARACTER SET 'utf8'");
     return $db;
 }
 
@@ -73,6 +75,7 @@ function F_db_error($link_identifier = null)
     if (empty($link_identifier)) {
         return '';
     }
+
     return '['.mysql_errno($link_identifier).']: '.mysql_error($link_identifier).'';
 
 }
@@ -150,11 +153,10 @@ function F_db_insert_id($link_identifier, $tablename = '', $fieldname = '')
 	 * mysql_insert_id() will be incorrect.
 	 */
      //return mysql_insert_id($link_identifier);
-    if ($r = mysql_query('SELECT LAST_INSERT_ID() FROM '.$tablename.'', $link_identifier)) {
-        if ($m = mysql_fetch_row($r)) {
-            return $m[0];
-        }
+    if (($r = mysql_query('SELECT LAST_INSERT_ID() FROM '.$tablename.'', $link_identifier)) && ($m = mysql_fetch_row($r))) {
+        return $m[0];
     }
+
     return 0;
 }
 
@@ -183,6 +185,7 @@ function F_escape_sql($link_identifier, $str, $stripslashes = true)
     if ($stripslashes) {
         $str = stripslashes($str);
     }
+
     return mysql_real_escape_string($str, $link_identifier);
 }
 

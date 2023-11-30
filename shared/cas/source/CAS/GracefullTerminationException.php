@@ -62,13 +62,14 @@ implements CAS_Exception
         // Exit cleanly to avoid filling up the logs with uncaught exceptions.
         if (self::$_exitWhenThrown) {
             exit;
-        } else {
-            // Throw exceptions to allow unit testing to continue;
-            parent::__construct($message, $code);
         }
+
+        // Throw exceptions to allow unit testing to continue;
+        parent::__construct($message, $code);
     }
 
-    private static $_exitWhenThrown = true;
+    private static bool $_exitWhenThrown = true;
+
     /**
     * Force phpcas to thow Exceptions instead of calling exit()
     * Needed for unit testing. Generally shouldn't be used in production due to

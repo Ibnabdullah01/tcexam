@@ -137,7 +137,7 @@ class LatexRender
      * List of unauthorized LaTeX commands.
      * @protected
      */
-    protected $latex_tags_blacklist = array('include', 'def', 'command', 'loop', 'repeat', 'open', 'toks', 'output', 'input', 'catcode', 'name', '^^', '\every', '\errhelp', '\errorstopmode', '\scrollmode', '\nonstopmode', '\batchmode', '\read', '\write', 'csname', '\newhelp', '\uppercase', '\lowercase', '\relax', '\aftergroup', '\afterassignment', '\expandafter', '\noexpand', '\special');
+    protected $latex_tags_blacklist = ['include', 'def', 'command', 'loop', 'repeat', 'open', 'toks', 'output', 'input', 'catcode', 'name', '^^', '\every', '\errhelp', '\errorstopmode', '\scrollmode', '\nonstopmode', '\batchmode', '\read', '\write', 'csname', '\newhelp', '\uppercase', '\lowercase', '\relax', '\aftergroup', '\afterassignment', '\expandafter', '\noexpand', '\special'];
 
     // ------ private ------
 
@@ -145,19 +145,19 @@ class LatexRender
      * Error code.
      * @private
      */
-    private $errorcode = 0;
+    private int $errorcode = 0;
 
     /**
      * Temporary filename.
      * @private
     */
-    private $tmp_filename = '';
+    private string $tmp_filename = '';
 
     /**
      * Latex formula.
      * @private
      */
-    private $latex_formula = '';
+    private string $latex_formula = '';
 
     /**
      * Image width.
@@ -180,7 +180,7 @@ class LatexRender
      */
     public function __construct()
     {
-        $this->tmp_filename = md5(rand());
+        $this->tmp_filename = md5(random_int(0, mt_getrandmax()));
     }
 
     /**
@@ -364,26 +364,30 @@ class LatexRender
 
         if (is_file($full_path_filename)) {
             return $this->picture_path_httpd.''.$filename;
-        } else {
-            // security filter: reject too long formulas
-            if (strlen($latex_formula) > $this->string_length_limit) {
-                $this->errorcode = 1;
-                return false;
-            }
-            // security filter: try to match against LaTeX-Tags Blacklist
-            for ($i=0; $i<sizeof($this->latex_tags_blacklist); $i++) {
-                if (stristr($latex_formula, $this->latex_tags_blacklist[$i])) {
-                    $this->errorcode = 2;
-                    return false;
-                }
-            }
-            // security checks assume correct formula, let's render it
-            if ($this->renderLatex($latex_formula)) {
-                return $this->picture_path_httpd.''.$filename;
-            } else {
+        }
+
+        // security filter: reject too long formulas
+        if (strlen($latex_formula) > $this->string_length_limit) {
+            $this->errorcode = 1;
+            return false;
+        }
+
+        // security filter: try to match against LaTeX-Tags Blacklist
+        $counter = count($this->latex_tags_blacklist);
+        // security filter: try to match against LaTeX-Tags Blacklist
+        for ($i=0; $i<$counter; ++$i) {
+            if (stristr($latex_formula, (string) $this->latex_tags_blacklist[$i])) {
+                $this->errorcode = 2;
                 return false;
             }
         }
+
+        // security checks assume correct formula, let's render it
+        if ($this->renderLatex($latex_formula)) {
+            return $this->picture_path_httpd.''.$filename;
+        }
+
+        return false;
     }
 
     /**
@@ -427,8 +431,7 @@ class LatexRender
      */
     private function getFilename($latex_formula)
     {
-        $filename = $this->img_prefix.md5($latex_formula).'.'.$this->image_format;
-        return $filename;
+        return $this->img_prefix.md5($latex_formula).'.'.$this->image_format;
     }
 
     /**
@@ -449,8 +452,7 @@ class LatexRender
         $string .= '\pagestyle{empty}'."\n";
         $string .= '\begin{document}'."\n";
         $string .= '$'.$latex_formula.'$'."\n";
-        $string .= '\end{document}'."\n";
-        return $string;
+        return $string . ('\end{document}'."\n");
     }
 
     /**
@@ -481,17 +483,15 @@ class LatexRender
     private function checkImageDimensions($filename)
     {
         $output = exec($this->identify_path." ".$filename);
-        if (empty($output)) {
+        if ($output === '' || $output === false) {
             return false;
         }
+
         $result = explode(' ', $output);
         $dim = explode('x', $result[2]);
         $this->img_width = $dim[0];
         $this->img_height = $dim[1];
-        if (($this->img_width > $this->width_limit) or ($this->img_height > $this->height_limit)) {
-            return false;
-        }
-        return true;
+        return $this->img_width <= $this->width_limit && $this->img_height <= $this->height_limit;
     }
 
     /**
@@ -519,7 +519,7 @@ class LatexRender
 
         // create temporary latex file
         $fp = fopen($this->tmp_dir.''.$this->tmp_filename.'.tex', 'a+');
-        fputs($fp, $latex_document);
+        fwrite($fp, $latex_document);
         fclose($fp);
 
         // create temporary DVI file

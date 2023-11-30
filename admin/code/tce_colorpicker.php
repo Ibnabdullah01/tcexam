@@ -76,11 +76,12 @@ function F_html_color_picker($callingform, $callingfield, $tag)
     $ck = 1;
     echo '<div style="width:320px;">';
     foreach (TCPDF_COLORS::$webcolor as $key => $val) { // for each color in table
-        echo '<a title="'.$key.'" onclick="document.getElementById(\'CSELECTED\').value=\'#'.$val.'\';FJ_pick_color(1);document.getElementById(\'colorname\').selectedIndex='.$ck.';" style="text-decoration:none;font-size:3px;">';
+        echo '<a title="'.$key.'" onclick="document.getElementById(\'CSELECTED\').value=\'#'.$val."';FJ_pick_color(1);document.getElementById('colorname').selectedIndex=".$ck.';" style="text-decoration:none;font-size:3px;">';
         echo '<span style="background-color:#'.$val.';padding:0;margin:0;width:20px;height:10px;float:left;">&nbsp;</span>';
         echo '</a>';
-        $ck++;
+        ++$ck;
     }
+
     echo '<br style="clear:both;"/>';
     echo '</div>'.K_NEWLINE;
     echo '<div id="pickedcolor" style="visibility:visible;border:1px solid black;width:320px;height:30px;">&nbsp;</div>'.K_NEWLINE;
@@ -91,9 +92,10 @@ function F_html_color_picker($callingform, $callingfield, $tag)
     foreach (TCPDF_COLORS::$webcolor as $key => $val) { // for each color in table
         echo '<option value="#'.$val.'">'.$key.'</option>'.K_NEWLINE;
     }
+
     echo '</select>';
     echo '<input type="text" name="CSELECTED" id="CSELECTED" size="10" maxlength="7" value="" onchange="FJ_pick_color(1); document.getElementById(\'colorname\').selectedIndex=0;" />'.K_NEWLINE;
-    $onclick = 'FJ_insert_tag(window.opener.document.getElementById(\''.$callingform.'\').'.$callingfield.', \'['.$tag.'=\'+document.getElementById(\'CSELECTED\').value+\']\');';
+    $onclick = "FJ_insert_tag(window.opener.document.getElementById('".$callingform."').".$callingfield.", '[".$tag."='+document.getElementById('CSELECTED').value+']');";
     echo '<input type="button" name="wclose" id="wclose" value="'.$l['w_close'].'" title="'.$l['h_close_window'].'" onclick="'.$onclick.'self.close();" />'.K_NEWLINE;
     echo '</div>'.K_NEWLINE;
     echo F_getCSRFTokenField().K_NEWLINE;
