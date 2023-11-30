@@ -15,6 +15,6 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2020-2020 Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2020-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
