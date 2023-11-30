@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_general.php
 // Begin       : 2001-09-08
-// Last Update : 2023-11-29
+// Last Update : 2023-11-30
 //
 // Description : General functions.
 //

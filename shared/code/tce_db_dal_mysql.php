@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_db_dal_mysql.php
 // Begin       : 2003-10-12
-// Last Update : 2022-12-17
+// Last Update : 2023-11-30
 //
 // Description : MySQL driver for TCExam Database Abstraction
 //               Layer (DAL).
@@ -18,7 +18,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2022  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

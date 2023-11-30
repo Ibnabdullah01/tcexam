@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_errmsg.php
 // Begin       : 2001-09-17
-// Last Update : 2021-08-04
+// Last Update : 2023-11-30
 //
 // Description : handle error messages
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2021  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

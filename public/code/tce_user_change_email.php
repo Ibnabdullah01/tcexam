@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_user_change_email.php
 // Begin       : 2010-09-17
-// Last Update : 2018-07-06
+// Last Update : 2023-11-30
 //
 // Description : Form to change user email
 //

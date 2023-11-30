@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_page_menu.php
 // Begin       : 2010-09-16
-// Last Update : 2012-12-19
+// Last Update : 2023-11-30
 //
 // Description : Output XHTML unordered list menu.
 //

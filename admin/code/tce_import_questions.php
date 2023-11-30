@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_import_questions.php
 // Begin       : 2006-03-12
-// Last Update : 2013-04-12
+// Last Update : 2023-11-30
 //
 // Description : Import questions from an XML file.
 //

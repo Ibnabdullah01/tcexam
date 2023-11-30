@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_xml_questions.php
 // Begin       : 2006-03-06
-// Last Update : 2023-11-29
+// Last Update : 2023-11-30
 //
 // Description : Functions to export questions using XML or JSON format.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2023  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

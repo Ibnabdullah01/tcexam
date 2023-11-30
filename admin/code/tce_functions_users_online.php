@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_levels.php
 // Begin       : 2001-10-18
-// Last Update : 2020-05-06
+// Last Update : 2023-11-30
 //
 // Description : Functions to display online users' data.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2020  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_update.php
 // Begin       : 2009-09-14
-// Last Update : 2012-12-20
+// Last Update : 2023-11-30
 //
 // Description : Automatic updates for linux systems.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2012  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

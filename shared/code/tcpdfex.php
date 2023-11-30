@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tcpdfex.php
 // Begin       : 2010-12-06
-// Last Update : 2014-04-15
+// Last Update : 2023-11-30
 // Author      : Nicola Asuni - Tecnick.com LTD - www.tecnick.com - info@tecnick.com
 // License     : http://www.tecnick.com/pagefiles/tcpdf/LICENSE.TXT GNU-LGPLv3 + YOU CAN'T REMOVE ANY TCPDF COPYRIGHT NOTICE OR LINK FROM THE GENERATED PDF DOCUMENTS.
 // -------------------------------------------------------------------

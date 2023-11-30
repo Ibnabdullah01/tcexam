@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_authorization.php
 // Begin       : 2001-09-26
-// Last Update : 2013-07-02
+// Last Update : 2023-11-30
 //
 // Description : Functions for Authorization / LOGIN
 //

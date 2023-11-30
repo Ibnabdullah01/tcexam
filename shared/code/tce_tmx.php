@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_tmx.php
 // Begin       : 2004-10-19
-// Last Update : 2010-08-09
+// Last Update : 2023-11-30
 //
 // Description : TMX-PHP Bridge Class
 // Platform    : PHP 5
@@ -16,7 +16,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2010  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //
 // 	This program is free software: you can redistribute it and/or modify
 // 	it under the terms of the GNU Lesser General Public License as published by

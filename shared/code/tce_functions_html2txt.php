@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_html2txt.php
 // Begin       : 2001-10-21
-// Last Update : 2017-04-22
+// Last Update : 2023-11-30
 //
 // Description : Function to convert HTML code to Text string.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2018  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

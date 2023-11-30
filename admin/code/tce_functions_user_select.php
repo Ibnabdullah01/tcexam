@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_user_select.php
 // Begin       : 2001-09-13
-// Last Update : 2022-12-17
+// Last Update : 2023-11-30
 //
 // Description : Functions to display and select registered user.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2022  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

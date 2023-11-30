@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_db_connect.php
 // Begin       : 2001-09-02
-// Last Update : 2014-01-26
+// Last Update : 2023-11-30
 //
 // Description : open connection with active database
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2014  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

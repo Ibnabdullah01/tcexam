@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_xhtml_header.php
 // Begin       : 2004-04-24
-// Last Update : 2013-01-29
+// Last Update : 2023-11-30
 //
 // Description : Output defaults XHTML header (doctype + head).
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2013  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

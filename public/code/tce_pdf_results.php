@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_pdf_results.php
 // Begin       : 2004-06-10
-// Last Update : 2020-05-06
+// Last Update : 2023-11-30
 //
 // Description : Create PDF document to display test results
 //               summary for all users.

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_statistics.php
 // Begin       : 2008-12-25
-// Last Update : 2010-02-17
+// Last Update : 2023-11-30
 //
 // Description : Functions to calculate descriptive statistics.
 //

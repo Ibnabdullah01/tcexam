@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_user_verification.php
 // Begin       : 2008-03-31
-// Last Update : 2012-11-22
+// Last Update : 2023-11-30
 //
 // Description : User verification.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2012  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : index.php
 // Begin       : 2004-04-29
-// Last Update : 2012-12-27
+// Last Update : 2023-11-30
 //
 // Description : Main page of administrator section.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2012  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

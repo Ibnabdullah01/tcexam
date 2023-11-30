@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_page_footer_popup.php
 // Begin       : 2001-11-01
-// Last Update : 2009-09-30
+// Last Update : 2023-11-30
 //
 // Description : Outputs default XHTML popup page footer.
 //

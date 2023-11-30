@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_auth.php
 // Begin       : 2002-09-02
-// Last Update : 2013-07-05
+// Last Update : 2023-11-30
 //
 // Description : Define access levels for each admin page
 //               Note:

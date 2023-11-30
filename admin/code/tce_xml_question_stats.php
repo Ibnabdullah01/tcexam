@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_xml_question_stats.php
 // Begin       : 2010-05-10
-// Last Update : 2020-05-06
+// Last Update : 2023-11-30
 //
 // Description : Functions to export question stats using XML
 //               or JSON format.

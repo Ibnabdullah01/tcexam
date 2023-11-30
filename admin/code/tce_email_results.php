@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_email_results.php
 // Begin       : 2005-02-24
-// Last Update : 2014-01-27
+// Last Update : 2023-11-30
 //
 // Description : Interface to send test reports to users via
 //               email.
@@ -16,7 +16,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2014  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

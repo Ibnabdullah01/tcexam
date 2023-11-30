@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_select_tests_popup.php
 // Begin       : 2012-12-02
-// Last Update : 2013-04-09
+// Last Update : 2023-11-30
 //
 // Description : Display user selection table on popup window.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2012  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

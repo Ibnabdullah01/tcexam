@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_page.php
 // Begin       : 2002-03-21
-// Last Update : 2011-02-05
+// Last Update : 2023-11-30
 //
 // Description : Functions for XHTML pages.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2010  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

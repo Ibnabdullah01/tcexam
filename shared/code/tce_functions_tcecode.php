@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_tcecode.php
 // Begin       : 2002-01-09
-// Last Update : 2023-06-13
+// Last Update : 2023-11-30
 //
 // Description : Functions to translate TCExam code into XHTML.
 //               The TCExam code is compatible to the common BBCode.

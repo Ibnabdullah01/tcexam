@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_colorpicker.php
 // Begin       : 2001-11-05
-// Last Update : 2013-03-17
+// Last Update : 2023-11-30
 //
 // Description : HTML Color Picker Functions.
 //

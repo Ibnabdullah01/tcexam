@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_questions.php
 // Begin       : 2008-11-26
-// Last Update : 2012-11-07
+// Last Update : 2023-11-30
 //
 // Description : Functions to manipulate questions.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2010  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

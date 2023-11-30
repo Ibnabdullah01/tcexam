@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_tcecode_editor.php
 // Begin       : 2002-02-20
-// Last Update : 2013-12-24
+// Last Update : 2023-11-30
 //
 // Description : TCExam Code Editor (editor for special mark-up
 //               code used to add some text formatting)

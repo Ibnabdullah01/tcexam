@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_tsv_result_allusers.php
 // Begin       : 2006-03-30
-// Last Update : 2014-01-21
+// Last Update : 2023-11-30
 //
 // Description : Functions to export users' results using
 //               TSV file format (tab delimited text).
@@ -16,7 +16,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2014  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

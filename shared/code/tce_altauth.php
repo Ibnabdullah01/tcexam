@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_altauth.php
 // Begin       : 2008-03-28
-// Last Update : 2022-12-17
+// Last Update : 2023-11-30
 //
 // Description : Check user authorization against alternative
 //               systems (SSL, HTTP-BASIC, CAS, SHIBBOLETH, RADIUS, LDAP)

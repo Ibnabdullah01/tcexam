@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_otp.php
 // Begin       : 2012-01-09
-// Last Update : 2012-11-22
+// Last Update : 2023-11-30
 //
 // Description : Functions for One Time Password (OTP).
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2012  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

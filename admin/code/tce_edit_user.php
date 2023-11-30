@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_edit_user.php
 // Begin       : 2002-02-08
-// Last Update : 2020-05-06
+// Last Update : 2023-11-30
 //
 // Description : Edit user data.
 //

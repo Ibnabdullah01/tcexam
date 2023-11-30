@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_svg_graph.php
 // Begin       : 2012-04-15
-// Last Update : 2013-07-14
+// Last Update : 2023-11-30
 //
 // Description : Create an SVG graph for user results.
 //

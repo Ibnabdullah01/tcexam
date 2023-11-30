@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_login.php
 // Begin       : 2002-03-21
-// Last Update : 2010-09-05
+// Last Update : 2023-11-30
 //
 // Description : Display Login interface and redirect to main
 //               page.
@@ -16,7 +16,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2010  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

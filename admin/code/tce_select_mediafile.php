@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_select_mediafile.php
 // Begin       : 2010-09-20
-// Last Update : 2021-08-05
+// Last Update : 2023-11-30
 //
 // Description : Select media file for questions or answer description
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2021  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

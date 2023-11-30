@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_edit_question.php
 // Begin       : 2004-04-27
-// Last Update : 2020-05-06
+// Last Update : 2023-11-30
 //
 // Description : Edit questions
 //

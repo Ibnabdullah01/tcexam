@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_test_start.php
 // Begin       : 2010-02-06
-// Last Update : 2012-12-04
+// Last Update : 2023-11-30
 //
 // Description : Display selected test description and buttons
 //               to start or cancel the test.
@@ -16,7 +16,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2012  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

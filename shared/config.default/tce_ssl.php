@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_ssl.php
 // Begin       : 2013-03-27
-// Last Update : 2013-03-27
+// Last Update : 2023-11-30
 //
 // Description : Configuration file for SSL Authentication
 //

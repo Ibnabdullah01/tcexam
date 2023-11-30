@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_functions_svg_graph.php
 // Begin       : 2012-04-15
-// Last Update : 2013-07-14
+// Last Update : 2023-11-30
 //
 // Description : Function to create an SVG graph for user results.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2013  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

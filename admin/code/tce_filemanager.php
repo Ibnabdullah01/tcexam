@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_filemanager.php
 // Begin       : 2010-09-20
-// Last Update : 2021-08-04
+// Last Update : 2023-11-30
 //
 // Description : File manager for media files.
 //

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_edit_backup.php
 // Begin       : 2009-04-06
-// Last Update : 2020-05-06
+// Last Update : 2023-11-30
 //
 // Description : Backup and Restore TCExam Database.
 //               ONLY FOR POSIX SYSTEMS

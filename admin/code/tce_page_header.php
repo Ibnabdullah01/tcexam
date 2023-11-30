@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_page_header.php
 // Begin       : 2001-09-18
-// Last Update : 2010-05-10
+// Last Update : 2023-11-30
 //
 // Description : output default XHTML page header
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2010  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

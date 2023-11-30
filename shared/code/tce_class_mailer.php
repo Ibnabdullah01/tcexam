@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : cp_class_mailer.php
 // Begin       : 2001-10-20
-// Last Update : 2020-01-03
+// Last Update : 2023-11-30
 //
 // Description : Extend PHPMailer class with inheritance
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2020  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

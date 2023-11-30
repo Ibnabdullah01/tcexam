@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_pdf.php
 // Begin       : 2004-06-11
-// Last Update : 2013-03-17
+// Last Update : 2023-11-30
 //
 // Description : Configuration file for pdf documents.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2013  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

@@ -2,7 +2,7 @@
 //============================================================+
 // File name   : tce_class_import_xml.php
 // Begin       : 2006-03-12
-// Last Update : 2012-11-14
+// Last Update : 2023-11-30
 //
 // Description : Class to import questions from an XML file.
 //
@@ -15,7 +15,7 @@
 //               info@tecnick.com
 //
 // License:
-//    Copyright (C) 2004-2012  Nicola Asuni - Tecnick.com LTD
+//    Copyright (C) 2004-2023 Nicola Asuni - Tecnick.com LTD
 //    See LICENSE.TXT file for more information.
 //============================================================+
 

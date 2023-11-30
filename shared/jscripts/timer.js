@@ -1,7 +1,7 @@
 //============================================================+
 // File name   : timer.js
 // Begin       : 2004-04-29
-// Last Update : 2010-10-05
+// Last Update : 2023-11-30
 //
 // Description : display clock and countdown timer
 //
